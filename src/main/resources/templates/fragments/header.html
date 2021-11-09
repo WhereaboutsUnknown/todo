@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title,link)">
+  <title th:replace="${title}">TODO</title>
+  <!-- Common styles and scripts -->
+  <link rel="stylesheet" type="text/css" media="all" th:href="@{/static/css/header.css}">
+  <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}">
+</head>
+<body>
+<header th:fragment="common-header">
+  <div class="navbar">
+    <ul class="navbar-content">
+      <!--<img class="logo" th:src="@{/static/images/logo-text-2.png}" alt="logo">-->
+      <li class="menu-item-logo">
+        <a class="menu-item-logo-href" th:href="@{/}">// TODO</a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-item-href menu-item-active" th:href="@{/}" th:text="${firstHref}"></a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-item-href menu-item-active" th:href="@{/}" th:text="${secondHref}"></a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-item-href" th:href="@{/}" th:text="${thirdHref}" th:classappend="${isAdmin} ? menu-item-active : ''"></a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-item-href" th:href="@{/}"></a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-item-href" th:href="@{/}"></a>
+      </li>
+      <li class="menu-item">
+        <a class="menu-item-href" th:href="@{/}"></a>
+      </li>
+      <li class="menu-item">
+        <form th:action="@{/logout}" method="post">
+          <input class="menu-item-button" type="submit" value="ВЫЙТИ"/>
+        </form>
+      </li>
+    </ul>
+  </div>
+</header>
+</body>
+</html>

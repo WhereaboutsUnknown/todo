@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Добро пожаловать! | TODO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/login.css}" type="text/css">
+    <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+    <div class="page-content-container">
+        <div class="login-form-container">
+            <div class="logo">// TODO</div>
+            <form th:action="@{/authenticate}" method="post" class="login-form" id="login-form">
+                <label for="username">Логин или e-mail</label>: <br />
+                <input type="text" id="username" name="username" autofocus="autofocus" class="input-field" th:classappend="${loginError != null} ? error-input : ''" /> <br />
+                <label for="password">Пароль</label>: <br />
+                <input type="password" id="password" name="password" class="input-field" th:classappend="${loginError != null} ? error-input : ''" /> <br />
+                <input type="submit" value="Войти" class="submit-button" />
+            </form>
+            <p th:if="${loginError != null}" class="error" id="error-message">Неверный логин или пароль</p>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" th:src="@{/static/js/login.js}"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+header {
+    background: linear-gradient(to bottom right, #195fd4, #4a8dfb);
+    padding: 10px;
+    margin-top: 0;
+    width: 100%;
+    height: 100px;
+}
+
+.navbar {
+    margin: auto;
+}
+
+.navbar-content {
+    width: 100%;
+    height: 100%;
+    list-style: none;
+}
+
+.menu-item-logo {
+    width: 16%;
+    margin: auto;
+    list-style-type: none;
+    display:inline-block;
+}
+
+.menu-item-logo-href {
+    color: #fdd501;
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+}
+
+.menu-item {
+    width: 11%;
+    margin: auto;
+    list-style-type: none;
+    display:inline-block;
+}
+
+.menu-item-href {
+    color: #fdd501;
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    text-decoration: none;
+    visibility: hidden;
+}
+
+.menu-item-active.menu-item-href {
+    visibility: visible;
+}
+
+.menu-item-button {
+    color: #fdd501;
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    background-color: transparent;
+    border: none;
+    text-align: center;
+}
+
+.menu-item-active:hover {
+    color: #fdd663;
+    text-shadow: whitesmoke 1px 0 3px;
+    cursor: pointer;
+}
+
+.menu-item-button:hover {
+    color: #fdd663;
+    text-shadow: whitesmoke 1px 0 3px;
+    cursor: pointer;
+}
