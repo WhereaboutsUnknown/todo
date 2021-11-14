@@ -51,6 +51,13 @@ public class Manager {
             }
             return String.join(" ", nameComponents.toArray(new String[0]));
         }
-        return "";
+        return null;
+    }
+
+    public String getAge() {
+        if (user != null) {
+            return user.getAge();
+        }
+        return null;
     }
 }

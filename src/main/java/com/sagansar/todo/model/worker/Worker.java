@@ -36,4 +36,11 @@ public class Worker {
     public void unblock() {
         active = true;
     }
+
+    public String getAge() {
+        if (user != null) {
+            return user.getAge();
+        }
+        return null;
+    }
 }
