@@ -24,6 +24,9 @@ public class TaskForm {
     private Integer creatorId;
 
     @JsonProperty
+    private Integer unitId;
+
+    @JsonProperty
     private String stack;
 
     @JsonProperty
