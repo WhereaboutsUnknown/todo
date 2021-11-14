@@ -38,4 +38,7 @@ public class User implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     protected Set<Role> roles;
+
+    @OneToOne(mappedBy = "user")
+    protected Contacts contacts;
 }
