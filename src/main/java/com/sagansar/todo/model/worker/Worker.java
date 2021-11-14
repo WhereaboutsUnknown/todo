@@ -2,10 +2,12 @@ package com.sagansar.todo.model.worker;
 
 import com.sagansar.todo.model.general.User;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @Entity(name = "worker_profiles")
 public class Worker {
 

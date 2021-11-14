@@ -2,10 +2,12 @@ package com.sagansar.todo.model.manager;
 
 import com.sagansar.todo.model.general.User;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @Entity(name = "task_managers")
 public class Manager {
 

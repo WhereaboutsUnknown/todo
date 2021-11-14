@@ -1,10 +1,12 @@
 package com.sagansar.todo.model.work;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
 @Entity(name = "todo_status")
 public class TodoStatus {
 
@@ -20,11 +22,11 @@ public class TodoStatus {
     private String description;
 
     public Status status(String name) {
-        return Status.valueOf(name);
+        return TodoStatus.Status.valueOf(name);
     }
 
     public Status status(int code) {
-        return Status.fromCode(code);
+        return TodoStatus.Status.fromCode(code);
     }
 
     @Getter
