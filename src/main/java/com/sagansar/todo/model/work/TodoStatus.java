@@ -21,12 +21,9 @@ public class TodoStatus {
     @Column(name = "descr")
     private String description;
 
-    public Status status(String name) {
-        return TodoStatus.Status.valueOf(name);
-    }
-
-    public Status status(int code) {
-        return TodoStatus.Status.fromCode(code);
+    public Status status() {
+        Status status = TodoStatus.Status.fromCode(code);
+        return status == null ? TodoStatus.Status.valueOf(statusName) : status;
     }
 
     @Getter
@@ -60,6 +57,11 @@ public class TodoStatus {
 
         static Integer codeOf(String name) {
             return valueOf(name).code;
+        }
+
+        @Override
+        public String toString() {
+            return "[" + name() + ", id " + code + "]";
         }
     }
 }
