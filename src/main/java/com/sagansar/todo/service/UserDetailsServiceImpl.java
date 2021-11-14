@@ -1,5 +1,6 @@
 package com.sagansar.todo.service;
 
+import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.general.UserAuthDetails;
 import com.sagansar.todo.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,5 +50,28 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
+    }
+
+    public User getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserDetails user;
+
+        if (principal instanceof UserDetails) {
+            user = (UserDetails) principal;
+        } else {
+            throw new RuntimeException("Unable to load user!");
+        }
+        return userRepository.findByUsername(user.getUsername());
+    }
+
+    public boolean checkUserRights(RoleEnum role) {
+        Set<String> currentUserRoles = getCurrentUserRoles();
+        return (currentUserRoles.contains(role.name()) || currentUserRoles.contains("ADMIN"));
+    }
+
+    public boolean isAdmin() {
+        Set<String> currentUserRoles = getCurrentUserRoles();
+        return currentUserRoles.contains("ADMIN");
     }
 }
