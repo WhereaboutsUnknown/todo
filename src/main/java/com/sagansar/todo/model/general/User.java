@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Getter
@@ -31,6 +32,9 @@ public class User implements Serializable {
 
     @Column(name = "surname", length = 100)
     protected String surname;
+
+    @Column(name = "birth_date")
+    protected LocalDate birthDate;
 
     @ManyToMany(fetch = FetchType.EAGER)
     protected Set<Role> roles;

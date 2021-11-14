@@ -14,9 +14,6 @@ public class UserDto {
     protected String username;
 
     @JsonProperty
-    protected String password;
-
-    @JsonProperty
     protected String firstName;
 
     @JsonProperty
@@ -27,4 +24,7 @@ public class UserDto {
 
     @JsonProperty
     protected String role;
+
+    @JsonProperty
+    protected String age;
 }
