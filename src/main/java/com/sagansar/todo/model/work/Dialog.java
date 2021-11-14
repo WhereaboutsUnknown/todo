@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "dialog")
 public class Dialog {
 
     @Id
