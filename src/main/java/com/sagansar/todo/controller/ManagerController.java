@@ -1,16 +1,15 @@
 package com.sagansar.todo.controller;
 
-import com.sagansar.todo.controller.dto.PersonNameDto;
+import com.sagansar.todo.controller.dto.ManagerDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
+import com.sagansar.todo.controller.mapper.ManagerMapper;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
-import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
-import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +34,22 @@ public class ManagerController {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+    @GetMapping("/")
+    public ManagerDto getUserManagerProfile() {
+        User currentUser = userDetailsService.getCurrentUser();
+        if (currentUser == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не найден");
+        }
+        Manager manager = managerRepository.findByUserId(currentUser.getId());
+        if (manager == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Не найден профиль менеджера");
+        }
+        if (!manager.isActive()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль менеджера был заблокирован");
+        }
+        return ManagerMapper.managerToDto(manager);
+    }
+
     @GetMapping("/{managerId}/tasks")
     public List<TaskShortDto> getManagedTasks(@PathVariable(name = "managerId") Integer managerId) {
         checkManagerRights(managerId);
@@ -46,6 +61,8 @@ public class ManagerController {
                 })
                 .collect(Collectors.toList());
     }
+
+    //TODO: назначение менеджера на задачу, получение списка менеджеров (возможно, отдельный контроллер отделов)
 
     private void checkManagerRights(Integer managerId) {
         if (!userDetailsService.checkUserRights(RoleEnum.MANAGER)) {
