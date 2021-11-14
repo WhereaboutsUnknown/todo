@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Set;
 
 @Getter
@@ -41,4 +42,12 @@ public class User implements Serializable {
 
     @OneToOne(mappedBy = "user")
     protected Contacts contacts;
+
+    public String getAge() {
+        if (birthDate != null) {
+            int userAge = LocalDate.now(ZoneId.systemDefault()).getYear() - birthDate.getYear();
+            return String.valueOf(userAge);
+        }
+        return null;
+    }
 }
