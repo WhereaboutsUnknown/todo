@@ -1,5 +1,7 @@
 package com.sagansar.todo.model.work;
 
+import com.sagansar.todo.model.manager.Manager;
+import com.sagansar.todo.model.worker.Worker;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,14 +24,16 @@ public class TodoTask {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "worker_id")
-    private Integer workerId;
-
     @Column(name = "creator_id")
     private Integer creatorId;
 
-    @Column(name = "manager_id")
-    private Integer managerId;
+    @OneToOne
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
+
+    @OneToOne
+    @JoinColumn(name = "worker_id")
+    private Worker worker;
 
     @Column(name = "unit_id")
     private Integer unitId;
