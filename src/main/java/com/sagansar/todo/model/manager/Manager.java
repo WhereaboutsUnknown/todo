@@ -3,8 +3,11 @@ package com.sagansar.todo.model.manager;
 import com.sagansar.todo.model.general.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +24,7 @@ public class Manager {
     private User user;
 
     @Column(name = "active")
-    private Boolean active;
+    private boolean active;
 
     public void block() {
         active = false;
@@ -29,5 +32,25 @@ public class Manager {
 
     public void unblock() {
         active = true;
+    }
+
+    public String getFullName() {
+        if (user != null) {
+            String surname = user.getSurname();
+            String firstname = user.getFirstName();
+            String patronym = user.getPatronym();
+            List<String> nameComponents = new ArrayList<>();
+            if (StringUtils.hasText(surname)) {
+                nameComponents.add(surname);
+            }
+            if (StringUtils.hasText(firstname)) {
+                nameComponents.add(firstname);
+            }
+            if (StringUtils.hasText(patronym)) {
+                nameComponents.add(patronym);
+            }
+            return String.join(" ", nameComponents.toArray(new String[0]));
+        }
+        return "";
     }
 }

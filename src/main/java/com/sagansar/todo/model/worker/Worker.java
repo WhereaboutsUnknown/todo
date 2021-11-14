@@ -27,7 +27,7 @@ public class Worker {
     private String info;
 
     @Column(name = "active")
-    private Boolean active;
+    private boolean active;
 
     public void block() {
         active = false;
