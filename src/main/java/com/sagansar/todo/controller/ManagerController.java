@@ -10,11 +10,13 @@ import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
+import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,7 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@RestController("/manager")
+@RestController
+@RequestMapping("/manager")
 public class ManagerController {
 
     @Autowired
@@ -32,11 +35,11 @@ public class ManagerController {
     ManagerRepository managerRepository;
 
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    SecurityService securityService;
 
     @GetMapping("/")
     public ManagerDto getUserManagerProfile() {
-        User currentUser = userDetailsService.getCurrentUser();
+        User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не найден");
         }
@@ -65,12 +68,12 @@ public class ManagerController {
     //TODO: назначение менеджера на задачу, получение списка менеджеров (возможно, отдельный контроллер отделов)
 
     private void checkManagerRights(Integer managerId) {
-        if (!userDetailsService.checkUserRights(RoleEnum.MANAGER)) {
+        if (!securityService.checkUserRights(RoleEnum.MANAGER)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }
         Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Менеджер не найден"));
         User assignedUser = manager.getUser();
-        User currentUser = userDetailsService.getCurrentUser();
+        User currentUser = securityService.getCurrentUser();
         if (!Objects.equals(assignedUser.getUsername(), currentUser.getUsername())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }

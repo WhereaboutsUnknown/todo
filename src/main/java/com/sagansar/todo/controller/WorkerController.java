@@ -12,8 +12,8 @@ import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.DialogService;
+import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.TodoService;
-import com.sagansar.todo.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@RestController("/worker")
+@RestController
+@RequestMapping("/worker")
 public class WorkerController {
 
     @Autowired
@@ -33,7 +34,7 @@ public class WorkerController {
     WorkerRepository workerRepository;
 
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    SecurityService securityService;
 
     @Autowired
     DialogService dialogService;
@@ -41,11 +42,9 @@ public class WorkerController {
     @Autowired
     TodoService todoService;
 
-    @Autowired
-
     @GetMapping("/")
     public WorkerDto getUserWorkerProfile() {
-        User currentUser = userDetailsService.getCurrentUser();
+        User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не найден");
         }
@@ -73,7 +72,7 @@ public class WorkerController {
 
     @GetMapping("/{workerId}/todo")
     public List<TaskShortDto> getAvailableTasks(@PathVariable(name = "workerId") Integer workerId) {
-        if (!userDetailsService.checkUserRights(RoleEnum.FREELANCER)) {
+        if (!securityService.checkUserRights(RoleEnum.FREELANCER)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }
         return todoTaskRepository.findAllAvailable().stream()
@@ -98,12 +97,12 @@ public class WorkerController {
     }
 
     private Worker checkWorkerRights(Integer workerId) {
-        if (!userDetailsService.checkUserRights(RoleEnum.FREELANCER)) {
+        if (!securityService.checkUserRights(RoleEnum.FREELANCER)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }
         Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Исполнитель не найден"));
         User assignedUser = worker.getUser();
-        User currentUser = userDetailsService.getCurrentUser();
+        User currentUser = securityService.getCurrentUser();
         if (!Objects.equals(assignedUser.getUsername(), currentUser.getUsername())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }
