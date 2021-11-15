@@ -16,18 +16,18 @@
             <div class="my-profile">
                 <h3>Личная информация</h3>
                 <img src="img/user.jpg" th:src="@{/static/images/user.jpg}" width="80" height="80" alt="Иванов Иван">
-                <p id="profile-name">Иванов Иван Иванович</p>
-                <p id="profile-age">25 лет</p>
+                <p id="profile-name"></p>
+                <p id="profile-age"></p>
 
             </div>
             <div class="work-skills">
                 <h3>Ключевые навыки</h3>
-                <p id="work-skills-info">HTML5, CSS3, JavaScript</p>
+                <p id="work-skills-info"></p>
             </div>
             <div class="contacts-info">
                 <h3>Контакты</h3>
-                <p><img src="img/icons-mail.png" th:src="@{/static/images/icons-mail.png}" alt="mail" id="contacts-email"> ivanov_ivan@mail.ru</p>
-                <p><img src="img/icons-telegram.svg" th:src="@{/static/images/icons-telegram.svg}" alt="telegram" id="contacts-telegram"> https://t.me/ivanov_ivan</p>
+                <p id="contacts-email"><img src="img/icons-mail.png" th:src="@{/static/images/icons-mail.png}" alt="mail"> </p>
+                <p id="contacts-telegram"><img src="img/icons-telegram.svg" th:src="@{/static/images/icons-telegram.svg}" alt="telegram"></p>
             </div>
             <div class="button-profile">
                 <a href="#button-1" class="button-1">Редактировать профиль</a>
@@ -48,5 +48,7 @@
             </div>
         </div>
     </div>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" th:src="@{/static/js/worker.profile.js}"></script>
 </body>
 </html>
