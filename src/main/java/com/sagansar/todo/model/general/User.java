@@ -46,8 +46,21 @@ public class User implements Serializable {
     public String getAge() {
         if (birthDate != null) {
             int userAge = LocalDate.now(ZoneId.systemDefault()).getYear() - birthDate.getYear();
-            return String.valueOf(userAge);
+            return formatAge(userAge);
         }
         return null;
+    }
+
+    private String formatAge(int age) {
+        if (age <= 20) {
+            return age + " лет";
+        }
+        if (age % 10 == 1) {
+            return age + " год";
+        }
+        if (age % 10 < 5) {
+            return age + " года";
+        }
+        return age + " лет";
     }
 }
