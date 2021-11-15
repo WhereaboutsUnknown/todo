@@ -14,6 +14,7 @@ public class WorkerMapper {
         dto.setId(worker.getId());
         dto.setName(worker.getName());
         dto.setAge(worker.getAge());
+        dto.setSkills(worker.getInfo());
         User user = worker.getUser();
         if (user != null) {
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
