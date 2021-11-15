@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    font-family: "PT Sans", sans-serif;
+}
+h3{
+    font-size: 15px;
+}
+h2{
+    padding: 10px;
+}
+.main-field{
+    background: #DCDCDC;
+    display: flex;
+    height: 100vh;
+}
+.employee-card{
+    margin: 10px;
+}
+.my-profile{
+    border: 1px solid white;
+    padding: 10px;
+    padding-top: 0;
+    background-color: white;
+    border-radius: 10px;
+}
+.work-skills{
+    border: 1px solid white;
+    padding: 10px;
+    padding-top: 0px;
+    background-color: white;
+    border-radius: 10px;
+    vertical-align: top;
+    margin-top: 10px;
+}
+.contacts-info{
+    border: 1px solid white;
+    padding: 10px;
+    padding-top: 0px;
+    background-color: white;
+    border-radius: 10px;
+    vertical-align: top;
+    margin-top: 10px;
+}
+.reviews{
+    border: 1px solid white;
+    padding: 10px;
+    padding-top: 0px;
+    background-color: white;
+    border-radius: 10px;
+    vertical-align: top;
+    margin-top: 10px;
+}
+.button-profile{
+    padding: 5px;
+    white-space: nowrap;
+    font-size: 12px;
+    position: relative;
+    bottom: 0;
+    text-align: center;
+}
+.button-profile a{
+    display:inline-block;
+    height: 30px;
+    padding:0 10px;
+    margin-top: 10px;
+    background:white;
+    text-align:center;
+    vertical-align:bottom;
+    color:black;
+    text-decoration:none;
+    line-height: 30px;
+    border-radius: 45px;
+    border: 2px solid #71C2FF;
+}
+.workspace-tasks{
+    background-color: white;
+    border-radius: 10px;
+    margin: 10px 10px 10px 0;
+    flex: 1;
+}
+.refresh-button{
+    float: right;
+    background:white;
+    color:black;
+    text-decoration:none;
+    line-height: 30px;
+    border-radius: 45px;
+    border: 2px solid #71C2FF;
+    font-size: 12px;
+    margin: 5px;
+}
+.page-numbers{
+    padding: 10px;
+    margin: 15px 15px 15px 15px;
+    white-space: nowrap;
+    font-size: 12px;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+}
+.page-numbers a,
+.page-numbers span{
+    display:inline-block;
+    min-width: 10px;
+    height: 30px;
+    padding:0 10px;
+    background:white;
+    color:black;
+    text-decoration:none;
+    line-height: 30px;
+    border-radius: 45px;
+    border: 2px solid #71C2FF;
+}
+.page-numbers .prev{
+    margin-right: 20px;
+}
+.page-numbers .next{
+    margin-left: 20px;
+}

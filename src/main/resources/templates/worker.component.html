@@ -7,9 +7,46 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
+    <link rel="stylesheet" th:href="@{/static/css/worker.component.css}">
 </head>
 <body>
     <div th:replace="fragments/header.html :: header(firstHref='ЗАКАЗЫ', secondHref='ОТДЕЛЫ', isAdmin=false)"></div>
-Это для внештатного сотрудника
+    <div class="main-field">
+        <div class="employee-card">
+            <div class="my-profile">
+                <h3>Личная информация</h3>
+                <img src="img/user.jpg" th:src="@{/static/images/user.jpg}" width="80" height="80" alt="Иванов Иван">
+                <p id="profile-name">Иванов Иван Иванович</p>
+                <p id="profile-age">25 лет</p>
+
+            </div>
+            <div class="work-skills">
+                <h3>Ключевые навыки</h3>
+                <p id="work-skills-info">HTML5, CSS3, JavaScript</p>
+            </div>
+            <div class="contacts-info">
+                <h3>Контакты</h3>
+                <p><img src="img/icons-mail.png" th:src="@{/static/images/icons-mail.png}" alt="mail" id="contacts-email"> ivanov_ivan@mail.ru</p>
+                <p><img src="img/icons-telegram.svg" th:src="@{/static/images/icons-telegram.svg}" alt="telegram" id="contacts-telegram"> https://t.me/ivanov_ivan</p>
+            </div>
+            <div class="button-profile">
+                <a href="#button-1" class="button-1">Редактировать профиль</a>
+                <a href="#button-2" class="button-2">Удалить профиль</a>
+            </div>
+        </div>
+
+        <div class="workspace-tasks">
+            <form>
+                <button class="refresh-button">Обновить</button>
+            </form>
+            <div class="page-numbers">
+                <a href="#prev" class="prev">Назад</a>
+                <a href="#1">1</a>
+                <span>&hellip;</span>
+                <a href="#3">3</a>
+                <a href="#next" class="next">Вперёд</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
