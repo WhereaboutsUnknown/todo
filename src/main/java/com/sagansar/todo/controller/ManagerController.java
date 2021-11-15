@@ -37,7 +37,7 @@ public class ManagerController {
     @Autowired
     SecurityService securityService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ManagerDto getUserManagerProfile() {
         User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {

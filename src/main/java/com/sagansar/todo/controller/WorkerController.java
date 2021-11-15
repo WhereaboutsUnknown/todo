@@ -42,7 +42,7 @@ public class WorkerController {
     @Autowired
     TodoService todoService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public WorkerDto getUserWorkerProfile() {
         User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {
