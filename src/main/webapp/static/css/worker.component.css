@@ -83,19 +83,29 @@ h2{
     flex-direction: column;
     flex: 1;
 }
-.refresh-form{
+.refresh-block{
     flex-grow: 1;
 }
 .refresh-button{
-    float: right;
-    background:white;
+    float: left;
+    background: #195fd4;
     color:black;
     text-decoration:none;
-    line-height: 30px;
+    height: 45px;
+    width: 45px;
     border-radius: 45px;
-    border: 2px solid #71C2FF;
+    border: none;
     font-size: 12px;
-    margin: 20px 40px auto 0;
+    margin: 20px 20px 0px 20px;
+}
+.refresh-button img {
+    position: relative;
+    top: 2px;
+}
+.refresh-button:hover {
+    background: #568bdc;
+    box-shadow: 0 0 2px 1px #97b2ff;
+    cursor: pointer;
 }
 .task-block-list-container {
     width: 100%;
@@ -119,7 +129,7 @@ h2{
     white-space: nowrap;
     font-size: 12px;
     text-align: center;
-    flex-grow: 8;
+    flex-grow: 12;
 }
 .page-numbers a,
 .page-numbers span{

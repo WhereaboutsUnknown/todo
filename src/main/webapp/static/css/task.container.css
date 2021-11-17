@@ -1,6 +1,7 @@
 .task-block {
     border-radius: 10px;
     margin: 10px;
+    box-shadow: 2px 2px 5px 2px #b6b6b6;
 }
 
 .task-status {
