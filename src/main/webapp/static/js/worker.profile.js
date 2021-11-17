@@ -46,7 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
                                     </div>
                                     <div class="task-block-bottom-container">
                                         <div class="task-block-bottom-block task-block-person">
-                                            <a href="https://sagansar.com" title="${data[i].person.name}" class="task-person" id="task-person">
+                                            <a href="#" title="${data[i].person.name}" class="task-person" id="task-person">
                                                 <img src="/static/images/person-icon.png" alt="${data[i].person.name}">
                                             </a>
                                         </div>
