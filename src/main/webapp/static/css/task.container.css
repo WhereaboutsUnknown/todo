@@ -1,0 +1,112 @@
+.task-block {
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.task-status {
+    margin: 0;
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+    border: 1px solid #195fd4;
+    background: #195fd4;
+    color: white;
+}
+
+.task-block-info {
+    border: 1px solid #195fd4;
+    border-radius: 0 0 10px 10px;
+    display: flex;
+    flex-flow: wrap column;
+}
+
+.task-block-header {
+    flex: 1;
+    display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-block-stack {
+    flex: 1;
+    display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-header, .task-stack {
+    margin: 10px;
+    white-space: break-spaces;
+    height: 30px;
+}
+
+.task-stack {
+    height: 60px;
+}
+
+.task-block-bottom-container {
+    display: flex;
+    flex-flow: wrap row;
+}
+
+.task-block-bottom-block {
+    margin: 5px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #195fd4;
+    border-radius: 10px;
+    background: #195fd4;
+    color: white;
+    display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.task-block-person {
+    width: 40px;
+}
+
+.task-block-deadline {
+    flex: 1;
+}
+
+.task-block-bottom-block p {
+    position: relative;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.task-block-bottom-block a {
+    flex: 1;
+}
+
+.task-block-bottom-block a img {
+    position: relative;
+    top: 9px;
+}
+
+.task-block:hover {
+    cursor: pointer;
+}
+
+.task-block:hover .task-status,
+.task-block:hover .task-block-bottom-block {
+    background: #568bdc;
+    border-color: #568bdc;
+}
+
+.task-block:hover .task-block-info {
+    border-color: #568bdc;
+    color: #666666;
+}
+
+.task-block:hover .task-block-person:hover {
+    background: #fada59;
+    border-color: #fada59;
+    box-shadow: 0 0 1px 2px #fce0ae;
+}

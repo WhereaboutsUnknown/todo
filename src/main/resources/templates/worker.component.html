@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
     <link rel="stylesheet" th:href="@{/static/css/worker.component.css}">
+    <link rel="stylesheet" th:href="@{/static/css/task.container.css}">
 </head>
 <body>
     <div th:replace="fragments/header.html :: header(firstHref='ЗАКАЗЫ', secondHref='ОТДЕЛЫ', isAdmin=false)"></div>
@@ -36,9 +37,13 @@
         </div>
 
         <div class="workspace-tasks">
-            <form>
-                <button class="refresh-button">Обновить</button>
+            <form class="refresh-form">
+                <button class="refresh-button" id="refresh-button">Обновить</button>
             </form>
+            <div class="task-block-list-container">
+                <ul class="task-block-list" id="task-block-list">
+                </ul>
+            </div>
             <div class="page-numbers">
                 <a href="#prev" class="prev">Назад</a>
                 <a href="#1">1</a>
