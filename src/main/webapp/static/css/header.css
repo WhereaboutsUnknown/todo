@@ -2,25 +2,30 @@ header {
     background: linear-gradient(to bottom right, #195fd4, #4a8dfb);
     padding: 10px;
     margin-top: 0;
-    width: 100%;
+    width: 99%;
     height: 100px;
+    overflow-x: hidden;
 }
 
 .navbar {
-    margin: auto;
+    width: 100%;
+    height: 80px;
+    overflow: hidden;
 }
 
 .navbar-content {
     width: 100%;
     height: 100%;
     list-style: none;
+    display: flex;
+    flex-flow: wrap;
+    justify-content: flex-start;
 }
 
 .menu-item-logo {
-    width: 16%;
-    margin: auto;
+    width: 180px;
     list-style-type: none;
-    display:inline-block;
+    margin-right: 20px;
 }
 
 .menu-item-logo-href {
@@ -30,13 +35,20 @@ header {
     font-weight: 600;
     text-decoration: none;
     text-align: center;
+    position: relative;
+    top: 8px;
 }
 
 .menu-item {
-    width: 11%;
-    margin: auto;
+    flex: 1;
+    flex-basis: 20px;
+    margin-left: 5px;
     list-style-type: none;
-    display:inline-block;
+    text-align: center;
+}
+
+.logout {
+    margin-right: auto;
 }
 
 .menu-item-href {
@@ -46,6 +58,8 @@ header {
     font-weight: 400;
     text-decoration: none;
     visibility: hidden;
+    position: relative;
+    top: 16px;
 }
 
 .menu-item-active.menu-item-href {
@@ -53,12 +67,17 @@ header {
 }
 
 .menu-item-button {
-    color: #fdd501;
+    position: relative;
+    top: 14px;
+    height: 40px;
+    width: 38px;
+    color: transparent;
     font-family: 'Poppins', sans-serif;
     font-size: 24px;
     font-weight: 400;
-    background-color: transparent;
-    border: none;
+    background: transparent url("../images/logout-icon.png") no-repeat -1px 0;
+    border: 0 solid transparent;
+    border-radius: 16px;
     text-align: center;
 }
 
@@ -69,7 +88,6 @@ header {
 }
 
 .menu-item-button:hover {
-    color: #fdd663;
-    text-shadow: whitesmoke 1px 0 3px;
+    box-shadow: 0 0 5px 1px white;
     cursor: pointer;
 }

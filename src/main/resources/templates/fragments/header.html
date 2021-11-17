@@ -8,7 +8,7 @@
 </head>
 <body>
 <header th:fragment="common-header">
-  <div class="navbar">
+  <nav class="navbar">
     <ul class="navbar-content">
       <!--<img class="logo" th:src="@{/static/images/logo-text-2.png}" alt="logo">-->
       <li class="menu-item-logo">
@@ -29,16 +29,13 @@
       <li class="menu-item">
         <a class="menu-item-href" th:href="@{/}"></a>
       </li>
-      <li class="menu-item">
-        <a class="menu-item-href" th:href="@{/}"></a>
-      </li>
-      <li class="menu-item">
+      <li class="menu-item logout">
         <form th:action="@{/logout}" method="post">
           <input class="menu-item-button" type="submit" value="ВЫЙТИ"/>
         </form>
       </li>
     </ul>
-  </div>
+  </nav>
 </header>
 </body>
 </html>
