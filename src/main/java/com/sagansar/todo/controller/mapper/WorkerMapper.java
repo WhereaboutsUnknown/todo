@@ -1,10 +1,18 @@
 package com.sagansar.todo.controller.mapper;
 
 import com.sagansar.todo.controller.dto.WorkerDto;
+import com.sagansar.todo.model.external.WorkerProfileForm;
+import com.sagansar.todo.model.general.Contacts;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.worker.Worker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
 
 public class WorkerMapper {
+
+    private static final Logger logger = LoggerFactory.getLogger(WorkerMapper.class);
 
     public static WorkerDto workerToDto(Worker worker) {
         if (worker == null) {
@@ -20,5 +28,41 @@ public class WorkerMapper {
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
         }
         return dto;
+    }
+
+    public static Worker fromWorkerProfileForm(WorkerProfileForm form) {
+        if (form == null) {
+            return null;
+        }
+        Worker worker = new Worker();
+        User user = new User();
+        Contacts contacts = new Contacts();
+
+        worker.setName(form.getProfileName());
+        worker.setInfo(form.getSkills());
+
+        user.setFirstName(form.getFirstName());
+        user.setPatronym(form.getPatronym());
+        user.setSurname(form.getSurname());
+
+        contacts.setEmail(form.getEmail());
+        contacts.setVk(form.getVk());
+        contacts.setPhoneNumber(form.getPhoneNumber());
+        contacts.setFacebook(form.getFacebook());
+        contacts.setTelegram(form.getTelegram());
+        contacts.setOther(form.getOther());
+        user.setContacts(contacts);
+
+        LocalDate birthDate = null;
+        try {
+            birthDate = LocalDate.parse(form.getBirthDate());
+        } catch (Exception e) {
+            logger.error("Worker profile birthdate is invalidated: {}", e.getMessage());
+        } finally {
+            user.setBirthDate(birthDate);
+        }
+
+        worker.setUser(user);
+        return worker;
     }
 }

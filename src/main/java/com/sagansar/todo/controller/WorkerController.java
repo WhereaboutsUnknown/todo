@@ -6,6 +6,7 @@ import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.mapper.WorkerMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.worker.Worker;
@@ -16,6 +17,7 @@ import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
+@Transactional
 @RequestMapping("/worker")
 public class WorkerController {
 
@@ -94,6 +97,16 @@ public class WorkerController {
         } catch (BadRequestException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getResponseMessage());
         }
+    }
+
+    @PostMapping("/{workerId}")
+    public WorkerDto editProfile(@PathVariable(name = "workerId") Integer workerId,
+                                 @RequestBody WorkerProfileForm workerProfileForm) {
+        Worker worker = checkWorkerRights(workerId);
+        Worker workerUpdate = WorkerMapper.fromWorkerProfileForm(workerProfileForm);
+        worker.copy(workerUpdate);
+
+        return WorkerMapper.workerToDto(workerRepository.save(worker));
     }
 
     private Worker checkWorkerRights(Integer workerId) {

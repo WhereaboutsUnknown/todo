@@ -2,6 +2,7 @@ package com.sagansar.todo.model.general;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -49,6 +50,26 @@ public class User implements Serializable {
             return formatAge(userAge);
         }
         return null;
+    }
+
+    public void copy(User other) {
+        if (other != null) {
+            if (StringUtils.hasText(other.firstName)) {
+                firstName = other.firstName;
+            }
+            if (StringUtils.hasText(other.patronym)) {
+                patronym = other.patronym;
+            }
+            if (StringUtils.hasText(other.surname)) {
+                surname = other.surname;
+            }
+            if (other.birthDate != null) {
+                birthDate = other.birthDate;
+            }
+            if (other.contacts != null && contacts != null) {
+                contacts.copy(other.contacts);
+            }
+        }
     }
 
     private String formatAge(int age) {

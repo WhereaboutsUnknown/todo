@@ -3,6 +3,7 @@ package com.sagansar.todo.model.worker;
 import com.sagansar.todo.model.general.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 
@@ -42,5 +43,19 @@ public class Worker {
             return user.getAge();
         }
         return null;
+    }
+
+    public void copy(Worker other) {
+        if (other != null) {
+            if (StringUtils.hasText(other.name)) {
+                name = other.name;
+            }
+            if (StringUtils.hasText(other.info)) {
+                info = other.info;
+            }
+            if (other.user != null && user != null) {
+                user.copy(other.user);
+            }
+        }
     }
 }
