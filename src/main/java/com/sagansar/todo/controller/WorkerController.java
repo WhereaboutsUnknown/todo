@@ -2,6 +2,7 @@ package com.sagansar.todo.controller;
 
 import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.controller.dto.WorkerDto;
+import com.sagansar.todo.controller.dto.WorkerFullDto;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.mapper.WorkerMapper;
@@ -46,7 +47,7 @@ public class WorkerController {
     TodoService todoService;
 
     @GetMapping("")
-    public WorkerDto getUserWorkerProfile() {
+    public WorkerFullDto getUserWorkerProfile() {
         User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не найден");
@@ -58,7 +59,7 @@ public class WorkerController {
         if (!worker.isActive()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль исполнителя был заблокирован");
         }
-        return WorkerMapper.workerToDto(worker);
+        return WorkerMapper.workerToFullDto(worker);
     }
 
     @GetMapping("/{workerId}/tasks")
@@ -100,13 +101,19 @@ public class WorkerController {
     }
 
     @PostMapping("/{workerId}")
-    public WorkerDto editProfile(@PathVariable(name = "workerId") Integer workerId,
-                                 @RequestBody WorkerProfileForm workerProfileForm) {
+    public WorkerFullDto editProfile(@PathVariable(name = "workerId") Integer workerId,
+                                     @RequestBody WorkerProfileForm workerProfileForm) {
         Worker worker = checkWorkerRights(workerId);
         Worker workerUpdate = WorkerMapper.fromWorkerProfileForm(workerProfileForm);
-        worker.copy(workerUpdate);
+//        worker.copy(workerUpdate);
 
-        return WorkerMapper.workerToDto(workerRepository.save(worker));
+        return WorkerMapper.workerToFullDto(worker); //(workerRepository.save(worker));
+    }
+
+    @GetMapping("/{workerId}/profile")
+    public WorkerFullDto getProfile(@PathVariable(name = "workerId") Integer workerId) {
+        Worker worker = checkWorkerRights(workerId);
+        return WorkerMapper.workerToFullDto(worker);
     }
 
     private Worker checkWorkerRights(Integer workerId) {

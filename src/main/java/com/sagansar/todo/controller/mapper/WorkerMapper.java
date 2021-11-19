@@ -1,6 +1,7 @@
 package com.sagansar.todo.controller.mapper;
 
 import com.sagansar.todo.controller.dto.WorkerDto;
+import com.sagansar.todo.controller.dto.WorkerFullDto;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.Contacts;
 import com.sagansar.todo.model.general.User;
@@ -30,6 +31,26 @@ public class WorkerMapper {
         return dto;
     }
 
+    public static WorkerFullDto workerToFullDto(Worker worker) {
+        if (worker == null) {
+            return null;
+        }
+        WorkerFullDto dto = new WorkerFullDto();
+        dto.setId(worker.getId());
+        dto.setName(worker.getName());
+        dto.setAge(worker.getAge());
+        dto.setSkills(worker.getInfo());
+        User user = worker.getUser();
+        if (user != null) {
+            dto.setBirthDate(user.getBirthDate());
+            dto.setFirstName(user.getFirstName());
+            dto.setPatronym(user.getPatronym());
+            dto.setSurname(user.getSurname());
+            dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
+        }
+        return dto;
+    }
+
     public static Worker fromWorkerProfileForm(WorkerProfileForm form) {
         if (form == null) {
             return null;
@@ -53,13 +74,8 @@ public class WorkerMapper {
         contacts.setOther(form.getOther());
         user.setContacts(contacts);
 
-        LocalDate birthDate = null;
-        try {
-            birthDate = LocalDate.parse(form.getBirthDate());
-        } catch (Exception e) {
-            logger.error("Worker profile birthdate is invalidated: {}", e.getMessage());
-        } finally {
-            user.setBirthDate(birthDate);
+        if (form.getBirthDate() != null) {
+            user.setBirthDate(form.getBirthDate());
         }
 
         worker.setUser(user);

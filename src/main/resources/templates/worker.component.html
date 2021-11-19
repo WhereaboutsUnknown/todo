@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
     <title>Мой профиль | TODO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9,36 +9,25 @@
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
     <link rel="stylesheet" th:href="@{/static/css/worker.component.css}">
     <link rel="stylesheet" th:href="@{/static/css/task.container.css}">
+    <link rel="stylesheet" th:href="@{/static/css/lightbox.css}">
+    <link rel="stylesheet" th:href="@{/static/css/profile.edit.css}">
 </head>
 <body>
+    <div th:replace="fragments/person.popup.html :: person-popup(isWorker=true)"></div>
+    <div th:replace="fragments/lightbox.html :: variative-lightbox(editProfileForm=true, editId='edit-profile')"></div>
     <div th:replace="fragments/header.html :: header(firstHref='ЗАКАЗЫ', secondHref='ОТДЕЛЫ', isAdmin=false)"></div>
     <div class="main-field">
         <div class="employee-card">
-            <div class="my-profile">
-                <h3>Личная информация</h3>
-                <img src="img/user.jpg" th:src="@{/static/images/user.jpg}" width="80" height="80" alt="Фото">
-                <p id="profile-name"></p>
-                <p id="profile-age"></p>
-
-            </div>
-            <div class="work-skills">
-                <h3>Ключевые навыки</h3>
-                <p id="work-skills-info"></p>
-            </div>
-            <div class="contacts-info">
-                <h3>Контакты</h3>
-                <p id="contacts-email"><img src="img/icons-mail.png" th:src="@{/static/images/icons-mail.png}" alt="E-mail"> </p>
-                <p id="contacts-telegram"><img src="img/icons-telegram.svg" th:src="@{/static/images/icons-telegram.svg}" alt="Telegram"></p>
-            </div>
+            <div th:replace="fragments/employee-card.html :: employee-card(isWorker=true)"></div>
             <div class="button-profile">
-                <a href="#button-1" class="button-1">Редактировать профиль</a>
-                <a href="#button-2" class="button-2">Удалить профиль</a>
+                <a class="basic-button edit-button" id="edit-profile-button" href="#edit-profile"><img src="" th:src="@{/static/images/edit-icon.png}" alt="Edit"></a>
+                <a class="basic-button delete-button" id="delete-profile-button" href="#delete-profile"><img src="" th:src="@{/static/images/delete-icon.png}" alt="Delete"></a>
             </div>
         </div>
 
         <div class="workspace-tasks">
             <div class="refresh-block">
-                <button class="refresh-button" id="refresh-button"><img src="" th:src="@{/static/images/round-arrow.png}" alt="Обновить"></button>
+                <button class="basic-button refresh-button" id="refresh-button"><img src="" th:src="@{/static/images/round-arrow.png}" alt="Обновить"></button>
             </div>
             <div class="task-block-list-container">
                 <ul class="task-block-list" id="task-block-list">
@@ -46,14 +35,16 @@
             </div>
             <div class="page-numbers">
                 <a href="#prev" class="prev">Назад</a>
-                <a href="#1">1</a>
+                <a href="#example1">1</a>
                 <span>&hellip;</span>
                 <a href="#3">3</a>
                 <a href="#next" class="next">Вперёд</a>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     <script type="text/javascript" th:src="@{/static/js/worker.profile.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/editworkerprofile.js}"></script>
 </body>
 </html>

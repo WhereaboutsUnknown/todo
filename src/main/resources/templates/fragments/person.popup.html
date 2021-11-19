@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:fragment="person-popup(isWorker)" class="popup-layout person-popup" id="person-popup" style="display: none">
+        <div class="popup-container">
+            <div class="employee-card popup-content" style="display: none">
+                <div class="my-profile">
+                    <h3>Личная информация</h3>
+                    <img src="img/user.jpg" th:src="@{/static/images/userfem.png}" width="80" height="80" alt="Фото">
+                    <p id="popup-profile-name"></p>
+                    <p id="popup-profile-age"></p>
+                </div>
+                <div th:if="${!isWorker}" class="work-skills">
+                    <h3>Ключевые навыки</h3>
+                    <p id="popup-work-skills-info"></p>
+                </div>
+                <div class="contacts-info">
+                    <h3>Контакты</h3>
+                    <div class="contacts-info-item" style="display: none">
+                        <img src="" th:src="@{/static/images/icons-phone.png}" alt="Phone">
+                        <p id="popup-contacts-phone"></p>
+                    </div>
+                    <div class="contacts-info-item" style="display: none">
+                        <img src="" th:src="@{/static/images/icons-vk.png}" alt="Vk">
+                        <p id="popup-contacts-vk"></p>
+                    </div>
+                    <div class="contacts-info-item" style="display: none">
+                        <img src="" th:src="@{/static/images/icons-mail.png}" alt="E-mail">
+                        <p id="popup-contacts-email"></p>
+                    </div>
+                    <div class="contacts-info-item" style="display: none">
+                        <img src="" th:src="@{/static/images/icons-telegram.svg}" alt="Telegram">
+                        <p id="popup-contacts-telegram"></p>
+                    </div>
+                    <div class="contacts-info-item" style="display: none">
+                        <img src="img/icons-mail.png" th:src="@{/static/images/icons-mail.png}" alt="E-mail">
+                        <p id="popup-contacts-facebook"></p>
+                    </div>
+                    <div class="contacts-info-item" style="display: none">
+                        <img src="img/icons-telegram.svg" th:src="@{/static/images/icons-other.png}" alt="Other">
+                        <p id="popup-contacts-other"></p>
+                    </div>
+                </div>
+                <div class="button-profile popup-buttons">
+                    <a href="#button-1" class="button-1">Связанные задачи</a>
+                    <a th:if="${!isWorker}" href="#button-2">Поручить задачу</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

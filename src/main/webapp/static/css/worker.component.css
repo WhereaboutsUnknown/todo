@@ -4,6 +4,7 @@ body {
     font-size: 15px;
     font-family: "PT Sans", sans-serif;
     overflow-x: hidden;
+    background: whitesmoke;
 }
 h3{
     font-size: 15px;
@@ -12,12 +13,17 @@ h2{
     padding: 10px;
 }
 .main-field{
-    background: #DCDCDC;
     display: flex;
-    height: 100vh;
+    height: 100%;
 }
 .employee-card{
     margin: 10px;
+    width: 300px;
+}
+.employee-card p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .my-profile{
     border: 1px solid white;
@@ -43,6 +49,22 @@ h2{
     border-radius: 10px;
     vertical-align: top;
     margin-top: 10px;
+    flex: 1;
+}
+.contacts-info-item {
+    display: flex;
+    flex-flow: wrap row;
+    height: 40px;
+}
+.contacts-info-item p {
+    flex: 1;
+}
+.contacts-info-item img {
+    height: 30px;
+    width: 30px;
+    position: relative;
+    top: 8px;
+    right: 3px;
 }
 .reviews{
     border: 1px solid white;
@@ -54,6 +76,9 @@ h2{
     margin-top: 10px;
 }
 .button-profile{
+    display:flex;
+    flex-flow: wrap row;
+    justify-content: flex-end;
     padding: 5px;
     white-space: nowrap;
     font-size: 12px;
@@ -61,7 +86,7 @@ h2{
     bottom: 0;
     text-align: center;
 }
-.button-profile a{
+div a{
     display:inline-block;
     height: 30px;
     padding:0 10px;
@@ -75,6 +100,34 @@ h2{
     border-radius: 45px;
     border: 2px solid #71C2FF;
 }
+.basic-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 2px;
+    border-radius: 10px;
+    border: 0 solid;
+    outline: none;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-color: #195fd4
+}
+.basic-button img {
+    position: relative;
+    top: 10px;
+}
+.basic-button:hover {
+    background-color: #fada59;
+    border-color: #fada59;
+    box-shadow: 0 0 1px 2px #fce0ae;
+    cursor: pointer;
+}
+/*.basic-button.edit-button {
+    background-image: url("/static/images/edit-icon.png");
+}
+.basic-button.delete-button {
+    background-image: url("/static/images/delete-icon.png");
+}*/
 .workspace-tasks{
     background-color: white;
     border-radius: 10px;
@@ -82,31 +135,19 @@ h2{
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-height: 85vh;
 }
 .refresh-block{
     flex-grow: 1;
 }
 .refresh-button{
     float: left;
-    background: #195fd4;
-    color:black;
-    text-decoration:none;
-    height: 45px;
-    width: 45px;
-    border-radius: 45px;
-    border: none;
-    font-size: 12px;
-    margin: 20px 20px 0px 20px;
+    border-radius: 100%;
+    margin: 20px 20px 0 20px;
 }
 .refresh-button img {
     position: relative;
     top: 2px;
-}
-.refresh-button:hover {
-    background: #fada59;
-    border-color: #fada59;
-    box-shadow: 0 0 1px 2px #fce0ae;
-    cursor: pointer;
 }
 .task-block-list-container {
     width: 100%;
@@ -150,4 +191,53 @@ h2{
 }
 .page-numbers .next{
     margin-left: 20px;
+}
+
+.popup-layout {
+    z-index: 10;
+    position:absolute;
+    width: 99.9%;
+    height: 100%;
+    display: flex;
+}
+
+.person-popup {
+    background: rgba(189, 189, 189, 0.5);
+}
+
+.popup-container {
+    position: fixed;
+    flex: 1;
+    top: 10%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 30%;
+    height: 70%;
+    border-radius: 12px;
+    background: whitesmoke;
+    box-shadow: 2px 2px 5px 2px #898989;
+}
+
+.popup-container .popup-content {
+    width: 95%;
+    display: flex;
+    flex-flow: wrap column;
+    height: 90%;
+}
+
+.popup-buttons {
+    margin-top: auto;
+
+}
+
+.disabled {
+    display: none !important;
+}
+
+.inactivated {
+    background-color: #d2d2d2 !important;
+    border-color: #d2d2d2 !important;
+    box-shadow: none !important;
+    outline: none !important;
 }

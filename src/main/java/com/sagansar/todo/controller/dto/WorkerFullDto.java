@@ -1,4 +1,4 @@
-package com.sagansar.todo.model.external;
+package com.sagansar.todo.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,10 +10,13 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WorkerProfileForm {
+public class WorkerFullDto {
 
     @JsonProperty
-    private String profileName;
+    private Integer id;
+
+    @JsonProperty
+    private String name;
 
     @JsonProperty
     protected String firstName;
@@ -25,26 +28,14 @@ public class WorkerProfileForm {
     protected String surname;
 
     @JsonProperty
-    private LocalDate birthDate;
+    protected LocalDate birthDate;
+
+    @JsonProperty
+    protected String age;
 
     @JsonProperty
     private String skills;
 
     @JsonProperty
-    private String phoneNumber;
-
-    @JsonProperty
-    private String email;
-
-    @JsonProperty
-    private String vk;
-
-    @JsonProperty
-    private String telegram;
-
-    @JsonProperty
-    private String facebook;
-
-    @JsonProperty
-    private String other;
+    private ContactsDto contacts;
 }

@@ -1,0 +1,97 @@
+.profile-edit-container {
+    z-index: 10;
+    position: absolute;
+    top: 5vh;
+    bottom: auto;
+    right: 0;
+    left: 0;
+    width: 400px;
+    margin: auto;
+    background: whitesmoke;
+    border: 1px solid whitesmoke;
+    box-shadow: 2px 2px 5px 2px #898989;
+    border-radius: 12px;
+}
+
+.profile-edit-header {
+    margin: 30px 20px;
+    font-size: 1.5em;
+    font-weight: normal;
+}
+
+.profile-edit-form {
+    display: flex;
+    flex-flow: wrap column;
+}
+.profile-edit-section {
+    flex: 1;
+    display: flex;
+    flex-flow: wrap column;
+    margin: 0 20px 20px 20px;
+}
+.profile-edit-section:last-child {
+    flex: 1;
+    display: flex;
+    flex-flow: wrap column;
+    margin-bottom: 40px;
+}
+.profile-edit-contacts-item {
+    flex: 1;
+    margin: 1px;
+    display: flex;
+    flex-flow: wrap row;
+}
+.profile-edit-section input {
+    margin: 2px 0;
+}
+.profile-edit-sex-container {
+    margin: 20px auto;
+}
+.profile-edit-submit {
+    line-height: 40px;
+    width: 100px;
+    background: url("../images/ok-icon.png") no-repeat #195fd4 50% 50%;
+    border-radius: 10px;
+    color: transparent;
+}
+.profile-edit-sex-container input {
+    margin: 10px;
+}
+.profile-edit-sex-container img {
+    position: relative;
+    top: 5px;
+}
+.profile-edit-info input[type='text'] {
+    border: none;
+    background: whitesmoke;
+    border-bottom: 2px solid lightgray;
+    font-size: 16px;
+}
+.profile-edit-skills textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+}
+.profile-edit-contacts input[type='text'] {
+    flex: 1;
+    margin-left: 10px;
+    padding: 2px 10px 2px 10px;
+    border-radius: 10px;
+    border: 1px solid whitesmoke;
+}
+.profile-edit-info input[type='text']:focus {
+    outline: none;
+}
+input[type='date'] {
+    width: 40%;
+}
+
+.profile-edit-info input[type='text']:invalid {
+    border-color: #fb2a79 !important;
+}
+.profile-edit-contacts input:invalid {
+    border: 2px solid #fb2a79;
+}
+input:invalid {
+    border: 2px solid #fb2a79;
+}
