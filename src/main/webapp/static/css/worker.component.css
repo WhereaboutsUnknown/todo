@@ -27,15 +27,13 @@ h2{
 }
 .my-profile{
     border: 1px solid white;
-    padding: 10px;
-    padding-top: 0;
+    padding: 0 10px 10px;
     background-color: white;
     border-radius: 10px;
 }
 .work-skills{
     border: 1px solid white;
-    padding: 10px;
-    padding-top: 0px;
+    padding: 0 10px 10px;
     background-color: white;
     border-radius: 10px;
     vertical-align: top;
@@ -43,8 +41,7 @@ h2{
 }
 .contacts-info{
     border: 1px solid white;
-    padding: 10px;
-    padding-top: 0px;
+    padding: 0 10px 10px;
     background-color: white;
     border-radius: 10px;
     vertical-align: top;
@@ -68,8 +65,7 @@ h2{
 }
 .reviews{
     border: 1px solid white;
-    padding: 10px;
-    padding-top: 0px;
+    padding: 0 10px 10px;
     background-color: white;
     border-radius: 10px;
     vertical-align: top;
@@ -166,12 +162,12 @@ div a{
     flex: 0 0 33.333333%;
 }
 .page-numbers{
+    flex: 1;
     padding: 10px;
-    margin: 15px auto 15px auto;
+    margin: auto auto 15px auto;
     white-space: nowrap;
     font-size: 12px;
     text-align: center;
-    flex-grow: 12;
 }
 .page-numbers a,
 .page-numbers span{
