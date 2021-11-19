@@ -91,7 +91,7 @@ header {
 
 .menu-item-active:hover {
     color: #fdd663;
-    text-shadow: whitesmoke 1px 0 3px;
+    text-shadow: whitesmoke 1px 0 2px;
     cursor: pointer;
 }
 
