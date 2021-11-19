@@ -48,10 +48,10 @@ function tasks() {
     }
 }
 
-function appendIfNonEmpty(element, value) {
+function appendIfNonEmpty(element, value, needHref) {
     if (value ) {
         element.empty();
-        element.append(`${value}`);
+        element.append(needHref ? `<a href="${value}">${value}</a>` : `${value}`);
         element.parent('.contacts-info-item').attr('style', '');
     } else {
         element.parent('.contacts-info-item').attr('style', 'display: none');
@@ -62,23 +62,23 @@ function updateWorkerProfile(data) {
     $("#profile-name").empty().append(`${data.name}`);
     $("#profile-age").empty().append(`${data.age}`);
     $("#work-skills-info").empty().append(`${data.skills}`);
-    appendIfNonEmpty($("#contacts-phone"), data.contacts.phoneNumber);
-    appendIfNonEmpty($("#contacts-vk"), data.contacts.vk);
-    appendIfNonEmpty($("#contacts-email"), data.contacts.email);
-    appendIfNonEmpty($("#contacts-telegram"), data.contacts.telegram);
-    appendIfNonEmpty($("#contacts-facebook"), data.contacts.facebook);
-    appendIfNonEmpty($("#contacts-other"), data.contacts.other);
+    appendIfNonEmpty($("#contacts-phone"), data.contacts.phoneNumber, false);
+    appendIfNonEmpty($("#contacts-vk"), data.contacts.vk, true);
+    appendIfNonEmpty($("#contacts-email"), data.contacts.email, false);
+    appendIfNonEmpty($("#contacts-telegram"), data.contacts.telegram, true);
+    appendIfNonEmpty($("#contacts-facebook"), data.contacts.facebook, true);
+    appendIfNonEmpty($("#contacts-other"), data.contacts.other, false);
 }
 
 function updatePopupManager(data) {
     $("#popup-profile-name").empty().append(`${data.name}`);
     $("#popup-profile-age").empty().append(`${data.age}`);
-    appendIfNonEmpty($("#popup-contacts-phone"), data.contacts.phoneNumber);
-    appendIfNonEmpty($("#popup-contacts-vk"), data.contacts.vk);
-    appendIfNonEmpty($("#popup-contacts-email"), data.contacts.email);
-    appendIfNonEmpty($("#popup-contacts-telegram"), data.contacts.telegram);
-    appendIfNonEmpty($("#popup-contacts-facebook"), data.contacts.facebook);
-    appendIfNonEmpty($("#popup-contacts-other"), data.contacts.other);
+    appendIfNonEmpty($("#popup-contacts-phone"), data.contacts.phoneNumber, true);
+    appendIfNonEmpty($("#popup-contacts-vk"), data.contacts.vk, false);
+    appendIfNonEmpty($("#popup-contacts-email"), data.contacts.email, true);
+    appendIfNonEmpty($("#popup-contacts-telegram"), data.contacts.telegram, false);
+    appendIfNonEmpty($("#popup-contacts-facebook"), data.contacts.facebook, false);
+    appendIfNonEmpty($("#popup-contacts-other"), data.contacts.other, true);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
