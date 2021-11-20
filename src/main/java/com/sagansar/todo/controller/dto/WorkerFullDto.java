@@ -38,4 +38,7 @@ public class WorkerFullDto {
 
     @JsonProperty
     private ContactsDto contacts;
+
+    @JsonProperty
+    private String error;
 }

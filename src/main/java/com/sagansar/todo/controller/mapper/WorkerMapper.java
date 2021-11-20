@@ -81,4 +81,10 @@ public class WorkerMapper {
         worker.setUser(user);
         return worker;
     }
+
+    public static WorkerFullDto errorResponse(String errorMessage) {
+        WorkerFullDto errorDto = new WorkerFullDto();
+        errorDto.setError(errorMessage);
+        return errorDto;
+    }
 }
