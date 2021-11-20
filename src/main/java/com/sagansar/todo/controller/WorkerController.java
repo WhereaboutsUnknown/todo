@@ -16,6 +16,7 @@ import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.DialogService;
 import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.TodoService;
+import com.sagansar.todo.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,9 @@ public class WorkerController {
 
     @Autowired
     DialogService dialogService;
+
+    @Autowired
+    ValidationService validationService;
 
     @Autowired
     TodoService todoService;
@@ -106,6 +110,11 @@ public class WorkerController {
         Worker worker = checkWorkerRights(workerId);
         Worker workerUpdate = WorkerMapper.fromWorkerProfileForm(workerProfileForm);
 //        worker.copy(workerUpdate);
+        try {
+            validationService.validateVk(workerProfileForm.getVk());
+        } catch (BadRequestException e) {
+            return WorkerMapper.errorResponse(e.getResponseMessage());
+        }
 
         return WorkerMapper.workerToFullDto(worker); //(workerRepository.save(worker));
     }

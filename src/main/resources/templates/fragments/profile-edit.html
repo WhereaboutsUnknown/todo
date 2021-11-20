@@ -42,15 +42,18 @@
         </div>
         <div class="profile-edit-contacts-item">
             <label for="edit-vk" title="Вконтакте"><img src="" th:src="@{/static/images/icons-vk.png}" alt="Вконтакте"></label>
-            <input type="text" id="edit-vk" maxlength="255">
+            <p>https://vk.com</p>
+            <input type="text" id="edit-vk" class="edit-vk" maxlength="255" pattern="^[^\/]*$" title="Введите только адрес профиля без адреса сайта">
         </div>
         <div class="profile-edit-contacts-item">
             <label for="edit-telegram" title="Телеграм"><img src="" th:src="@{/static/images/icons-telegram.svg}" alt="Телеграм"></label>
-            <input type="text" id="edit-telegram" maxlength="255">
+            <p>https://t.me</p>
+            <input type="text" id="edit-telegram" class="edit-telegram" maxlength="255" pattern="^[^\/]*$" title="Введите только адрес профиля без адреса сайта">
         </div>
         <div class="profile-edit-contacts-item">
             <label for="edit-facebook" title="Facebook"><img src="" th:src="@{/static/images/icons-other.png}" alt="Facebook"></label>
-            <input type="text" id="edit-facebook" maxlength="255">
+            <p>https://facebook.com</p>
+            <input type="text" id="edit-facebook" class="edit-facebook" maxlength="255" pattern="^[^\/]*$" title="Введите только адрес профиля без адреса сайта">
         </div>
         <div class="profile-edit-contacts-item">
             <label for="edit-other" title="Другое"><img src="" th:src="@{/static/images/icons-other.png}" alt="Другое"></label>

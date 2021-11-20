@@ -5,7 +5,7 @@
     bottom: auto;
     right: 0;
     left: 0;
-    width: 400px;
+    width: 420px;
     margin: auto;
     background: whitesmoke;
     border: 1px solid whitesmoke;
@@ -78,6 +78,15 @@
     padding: 2px 10px 2px 10px;
     border-radius: 10px;
     border: 1px solid whitesmoke;
+}
+.profile-edit-contacts p {
+    margin: 0 10px 0 0;
+    padding: 0;
+    position: relative;
+    top: 9px;
+    left: 15px;
+    font-size: 13px;
+    color: grey;
 }
 .profile-edit-info input[type='text']:focus {
     outline: none;

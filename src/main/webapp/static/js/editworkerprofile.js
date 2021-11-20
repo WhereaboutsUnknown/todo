@@ -76,6 +76,16 @@ $(document).on('submit','#profile-edit-form', function (event) {
         if (xhr.status === 200) {
             let data = JSON.parse(xhr.response);
             console.log(data);
+
+            if (data.error) {
+                Swal.fire({
+                    text: data.error,
+                    type: 'error',
+                    confirmButtonColor: '#fb2a79'
+                });
+                return;
+            }
+
             updateWorkerProfile(data);
             updateProfileEditForm(data);
             profileCache = data;
