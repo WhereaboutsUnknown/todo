@@ -1,6 +1,7 @@
 package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
@@ -9,6 +10,9 @@ import com.sagansar.todo.repository.TodoStatusRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 public class TodoService {
@@ -31,8 +35,15 @@ public class TodoService {
         this.dialogService = dialogService;
     }
 
-    public void createTask(Manager creator) {
-
+    public void createTask(Manager creator, TaskForm taskForm) throws BadRequestException {
+        if (creator == null) {
+            throw new BadRequestException("У задачи отсутствует создатель!");
+        }
+        if (taskForm == null) {
+            throw new BadRequestException("Отсутствует заполненная форма задачи");
+        }
+        TodoTask createdTask = newTask(creator, taskForm);
+        //TODO: уведомление менеджеру, что задача создана (мб не нужно?)
     }
 
     /**
@@ -49,8 +60,7 @@ public class TodoService {
         dialogService.createDialog(task, worker.getUser(), message);
 
         if (!TodoStatus.Status.DISCUSSION.equals(task.getStatus().status())) {
-            TodoStatus discussion = todoStatusRepository.findById(TodoStatus.Status.DISCUSSION.getCode())
-                    .orElseThrow(() -> new RuntimeException("Нарушение данных: не найден статус " + TodoStatus.Status.DISCUSSION));
+            TodoStatus discussion = getStatus(TodoStatus.Status.DISCUSSION);
             task.setStatus(discussion);
             todoTaskRepository.save(task);
         }
@@ -78,5 +88,30 @@ public class TodoService {
             throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
         }
         return task;
+    }
+
+    private TodoTask newTask(@NonNull Manager creator, @NonNull TaskForm taskForm) {
+        TodoTask task = new TodoTask();
+        TodoStatus draft = getStatus(TodoStatus.Status.DRAFT);
+
+        task.setStatus(draft);
+        task.setCreationTime(LocalDateTime.now(ZoneId.systemDefault()));
+        task.setCreatorId(creator.getId());
+        task.setDeadline(taskForm.getDeadline());
+        task.setHeader(taskForm.getHeader());
+        task.setDescription(taskForm.getDescription());
+        task.setManager(creator);
+        task.setStack(taskForm.getStack());
+        task.setUnitId(taskForm.getUnitId());
+
+        return task;
+    }
+
+    private TodoStatus getStatus(TodoStatus.Status status) {
+        if (status == null) {
+            throw new RuntimeException("Статус не может быть null");
+        }
+        return todoStatusRepository.findById(status.getCode())
+                .orElseThrow(() -> new RuntimeException("Нарушение данных: не найден статус " + status));
     }
 }
