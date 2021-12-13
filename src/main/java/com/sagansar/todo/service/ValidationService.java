@@ -1,6 +1,7 @@
 package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,12 @@ public class ValidationService {
 
     public void validate(WorkerProfileForm profileForm) throws BadRequestException {
 
+    }
+
+    public void validate(TaskForm taskForm) throws BadRequestException {
+        if (taskForm == null) {
+            throw new BadRequestException("Форма создания задачи не может быть null!");
+        }
     }
 
     private void validatePhone(String phone) {
