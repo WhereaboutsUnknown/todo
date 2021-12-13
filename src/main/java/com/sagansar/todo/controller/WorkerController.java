@@ -106,15 +106,11 @@ public class WorkerController {
 
     @PostMapping("/{workerId}")
     public WorkerFullDto editProfile(@PathVariable(name = "workerId") Integer workerId,
-                                     @RequestBody WorkerProfileForm workerProfileForm) {
+                                     @RequestBody WorkerProfileForm workerProfileForm) throws BadRequestException {
         Worker worker = checkWorkerRights(workerId);
         Worker workerUpdate = WorkerMapper.fromWorkerProfileForm(workerProfileForm);
-//        worker.copy(workerUpdate);
-        try {
-            validationService.validateVk(workerProfileForm.getVk());
-        } catch (BadRequestException e) {
-            return WorkerMapper.errorResponse(e.getResponseMessage());
-        }
+        validationService.validateVk(workerProfileForm.getVk());
+        worker.copy(workerUpdate);
 
         return WorkerMapper.workerToFullDto(worker); //(workerRepository.save(worker));
     }
