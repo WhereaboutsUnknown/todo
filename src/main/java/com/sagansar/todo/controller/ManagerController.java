@@ -5,19 +5,20 @@ import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.controller.mapper.ManagerMapper;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
+import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.service.SecurityService;
+import com.sagansar.todo.service.TodoService;
+import com.sagansar.todo.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -37,6 +38,12 @@ public class ManagerController {
 
     @Autowired
     SecurityService securityService;
+
+    @Autowired
+    ValidationService validationService;
+
+    @Autowired
+    TodoService todoService;
 
     @GetMapping("")
     public ManagerDto getUserManagerProfile() {
@@ -75,7 +82,15 @@ public class ManagerController {
 
     //TODO: назначение менеджера на задачу, получение списка менеджеров (возможно, отдельный контроллер отделов)
 
-    private void checkManagerRights(Integer managerId) {
+    @PostMapping("/{managerId}/tasks")
+    public TaskShortDto createTask(@PathVariable(name = "managerId") Integer managerId,
+                                   @RequestBody TaskForm taskForm) throws BadRequestException {
+        Manager manager = checkManagerRights(managerId);
+        validationService.validate(taskForm);
+        return TaskMapper.taskToShort(todoService.createTask(manager, taskForm));
+    }
+
+    private Manager checkManagerRights(Integer managerId) {
         if (!securityService.checkUserRights(RoleEnum.MANAGER)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }
@@ -88,5 +103,6 @@ public class ManagerController {
         if (!manager.isActive()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль менеджера был заблокирован");
         }
+        return manager;
     }
 }
