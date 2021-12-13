@@ -75,9 +75,8 @@ $(document).on('submit','#profile-edit-form', function (event) {
     xhr.addEventListener("load", function () {
         if (xhr.status === 200) {
             let data = JSON.parse(xhr.response);
-            console.log(data);
-
             if (data.error) {
+                console.error("POST http://localhost:8080/worker/" + profileCache.id, data.errors[0], data.error);
                 Swal.fire({
                     text: data.error,
                     type: 'error',
@@ -85,6 +84,7 @@ $(document).on('submit','#profile-edit-form', function (event) {
                 });
                 return;
             }
+            console.log(data);
 
             updateWorkerProfile(data);
             updateProfileEditForm(data);
