@@ -35,15 +35,15 @@ public class TodoService {
         this.dialogService = dialogService;
     }
 
-    public void createTask(Manager creator, TaskForm taskForm) throws BadRequestException {
-        if (creator == null) {
-            throw new BadRequestException("У задачи отсутствует создатель!");
-        }
-        if (taskForm == null) {
-            throw new BadRequestException("Отсутствует заполненная форма задачи");
-        }
-        TodoTask createdTask = newTask(creator, taskForm);
-        //TODO: уведомление менеджеру, что задача создана (мб не нужно?)
+    /**
+     * Create new task draft from valid form
+     *
+     * @param creator manager profile that is an applier of current form
+     * @param taskForm task form submitted
+     * @return created task
+     */
+    public TodoTask createTask(@NonNull Manager creator, @NonNull TaskForm taskForm) {
+        return newTask(creator, taskForm);
     }
 
     /**
@@ -90,6 +90,13 @@ public class TodoService {
         return task;
     }
 
+    /**
+     * Create new task
+     *
+     * @param creator manager profile that is an applier of current form
+     * @param taskForm task form submitted
+     * @return created task
+     */
     private TodoTask newTask(@NonNull Manager creator, @NonNull TaskForm taskForm) {
         TodoTask task = new TodoTask();
         TodoStatus draft = getStatus(TodoStatus.Status.DRAFT);
