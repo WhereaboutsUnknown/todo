@@ -95,13 +95,9 @@ public class WorkerController {
     @PostMapping("/{workerId}/todo/{taskId}")
     public String claimTask(@PathVariable(name = "workerId") Integer workerId,
                           @PathVariable(name = "taskId") Long taskId,
-                          @RequestParam(name = "message") String message) {
+                          @RequestParam(name = "message") String message) throws BadRequestException {
         Worker worker = checkWorkerRights(workerId);
-        try {
-            return todoService.claimTask(worker, taskId, message);
-        } catch (BadRequestException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getResponseMessage());
-        }
+        return todoService.claimTask(worker, taskId, message);
     }
 
     @PostMapping("/{workerId}")
