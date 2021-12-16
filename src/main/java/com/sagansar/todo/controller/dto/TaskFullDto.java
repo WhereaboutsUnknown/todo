@@ -35,7 +35,7 @@ public class TaskFullDto {
     private PersonNameDto worker;
 
     @JsonProperty
-    private Integer unitId;
+    private UnitBasic unit;
 
     @JsonProperty
     private String status;
