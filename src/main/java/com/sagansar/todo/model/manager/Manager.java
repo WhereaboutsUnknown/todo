@@ -26,6 +26,10 @@ public class Manager {
     @Column(name = "active")
     private boolean active;
 
+    @ManyToOne
+    @JoinColumn(name = "unit_id")
+    private Unit unit;
+
     public void block() {
         active = false;
     }

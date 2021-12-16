@@ -4,7 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
+/**
+ * Organization department or separate organization (has Managers)
+ */
 @Getter
 @Setter
 @Entity(name = "org_unit")
@@ -20,4 +24,7 @@ public class Unit {
 
     @Column(name = "descr")
     private String description;
+
+    @OneToMany(mappedBy = "unit")
+    private List<Manager> managers;
 }
