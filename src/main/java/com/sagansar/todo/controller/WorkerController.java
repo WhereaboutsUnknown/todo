@@ -13,10 +13,8 @@ import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
-import com.sagansar.todo.service.DialogService;
-import com.sagansar.todo.service.SecurityService;
-import com.sagansar.todo.service.TodoService;
-import com.sagansar.todo.service.ValidationService;
+import com.sagansar.todo.service.*;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,26 +27,23 @@ import java.util.stream.Collectors;
 
 @RestController
 @Transactional
+@AllArgsConstructor
 @RequestMapping("/worker")
 public class WorkerController {
 
-    @Autowired
-    TodoTaskRepository todoTaskRepository;
+    private final TodoTaskRepository todoTaskRepository;
 
-    @Autowired
-    WorkerRepository workerRepository;
+    private final WorkerRepository workerRepository;
 
-    @Autowired
-    SecurityService securityService;
+    private final SecurityService securityService;
 
-    @Autowired
-    DialogService dialogService;
+    private final DialogService dialogService;
 
-    @Autowired
-    ValidationService validationService;
+    private final ValidationService validationService;
 
-    @Autowired
-    TodoService todoService;
+    private final TodoService todoService;
+
+    private final InviteService inviteService;
 
     @GetMapping("")
     public WorkerFullDto getUserWorkerProfile() {
