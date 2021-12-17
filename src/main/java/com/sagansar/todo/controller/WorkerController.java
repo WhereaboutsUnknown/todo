@@ -68,7 +68,7 @@ public class WorkerController {
 
     @GetMapping("/{workerId}/tasks")
     public List<TaskShortDto> getTakenTasks(@PathVariable(name = "workerId") Integer workerId) {
-        checkWorkerRights(workerId);
+        securityService.getAuthorizedWorker(workerId);
         return todoTaskRepository.findAllByWorkerId(workerId).stream()
                 .map(task -> {
                     TaskShortDto dto = TaskMapper.taskToShort(task);
@@ -96,14 +96,14 @@ public class WorkerController {
     public String claimTask(@PathVariable(name = "workerId") Integer workerId,
                           @PathVariable(name = "taskId") Long taskId,
                           @RequestParam(name = "message") String message) throws BadRequestException {
-        Worker worker = checkWorkerRights(workerId);
+        Worker worker = securityService.getAuthorizedWorker(workerId);
         return todoService.claimTask(worker, taskId, message);
     }
 
     @PostMapping("/{workerId}")
     public WorkerFullDto editProfile(@PathVariable(name = "workerId") Integer workerId,
                                      @RequestBody WorkerProfileForm workerProfileForm) throws BadRequestException {
-        Worker worker = checkWorkerRights(workerId);
+        Worker worker = securityService.getAuthorizedWorker(workerId);
         Worker workerUpdate = WorkerMapper.fromWorkerProfileForm(workerProfileForm);
         validationService.validateVk(workerProfileForm.getVk());
         worker.copy(workerUpdate);
@@ -113,23 +113,7 @@ public class WorkerController {
 
     @GetMapping("/{workerId}/profile")
     public WorkerFullDto getProfile(@PathVariable(name = "workerId") Integer workerId) {
-        Worker worker = checkWorkerRights(workerId);
+        Worker worker = securityService.getAuthorizedWorker(workerId);
         return WorkerMapper.workerToFullDto(worker);
-    }
-
-    private Worker checkWorkerRights(Integer workerId) {
-        if (!securityService.checkUserRights(RoleEnum.FREELANCER)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
-        }
-        Worker worker = workerRepository.findById(workerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Исполнитель не найден"));
-        User assignedUser = worker.getUser();
-        User currentUser = securityService.getCurrentUser();
-        if (!Objects.equals(assignedUser.getUsername(), currentUser.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
-        }
-        if (!worker.isActive()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль исполнителя был заблокирован");
-        }
-        return worker;
     }
 }
