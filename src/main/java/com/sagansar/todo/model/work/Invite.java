@@ -1,6 +1,5 @@
-package com.sagansar.todo.model.manager;
+package com.sagansar.todo.model.work;
 
-import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import lombok.Getter;
 import lombok.Setter;
