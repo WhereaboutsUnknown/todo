@@ -50,4 +50,7 @@ public class TodoTask {
 
     @Column(name = "deadline")
     private LocalDateTime deadline;
+
+    @Column(name = "visible_all")
+    private boolean visibleToAll;
 }

@@ -14,6 +14,7 @@ public interface TodoTaskRepository extends JpaRepository<TodoTask, Long> {
 
     List<TodoTask> findAllByManagerId(Integer managerId);
 
-    @Query("SELECT task FROM todo_task task JOIN task.status WHERE (task.status.statusName = 'TODO' OR task.status.statusName = 'DISCUSSION')")
+    @Query("SELECT task FROM todo_task task JOIN task.status WHERE (task.status.statusName = 'TODO' OR task.status.statusName = 'DISCUSSION')" +
+            "AND task.visibleToAll = true")
     List<TodoTask> findAllAvailable();
 }
