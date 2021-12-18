@@ -8,9 +8,9 @@ import java.util.List;
 
 @Getter
 public class RestError {
-    private HttpStatus status;
-    private String error;
-    private List<String> errors;
+    private final HttpStatus status;
+    private final String error;
+    private final List<String> errors;
 
     public RestError(HttpStatus status, String errorMessage, List<String> errors) {
         super();

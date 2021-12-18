@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class RestWarning {
-    private String warning;
+    private final String warning;
     private Object response;
 
     public RestWarning(String warning) {
