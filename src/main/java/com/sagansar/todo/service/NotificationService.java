@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -19,11 +17,8 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    private final RestOperations restOperations;
-
     public NotificationService(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-        restOperations = new RestTemplate();
     }
 
     public void sendTaskClaimNotification(@NonNull User user, String taskHeader, String worker) {
@@ -34,7 +29,6 @@ public class NotificationService {
     public void sendInviteNotification(@NonNull User user, String taskHeader) {
         String message = "Для вас есть новая задача! \"" + taskHeader + "\"";
         sendNotification(user, message);
-        sendExternalInviteNotifications(user, taskHeader);
     }
 
     public void sendNotification(@NonNull User user, String message) {
@@ -55,14 +49,5 @@ public class NotificationService {
         notification.setNote(message);
         notification.setUser(user);
         return notification;
-    }
-
-    private void sendExternalInviteNotifications(User user, String task) {
-        //TODO: use pengrad Telegram Bot API for sending notifications with URLs for accepting invite
-
-        //TODO: должна приходить ссылка (в тг?), по которой можно принять инвайт (секьюрити должна пропустить), InviteController
-        logger.warn("Telegram notifications are still in progress!");
-
-        ////////////////////////////////////
     }
 }

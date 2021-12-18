@@ -30,6 +30,8 @@ public class InviteService {
 
     private final NotificationService notificationService;
 
+    private final SocialMediaService socialMediaService;
+
     public void sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
         if (workers == null || workers.isEmpty()) {
             throw new WarningException("Приглашения не отправлены: не выбрано ни одного исполнителя!");
@@ -39,6 +41,7 @@ public class InviteService {
                 .map(workerRepository::findById)
                 .flatMap(Optional::stream)
                 .peek(worker -> notificationService.sendInviteNotification(worker.getUser(), task.getHeader()))
+                .peek(worker -> socialMediaService.sendTelegramInvite(worker.getUser(), task.getHeader()))
                 .map(worker -> createInvite(worker, task))
                 .collect(Collectors.toList()));
     }
