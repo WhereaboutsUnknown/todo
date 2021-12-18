@@ -15,14 +15,12 @@ import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -88,11 +86,11 @@ public class WorkerController {
     }
 
     @PostMapping("/{workerId}/todo/{taskId}")
-    public String claimTask(@PathVariable(name = "workerId") Integer workerId,
+    public TaskShortDto claimTask(@PathVariable(name = "workerId") Integer workerId,
                           @PathVariable(name = "taskId") Long taskId,
                           @RequestParam(name = "message") String message) throws BadRequestException {
         Worker worker = securityService.getAuthorizedWorker(workerId);
-        return todoService.claimTask(worker, taskId, message);
+        return TaskMapper.taskToShort(todoService.claimTask(worker, taskId, message));
     }
 
     @PostMapping("/{workerId}")
