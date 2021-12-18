@@ -1,49 +1,48 @@
 package com.sagansar.todo.controller;
 
 import com.sagansar.todo.controller.dto.ManagerDto;
+import com.sagansar.todo.controller.dto.TaskFullDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.controller.mapper.ManagerMapper;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.external.TaskForm;
-import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
+import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
+import com.sagansar.todo.service.InviteService;
 import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.TodoService;
 import com.sagansar.todo.service.ValidationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
 @Transactional
+@AllArgsConstructor
 @RequestMapping("/manager")
 public class ManagerController {
 
-    @Autowired
-    TodoTaskRepository todoTaskRepository;
+    private final TodoTaskRepository todoTaskRepository;
 
-    @Autowired
-    ManagerRepository managerRepository;
+    private final ManagerRepository managerRepository;
 
-    @Autowired
-    SecurityService securityService;
+    private final SecurityService securityService;
 
-    @Autowired
-    ValidationService validationService;
+    private final ValidationService validationService;
 
-    @Autowired
-    TodoService todoService;
+    private final TodoService todoService;
+
+    private final InviteService inviteService;
 
     @GetMapping("")
     public ManagerDto getUserManagerProfile() {
@@ -70,7 +69,7 @@ public class ManagerController {
 
     @GetMapping("/{managerId}/tasks")
     public List<TaskShortDto> getManagedTasks(@PathVariable(name = "managerId") Integer managerId) {
-        checkManagerRights(managerId);
+        securityService.getAuthorizedManager(managerId);
         return todoTaskRepository.findAllByManagerId(managerId).stream()
                 .map(task -> {
                     TaskShortDto dto = TaskMapper.taskToShort(task);
@@ -85,24 +84,23 @@ public class ManagerController {
     @PostMapping("/{managerId}/tasks")
     public TaskShortDto createTask(@PathVariable(name = "managerId") Integer managerId,
                                    @RequestBody TaskForm taskForm) throws BadRequestException {
-        Manager manager = checkManagerRights(managerId);
+        Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.validate(taskForm);
         return TaskMapper.taskToShort(todoService.createTask(manager, taskForm));
     }
 
-    private Manager checkManagerRights(Integer managerId) {
-        if (!securityService.checkUserRights(RoleEnum.MANAGER)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
+    @PostMapping("/{managerId}/tasks/{taskId}")
+    public TaskFullDto publishTask(@PathVariable(name = "managerId") Integer managerId,
+                                   @PathVariable(name = "taskId") Long taskId,
+                                   @RequestParam(name = "all", required = false) boolean visibleToAll,
+                                   @RequestBody List<Integer> workersToInvite) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        if (taskId == null) {
+            throw new BadRequestException("В запросе отсутствует ID задачи!");
         }
-        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Менеджер не найден"));
-        User assignedUser = manager.getUser();
-        User currentUser = securityService.getCurrentUser();
-        if (!Objects.equals(assignedUser.getUsername(), currentUser.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
-        }
-        if (!manager.isActive()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль менеджера был заблокирован");
-        }
-        return manager;
+        TodoTask task = todoService.publishTask(manager, taskId, visibleToAll);
+        inviteService.sendInvitesToAll(workersToInvite, task);
+
+        return TaskMapper.taskToFull(task); //TODO возможно, нужно сперва получать список программистов, отсортированных по подходящим скиллам, выбирать из них и отправлять массив, для кого видна
     }
 }
