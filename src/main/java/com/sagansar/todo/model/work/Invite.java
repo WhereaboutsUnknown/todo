@@ -27,4 +27,10 @@ public class Invite {
     @ManyToOne
     @JoinColumn(name = "task")
     private TodoTask task;
+
+    @Column(name = "accepted")
+    private boolean accepted;
+
+    @Column(name = "checked")
+    private boolean checked;
 }
