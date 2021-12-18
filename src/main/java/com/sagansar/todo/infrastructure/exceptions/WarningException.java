@@ -12,4 +12,8 @@ public class WarningException extends RuntimeException {
         this.responseMessage = responseMessage;
         this.response = response;
     }
+
+    public WarningException(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
 }
