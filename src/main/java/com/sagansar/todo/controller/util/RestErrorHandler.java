@@ -1,6 +1,7 @@
 package com.sagansar.todo.controller.util;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.infrastructure.exceptions.WarningException;
 import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -88,6 +89,14 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 new RestError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errorMessage);
         return new ResponseEntity<>(
                 error, new HttpHeaders(), error.getStatus());
+    }
+
+    @ExceptionHandler({ WarningException.class })
+    public ResponseEntity<Object> handleWarning(WarningException ex, WebRequest request) {
+        RestWarning warning =
+                new RestWarning(ex.getResponseMessage(), ex.getResponse());
+        return new ResponseEntity<>(
+                warning, new HttpHeaders(), warning.getStatus());
     }
 
     @ExceptionHandler({ BadRequestException.class })
