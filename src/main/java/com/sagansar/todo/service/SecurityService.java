@@ -3,18 +3,25 @@ package com.sagansar.todo.service;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
+import com.sagansar.todo.model.work.Invite;
+import com.sagansar.todo.model.work.InviteKey;
 import com.sagansar.todo.model.worker.Worker;
+import com.sagansar.todo.repository.InviteKeyRepository;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.UserRepository;
 import com.sagansar.todo.repository.WorkerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,6 +33,8 @@ public class SecurityService {
     private final UserRepository userRepository;
     private final ManagerRepository managerRepository;
     private final WorkerRepository workerRepository;
+    private final InviteKeyRepository inviteKeyRepository;
+    private final PasswordEncoder encoder;
 
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -84,5 +93,14 @@ public class SecurityService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль исполнителя был заблокирован");
         }
         return worker;
+    }
+
+    public String generateUrlInviteKey(@NonNull Invite invite) {
+        String encodedKey = encoder.encode(invite.getId() + ":" + LocalDateTime.now(ZoneId.systemDefault()));
+        InviteKey inviteKey = new InviteKey();
+        inviteKey.setInvite(invite);
+        inviteKey.setKey(encodedKey);
+
+        return inviteKeyRepository.save(inviteKey).getKey();
     }
 }

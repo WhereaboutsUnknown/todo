@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service for creating and sending task invites to Workers
+ */
 @Service
 @AllArgsConstructor
 public class InviteService {
@@ -32,18 +35,25 @@ public class InviteService {
 
     private final SocialMediaService socialMediaService;
 
+    /**
+     * Send task invites to all chosen Workers except for profiles without User and non-active profiles
+     *
+     * @param workers Worker ID list
+     * @param task task
+     */
     public void sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
         if (workers == null || workers.isEmpty()) {
             throw new WarningException("Приглашения не отправлены: не выбрано ни одного исполнителя!");
         }
-        inviteRepository.saveAll(
-            workers.stream()
+        workers.stream()
                 .map(workerRepository::findById)
                 .flatMap(Optional::stream)
+                .filter(worker -> worker.getUser() != null)
+                .filter(Worker::isActive)
                 .peek(worker -> notificationService.sendInviteNotification(worker.getUser(), task.getHeader()))
-                .peek(worker -> socialMediaService.sendTelegramInvite(worker.getUser(), task.getHeader()))
                 .map(worker -> createInvite(worker, task))
-                .collect(Collectors.toList()));
+                .map(inviteRepository::save)
+                .forEach(socialMediaService::sendTelegramInvite);
     }
 
     private Invite createInvite(Worker worker, TodoTask task) {
