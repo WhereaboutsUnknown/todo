@@ -9,8 +9,6 @@ import com.sagansar.todo.model.worker.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-
 public class WorkerMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkerMapper.class);
@@ -80,11 +78,5 @@ public class WorkerMapper {
 
         worker.setUser(user);
         return worker;
-    }
-
-    public static WorkerFullDto errorResponse(String errorMessage) {
-        WorkerFullDto errorDto = new WorkerFullDto();
-        errorDto.setError(errorMessage);
-        return errorDto;
     }
 }
