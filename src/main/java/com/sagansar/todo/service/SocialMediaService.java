@@ -2,7 +2,7 @@ package com.sagansar.todo.service;
 
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.work.Invite;
-import com.sagansar.todo.telegram.TelegramBot;
+import com.sagansar.todo.telegram.TelegramBotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
@@ -19,13 +19,13 @@ public class SocialMediaService {
 
     private final SecurityService securityService;
 
-    private final TelegramBot telegramBot;
+    private final TelegramBotService telegramBotService;
 
     private final RestOperations restOperations;
 
-    public SocialMediaService(SecurityService securityService, TelegramBot telegramBot) {
+    public SocialMediaService(SecurityService securityService, TelegramBotService telegramBotService) {
         this.securityService = securityService;
-        this.telegramBot = telegramBot;
+        this.telegramBotService = telegramBotService;
         this.restOperations = new RestTemplate();
     }
 
@@ -46,7 +46,7 @@ public class SocialMediaService {
                 .build()
                 .toUriString();
         String message = generateInviteMessage(inviteUrl);
-        telegramBot.sendMessage(message, user.getContacts());
+        telegramBotService.sendMessage(message, user);
     }
 
     private String generateInviteMessage(String inviteUrl) {
