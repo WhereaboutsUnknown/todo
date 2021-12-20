@@ -51,4 +51,7 @@ public class TaskFullDto {
 
     @JsonProperty
     private List<PersonNameDto> group;
+
+    @JsonProperty
+    private List<Integer> invited;
 }

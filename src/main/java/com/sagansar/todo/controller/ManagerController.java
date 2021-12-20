@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -99,8 +100,10 @@ public class ManagerController {
             throw new BadRequestException("В запросе отсутствует ID задачи!");
         }
         TodoTask task = todoService.publishTask(manager, taskId, visibleToAll);
-        inviteService.sendInvitesToAll(workersToInvite, task);
+        TaskFullDto dto = TaskMapper.taskToFull(task);
+        List<Integer> invited = inviteService.sendInvitesToAll(workersToInvite, task);
+        dto.setInvited(invited);
 
-        return TaskMapper.taskToFull(task); //TODO возможно, нужно сперва получать список программистов, отсортированных по подходящим скиллам, выбирать из них и отправлять массив, для кого видна
+        return dto; //TODO возможно, нужно сперва получать список программистов, отсортированных по подходящим скиллам, выбирать из них и отправлять массив, для кого видна
     }
 }
