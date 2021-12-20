@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
+  <title>Приглашение | TODO</title>
+  <link rel="stylesheet" th:href="@{/static/css/invite.css}">
+  <link rel="stylesheet" href="sweetalert2.min.css">
+</head>
+<body>
+<div class="invite-container">
+  <div class="invite-block" id="invite-block" th:value="${inviteId}">
+    <div class="invite-message-container">
+      <h1 class="invite-header" th:text="${header}">
+        Заголовок
+      </h1>
+      <p class="invite-message" th:text="${message}">
+        Текст задачи
+      </p>
+      <p class="invite-skills" th:text="${skills}">
+        Навыки
+      </p>
+    </div>
+    <div class="invite-buttons-container">
+      <button class="btn-accept" id="accept">Принять</button>
+      <button class="btn-decline" id="decline">Отказаться</button>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" th:src="@{/static/js/invite.js}"></script>
+</body>
+</html>
