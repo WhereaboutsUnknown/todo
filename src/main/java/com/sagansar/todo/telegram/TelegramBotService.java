@@ -111,13 +111,24 @@ public class TelegramBotService {
         return LocalDateTime.now(ZoneId.systemDefault()).minus(5, ChronoUnit.MINUTES).isAfter(lastUpdate);
     }
 
+    private void sendMessage(Long chatId, String message, String url) {
+        if (StringUtils.hasText(url)) {
+            message += "[URL](" + url + ")";
+        }
+        sendMessage(chatId, message, 1, ParseMode.Markdown);
+    }
+
     private void sendMessage(Long chatId, String message) {
-        sendMessage(chatId, message, 1);
+        sendMessage(chatId, message, 1, ParseMode.HTML);
     }
 
     private void sendMessage(Long chatId, String message, int messageId) {
+        sendMessage(chatId, message, messageId, ParseMode.HTML);
+    }
+
+    private void sendMessage(Long chatId, String message, int messageId, ParseMode parseMode) {
         SendMessage request = new SendMessage(chatId, message)
-                .parseMode(ParseMode.HTML)
+                .parseMode(parseMode)
                 .disableWebPagePreview(true)
                 .disableNotification(true)
                 .replyToMessageId(messageId)
