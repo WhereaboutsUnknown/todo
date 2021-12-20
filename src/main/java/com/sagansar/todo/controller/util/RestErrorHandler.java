@@ -94,7 +94,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ WarningException.class })
     public ResponseEntity<Object> handleWarning(WarningException ex, WebRequest request) {
         RestWarning warning =
-                new RestWarning(ex.getResponseMessage(), ex.getResponse());
+                new RestWarning(ex.getResponseMessage(), ex.getResponse(), ex.getAddition());
         return new ResponseEntity<>(
                 warning, new HttpHeaders(), warning.getStatus());
     }
