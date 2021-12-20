@@ -44,11 +44,11 @@ public class SocialMediaService {
                 .queryParam("token", urlSecurityKey)
                 .build()
                 .toUriString();
-        String message = generateInviteMessage(inviteUrl);
-        return telegramBotService.sendMessage(message, user);
+        String message = generateInviteMessage();
+        return telegramBotService.sendMessage(message + inviteUrl, user);
     }
 
-    private String generateInviteMessage(String inviteUrl) {
-        return "Для Вас есть новая задача! Чтобы принять или отказаться, перейдите по ссылке: " + inviteUrl;
+    private String generateInviteMessage() {
+        return "Для Вас есть новая задача! Чтобы принять или отказаться, перейдите по ссылке: ";
     }
 }

@@ -5,21 +5,26 @@ import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
+import com.sagansar.todo.model.work.WorkerGroupTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.model.worker.WorkerResponse;
 import com.sagansar.todo.repository.TodoStatusRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
+import com.sagansar.todo.repository.WorkerGroupTaskRepository;
 import com.sagansar.todo.repository.WorkerResponseRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 @Service
 public class TodoService {
 
     private final TodoTaskRepository todoTaskRepository;
+
+    private final WorkerGroupTaskRepository workerGroupTaskRepository;
 
     private final TodoStatusRepository todoStatusRepository;
 
@@ -30,10 +35,12 @@ public class TodoService {
     private final WorkerResponseRepository responseRepository;
 
     public TodoService(TodoTaskRepository todoTaskRepository,
+                       WorkerGroupTaskRepository workerGroupTaskRepository,
                        TodoStatusRepository todoStatusRepository,
                        NotificationService notificationService,
                        DialogService dialogService,
                        WorkerResponseRepository responseRepository) {
+        this.workerGroupTaskRepository = workerGroupTaskRepository;
         this.todoStatusRepository = todoStatusRepository;
         this.todoTaskRepository = todoTaskRepository;
         this.notificationService = notificationService;
@@ -95,6 +102,33 @@ public class TodoService {
         notificationService.sendTaskClaimNotification(task.getManager().getUser(), task.getHeader(), worker.getName());
 
         return task;
+    }
+
+    /**
+     * Add Worker to task group, set as responsible if no one responded yet
+     *
+     * @param task task
+     * @param worker Worker
+     * @return success message
+     */
+    public String addWorker(@NonNull TodoTask task, @NonNull Worker worker) {
+        Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
+        if (link.isEmpty()) {
+            WorkerGroupTask workerGroupTask = new WorkerGroupTask();
+            workerGroupTask.setWorker(worker);
+            workerGroupTask.setTask(task);
+            if (task.getWorker() == null) {
+                task.setWorker(worker);
+                workerGroupTask.setResponsible(true);
+            }
+            workerGroupTaskRepository.save(workerGroupTask);
+            if (!TodoStatus.Status.GO.equals(task.getStatus().status())) {
+                TodoStatus go = todoStatusRepository.getById(TodoStatus.Status.GO.getCode());
+                task.setStatus(go);
+                todoTaskRepository.save(task);
+            }
+        }
+        return "задача успешно поручена Вам!";
     }
 
     /**
@@ -192,5 +226,9 @@ public class TodoService {
         response.setCreationTime(LocalDateTime.now(ZoneId.systemDefault()));
         response.setMessage(message);
         responseRepository.save(response);
+    }
+
+    private Long generateCompositeId(@NonNull Long taskId, @NonNull Integer workerId) {
+        return (taskId * 10_000_000) + workerId;
     }
 }

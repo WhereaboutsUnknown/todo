@@ -1,5 +1,6 @@
 package com.sagansar.todo.service;
 
+import com.sagansar.todo.infrastructure.exceptions.UnauthorizedException;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
@@ -102,5 +103,18 @@ public class SecurityService {
         inviteKey.setKey(encodedKey);
 
         return inviteKeyRepository.save(inviteKey).getKey();
+    }
+
+    public Invite authorizeInviteToken(String token) {
+        InviteKey key = inviteKeyRepository.findDistinctByKey(token);
+        if (key == null) {
+            throw new UnauthorizedException("Токен не найден!");
+        }
+        Invite invite = key.getInvite();
+        if (invite == null) {
+            throw new UnauthorizedException("Приглашение не найдено!");
+        }
+        inviteKeyRepository.delete(key);
+        return invite;
     }
 }

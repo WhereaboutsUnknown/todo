@@ -1,5 +1,6 @@
 package com.sagansar.todo.service;
 
+import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.WarningException;
 import com.sagansar.todo.model.work.Invite;
 import com.sagansar.todo.model.work.TodoTask;
@@ -60,6 +61,19 @@ public class InviteService {
                     }
                 });
         return invited;
+    }
+
+    public Invite processInviteAnswer(Long inviteId, boolean accept) throws BadRequestException {
+        if (inviteId == null) {
+            logger.error("Отсутствует ID приглашения");
+            throw new BadRequestException("При обработке ответа возникла ошибка!");
+        }
+        Invite invite = inviteRepository.findById(inviteId)
+                .orElseThrow(() -> new BadRequestException("Приглашение не найдено!"));
+        invite.setAccepted(accept);
+        invite.setChecked(true);
+        return inviteRepository.save(invite);
+        //TODO: уведомления о полученном ответе на приглашение
     }
 
     private Invite createInvite(Worker worker, TodoTask task) {
