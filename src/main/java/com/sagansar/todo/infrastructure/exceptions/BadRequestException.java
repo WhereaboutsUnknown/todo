@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class BadRequestException extends Exception {
-    private String responseMessage;
+    private final String responseMessage;
 
     public BadRequestException(String responseMessage) {
         this.responseMessage = responseMessage;
