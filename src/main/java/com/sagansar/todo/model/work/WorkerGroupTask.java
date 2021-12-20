@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class WorkerGroupTask {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "compos_id")
     private Long compositeId;
 
     @Column(name = "in_charge")
@@ -32,7 +32,7 @@ public class WorkerGroupTask {
     @PrePersist
     public void prePersist() {
         if (task.getId() != null && worker.getId() != null) {
-            compositeId = (task.getId() * 1_000_000) + worker.getId();
+            compositeId = (task.getId() * 10_000_000) + worker.getId();
         }
     }
 }
