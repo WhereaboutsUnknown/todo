@@ -64,6 +64,10 @@ public class TelegramBotService {
         }
         try {
             String telegramUsername = user.getContacts().getTelegram();
+            if (!StringUtils.hasText(telegramUsername)) {
+                logger.error("У пользователя {} не указан аккаунт Telegram!", user.getUsername());
+                return false;
+            }
             TelegramChat chat = chatRepository.findDistinctByUsername(telegramUsername);
             if (chat == null) {
                 logger.error("Ошибка при попытке отправить сообщение пользователю {}: чат не найден", user.getUsername());
