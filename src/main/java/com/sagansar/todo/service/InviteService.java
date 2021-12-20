@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Service for creating and sending task invites to Workers
@@ -41,10 +41,11 @@ public class InviteService {
      * @param workers Worker ID list
      * @param task task
      */
-    public void sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
+    public List<Integer> sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
         if (workers == null || workers.isEmpty()) {
             throw new WarningException("Приглашения не отправлены: не выбрано ни одного исполнителя!");
         }
+        List<Integer> invited = new ArrayList<>();
         workers.stream()
                 .map(workerRepository::findById)
                 .flatMap(Optional::stream)
@@ -53,7 +54,12 @@ public class InviteService {
                 .peek(worker -> notificationService.sendInviteNotification(worker.getUser(), task.getHeader()))
                 .map(worker -> createInvite(worker, task))
                 .map(inviteRepository::save)
-                .forEach(socialMediaService::sendTelegramInvite);
+                .forEach(invite -> {
+                    if (socialMediaService.sendTelegramInvite(invite)) {
+                        invited.add(invite.getWorker().getId());
+                    }
+                });
+        return invited;
     }
 
     private Invite createInvite(Worker worker, TodoTask task) {

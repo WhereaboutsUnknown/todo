@@ -29,13 +29,12 @@ public class SocialMediaService {
         this.restOperations = new RestTemplate();
     }
 
-    public void sendTelegramInvite(@NonNull Invite invite) {
-        //TODO: use pengrad Telegram Bot API for sending notifications with URLs for accepting invite
-
-        //TODO: должна приходить ссылка (в тг?), по которой можно принять инвайт (секьюрити должна пропустить), InviteController
-        logger.warn("Telegram notifications are still in progress!");
-
-        ////////////////////////////////////
+    /**
+     * Send invite url by Telegram bot
+     *
+     * @param invite task invite
+     */
+    public boolean sendTelegramInvite(@NonNull Invite invite) {
         User user = invite.getWorker().getUser();
 
         String urlSecurityKey = securityService.generateUrlInviteKey(invite);
@@ -46,7 +45,7 @@ public class SocialMediaService {
                 .build()
                 .toUriString();
         String message = generateInviteMessage(inviteUrl);
-        telegramBotService.sendMessage(message, user);
+        return telegramBotService.sendMessage(message, user);
     }
 
     private String generateInviteMessage(String inviteUrl) {
