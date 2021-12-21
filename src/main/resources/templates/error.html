@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
+  <title th:text="${httpStatusName + ' | TODO'}">Ошибка! | TODO</title>
+  <link rel="stylesheet" th:href="@{/static/css/error.css}">
+  <link rel="stylesheet" href="sweetalert2.min.css">
+</head>
+<body th:classappend="${httpStatus}">
+<div class="error-container" th:classappend="${httpStatus}">
+  <div class="error-block">
+    <div class="error-message-container">
+      <h1 class="error-header" th:text="${header}">
+        Ошибка
+      </h1>
+      <p class="error-message" th:text="${message}">
+        Что-то пошло не так!
+      </p>
+    </div>
+    <div class="error-buttons-container">
+      <a class="go-home" id="error-ok" href="./">Домой</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

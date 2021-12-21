@@ -1,0 +1,83 @@
+body {
+    width: 100%;
+    font-family: 'Arial', sans-serif;
+    background: url("../images/logo-text-2.png") 50% -100% / 300px auto no-repeat #fbfbfb;
+}
+
+.error-container {
+    width: 100%;
+}
+
+.error-block {
+    position: absolute;
+    top: 30%;
+    bottom: 30%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 550px;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    border: solid 1px #222222;
+    background-color: #222222;
+    border-radius: 25px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+    font-family: 'Arial', sans-serif;
+    color: white;
+}
+
+.error-message-container {
+    margin: 20px;
+    font-size: 20px;
+    flex: 100;
+    text-align: center;
+}
+
+.error-buttons-container {
+    margin: 20px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.error-buttons-container .go-home {
+    margin: 5px;
+    flex: none;
+    width: 150px;
+    height: 20px;
+    font-family: 'Arial', sans-serif;
+    color: white;
+    border: solid 1px black;
+    border-radius: 45px;
+    background: url("../images/round-arrow.png") no-repeat 10% 50% black;
+    text-align: center;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.error-buttons-container .go-home:hover {
+    background-color: #fada59;
+    border-color: #fada59;
+    box-shadow: 0 0 1px 2px #fce0ae;
+    cursor: pointer;
+}
+
+.error-header {
+    padding: 0;
+    margin: 0 0 30px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.status404 .error-block {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    color: black;
+}
+
+.status403 {
+    background-color: #4F4F4F;
+}
