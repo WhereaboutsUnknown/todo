@@ -24,6 +24,10 @@ public class InviteController {
             Invite invite = securityService.authorizeInviteToken(token);
             TodoTask task = invite.getTask();
             if (task == null) {
+                modelAndView.addObject("isError", false);
+                modelAndView.addObject("header", "Что-то пошло не так");
+                modelAndView.addObject("message", "Ошибка обработки приглашения: задача не найдена!");
+                modelAndView.setViewName("invite-error");
                 return modelAndView;
             }
             modelAndView.addObject("inviteId", invite.getId());
@@ -33,6 +37,10 @@ public class InviteController {
             modelAndView.setViewName("invite-ok");
             return modelAndView;
         } catch (UnauthorizedException ex) {
+            modelAndView.addObject("isError", true);
+            modelAndView.addObject("header", "403: ДОСТУП ЗАПРЕЩЕН");
+            modelAndView.addObject("message", ex.getMessage());
+            modelAndView.setViewName("invite-error");
             return modelAndView;
         }
     }

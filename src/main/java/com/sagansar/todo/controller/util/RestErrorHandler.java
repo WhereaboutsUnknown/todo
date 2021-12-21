@@ -6,6 +6,7 @@ import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -30,6 +31,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpHeaders headers,
             @NonNull HttpStatus status,
             @NonNull WebRequest request) {
+        ex.printStackTrace();
         List<String> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -50,6 +52,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpHeaders headers,
             @NonNull HttpStatus status,
             @NonNull WebRequest request) {
+        ex.printStackTrace();
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
         builder.append(
@@ -68,6 +71,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpHeaders headers,
             @NonNull HttpStatus status,
             @NonNull WebRequest request) {
+        ex.printStackTrace();
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getContentType());
         builder.append(" media type is not supported. Supported media types are ");
@@ -82,6 +86,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException ex, WebRequest request) {
+        ex.printStackTrace();
         String errorMessage =
                 ex.getName() + " should be of type " + Objects.requireNonNull(ex.getRequiredType()).getName();
 
@@ -93,6 +98,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ WarningException.class })
     public ResponseEntity<Object> handleWarning(WarningException ex, WebRequest request) {
+        ex.printStackTrace();
         RestWarning warning =
                 new RestWarning(ex.getResponseMessage(), ex.getResponse(), ex.getAddition());
         return new ResponseEntity<>(
@@ -101,14 +107,22 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ BadRequestException.class })
     public ResponseEntity<Object> handleBadRequest(BadRequestException ex, WebRequest request) {
+        ex.printStackTrace();
         RestError error =
                 new RestError(HttpStatus.OK, ex.getResponseMessage(), "400"); //TODO: browser dont accept response message, try to solve it later and use proper HTTP status instead of 200
         return new ResponseEntity<>(
                 error, new HttpHeaders(), error.getStatus());
     }
 
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
+        ex.printStackTrace();
+        throw ex;
+    }
+
     @ExceptionHandler({ Exception.class })
     public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         RestError error = new RestError(
                 HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
         return new ResponseEntity<>(
