@@ -57,7 +57,7 @@ public class TelegramBotService {
         this.customBotCommandRepository = customBotCommandRepository;
     }
 
-    public boolean sendMessage(String message, @NonNull User user) {
+    public boolean sendMessage(String message, @NonNull User user, String url) {
         if (user.getContacts() == null) {
             logger.error("У пользователя {} нет контактной информации!", user.getUsername());
             return false;
@@ -73,7 +73,11 @@ public class TelegramBotService {
                 logger.error("Ошибка при попытке отправить сообщение пользователю {}: чат не найден", user.getUsername());
                 return false;
             }
-            sendMessage(chat.getId(), message);
+            if (StringUtils.hasText(url)) {
+                sendMessage(chat.getId(), message, url);
+            } else {
+                sendMessage(chat.getId(), message);
+            }
             return true;
         } catch (Exception e) {
             logger.error("Ошибка при попытке отправить сообщение пользователю {}: {}", user.getUsername(), e.getMessage());
@@ -113,9 +117,12 @@ public class TelegramBotService {
 
     private void sendMessage(Long chatId, String message, String url) {
         if (StringUtils.hasText(url)) {
-            message += "[URL](" + url + ")";
+            if (url.contains("localhost")) {
+                url = url.replace("localhost", "127.0.0.1"); //telegram bug: does not properly map localhost
+            }
+            message += "[➡](" + url + ")";
         }
-        sendMessage(chatId, message, 1, ParseMode.Markdown);
+        sendMessage(chatId, message, 1, ParseMode.MarkdownV2);
     }
 
     private void sendMessage(Long chatId, String message) {

@@ -38,14 +38,14 @@ public class SocialMediaService {
         User user = invite.getWorker().getUser();
 
         String urlSecurityKey = securityService.generateUrlInviteKey(invite);
-        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
         String inviteUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .pathSegment("invite")
                 .queryParam("token", urlSecurityKey)
                 .build()
                 .toUriString();
         String message = generateInviteMessage();
-        return telegramBotService.sendMessage(message + inviteUrl, user);
+        return telegramBotService.sendMessage(message, user, inviteUrl);
     }
 
     private String generateInviteMessage() {
