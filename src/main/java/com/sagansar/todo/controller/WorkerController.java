@@ -10,12 +10,14 @@ import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,7 +28,8 @@ import java.util.stream.Collectors;
 @RestController
 @Transactional
 @AllArgsConstructor
-@RequestMapping("/worker")
+@ResponseBody
+@RequestMapping(path = "/worker", produces = MediaType.APPLICATION_JSON_VALUE)
 public class WorkerController {
 
     private final TodoTaskRepository todoTaskRepository;

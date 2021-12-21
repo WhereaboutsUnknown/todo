@@ -7,6 +7,7 @@ import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.service.InviteService;
 import com.sagansar.todo.service.TodoService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,8 @@ import java.util.Map;
 @RestController
 @Transactional
 @AllArgsConstructor
-@RequestMapping("/invite/api")
+@ResponseBody
+@RequestMapping(path = "/invite/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class InviteRestController {
 
     private final TodoService todoService;

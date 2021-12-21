@@ -19,6 +19,7 @@ import com.sagansar.todo.service.TodoService;
 import com.sagansar.todo.service.ValidationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +30,8 @@ import java.util.stream.Collectors;
 @RestController
 @Transactional
 @AllArgsConstructor
-@RequestMapping("/manager")
+@ResponseBody
+@RequestMapping(path = "/manager", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ManagerController {
 
     private final TodoTaskRepository todoTaskRepository;
