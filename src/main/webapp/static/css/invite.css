@@ -37,6 +37,7 @@ body {
     margin: 20px;
     flex: 1;
     display: flex;
+    justify-content: center;
 }
 
 .invite-buttons-container button {
@@ -79,6 +80,49 @@ body {
     font-weight: bold;
 }
 
+.invite-block.error {
+    width: 550px;
+    /*background-color: #f04949;
+    border-color: #f04949;*/
+    color: white;
+    text-align: center;
+}
+
+.invite-block.warning {
+    width: 550px;
+    background-color: #ffc223;
+    border-color: #ffc223;
+    color: black;
+    text-align: center;
+}
+
+.invite-buttons-container .btn-ok {
+    width: 150px;
+    border-color: white;
+    background-color: white;
+    color: black;
+    flex: none;
+}
+
+.error > .invite-buttons-container .btn-ok:hover {
+    background-color: #f59591;
+    color: white;
+}
+
+.warning > .invite-buttons-container .btn-ok:hover {
+    background-color: #fada59;
+    color: white;
+}
+
+.error > .invite-message-container .invite-header {
+    font-size: 30px;
+    color: white;
+}
+
+.warning > .invite-message-container .invite-header {
+    font-size: 30px;
+    color: black;
+}
 
 .swal-modal {
     font-size: 1.6rem !important;

@@ -54,3 +54,7 @@ $("#decline").click(function () {
         sendInviteAnswer(false);
     }
 });
+
+$("#error-ok").click(function () {
+    document.location = window.location.origin;
+});
