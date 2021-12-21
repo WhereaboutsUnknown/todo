@@ -1,7 +1,11 @@
 package com.sagansar.todo;
 
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -25,5 +29,19 @@ public class WebConfiguration implements WebMvcConfigurer {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         return templateEngine;
+    }
+
+    @Bean
+    public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
+        return container -> {
+            container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND,
+                    "/error"));
+            container.addErrorPages(new ErrorPage(HttpStatus.FORBIDDEN,
+                    "/error"));
+            container.addErrorPages(new ErrorPage(HttpStatus.GATEWAY_TIMEOUT,
+                    "/error"));
+            container.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "/error"));
+        };
     }
 }

@@ -27,6 +27,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/test/*").permitAll() //TODO: for API testing, hide/delete later
                 .antMatchers("/invite*").permitAll()
                 .antMatchers("/invite/api*").permitAll()
+                .antMatchers("/error/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
