@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZoneId;
 import java.util.Set;
 
@@ -46,7 +47,7 @@ public class User implements Serializable {
 
     public String getAge() {
         if (birthDate != null) {
-            int userAge = LocalDate.now(ZoneId.systemDefault()).getYear() - birthDate.getYear();
+            long userAge = Period.between(birthDate, LocalDate.now(ZoneId.systemDefault())).getYears();
             return formatAge(userAge);
         }
         return null;
@@ -72,7 +73,7 @@ public class User implements Serializable {
         }
     }
 
-    private String formatAge(int age) {
+    private String formatAge(long age) {
         if (age <= 20) {
             return age + " лет";
         }
