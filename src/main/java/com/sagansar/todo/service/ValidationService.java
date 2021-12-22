@@ -5,6 +5,9 @@ import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -67,6 +70,33 @@ public class ValidationService {
                 throw new BadRequestException("Что-то пошло не так! Покажите этот код администратору: " + e.getRawStatusCode());
             }
         }
+    }
+
+    /**
+     * Validate pagination from client
+     *
+     * @param pageable pagination
+     * @param sort sorting parameter
+     * @param direction sorting direction
+     * @return pagination with sorting
+     * @throws BadRequestException if there is no parameter or direction
+     */
+    public Pageable validatePageRequest(Pageable pageable, String sort, String direction) throws BadRequestException {
+        Sort sortFilter = validateSort(sort, direction);
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortFilter);
+    }
+
+    private Sort validateSort(String sort, String direction) throws BadRequestException {
+        if (!StringUtils.hasText(sort)) {
+            throw new BadRequestException("Не указан параметр для сортировки");
+        }
+        if (!StringUtils.hasText(direction)) {
+            throw new BadRequestException("Не указано направление сортировки");
+        }
+        if ("desc".equalsIgnoreCase(direction)) {
+            return Sort.by(Sort.Direction.DESC, sort);
+        }
+        return Sort.by(Sort.Direction.ASC, sort);
     }
 
 }
