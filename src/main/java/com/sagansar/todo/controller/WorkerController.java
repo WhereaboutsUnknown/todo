@@ -7,15 +7,20 @@ import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.mapper.WorkerMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.infrastructure.exceptions.UnauthorizedException;
+import com.sagansar.todo.infrastructure.specifications.FilterCompiler;
+import com.sagansar.todo.infrastructure.specifications.SearchSpecification;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
-import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +50,8 @@ public class WorkerController {
     private final TodoService todoService;
 
     private final InviteService inviteService;
+
+    private final FilterCompiler<Worker> filterCompiler;
 
     @GetMapping("")
     public WorkerFullDto getUserWorkerProfile() {
@@ -111,5 +118,30 @@ public class WorkerController {
     public WorkerFullDto getProfile(@PathVariable(name = "workerId") Integer workerId) {
         Worker worker = securityService.getAuthorizedWorker(workerId);
         return WorkerMapper.workerToFullDto(worker);
+    }
+
+    @GetMapping("/search")
+    public Page<WorkerDto> findWorkers(@RequestParam(name = "crit", required = false) List<String> criteria,
+                                    @RequestParam(name = "op", required = false) String operator,
+                                    @RequestParam(name = "by", required = false) String sort,
+                                    @RequestParam(name = "dir", required = false) String direction,
+                                    Pageable pageable) throws BadRequestException {
+        if (!securityService.checkUserRights(RoleEnum.MANAGER) && !securityService.isAdmin()) {
+            throw new UnauthorizedException("Недостаточно полномочий для доступа", true);
+        }
+        if (sort != null && direction != null) {
+            pageable = validationService.validatePageRequest(pageable, sort, direction);
+        }
+        Specification<Worker> filter = new SearchSpecification<>(filterCompiler.compile("active:true"));
+        if (criteria != null && operator != null) {
+            filter = filterCompiler.compile(
+                    criteria.stream()
+                    .map(filterCompiler::compile)
+                    .collect(Collectors.toList()),
+                    operator
+            ).and(filter);
+        }
+        return workerRepository.findAll(filter, pageable)
+                .map(WorkerMapper::workerToDto);
     }
 }
