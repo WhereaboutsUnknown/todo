@@ -1,15 +1,9 @@
 package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
-import com.sagansar.todo.telegram.TelegramBotService;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
