@@ -132,14 +132,15 @@ public class WorkerController {
         if (sort != null && direction != null) {
             pageable = validationService.validatePageRequest(pageable, sort, direction);
         }
-        Specification<Worker> filter = new SearchSpecification<>(filterCompiler.compile("active:true"));
+        Specification<Worker> filter = null;
         if (criteria != null && operator != null) {
             filter = filterCompiler.compile(
                     criteria.stream()
                     .map(filterCompiler::compile)
+                    .filter(crit -> crit.getKey() != null && crit.getOperation() != null && crit.getValue() != null)
                     .collect(Collectors.toList()),
                     operator
-            ).and(filter);
+            );
         }
         return workerRepository.findAll(filter, pageable)
                 .map(WorkerMapper::workerToDto);
