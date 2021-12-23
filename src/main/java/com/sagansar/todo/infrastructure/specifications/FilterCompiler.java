@@ -33,12 +33,14 @@ public class FilterCompiler<T> {
     }
 
     public SearchCriteria compile(String data) {
-        Pattern pattern = Pattern.compile("(\\w+?)([:<>!~#])(\\w+?),");
-        Matcher matcher = pattern.matcher(data + ",");
+        Pattern pattern = Pattern.compile("([.А-Яа-я\\w]+?)([:<>!~#])([.А-Яа-я\\w]+)");
+        Matcher matcher = pattern.matcher(data);
         SearchCriteria searchCriteria = new SearchCriteria();
-        searchCriteria.setKey(matcher.group(1));
-        searchCriteria.setOperation(matcher.group(2));
-        searchCriteria.setValue(matcher.group(3));
+        if (matcher.find()) {
+            searchCriteria.setKey(matcher.group(1));
+            searchCriteria.setOperation(matcher.group(2));
+            searchCriteria.setValue(matcher.group(3));
+        }
         return searchCriteria;
     }
 
