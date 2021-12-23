@@ -45,10 +45,9 @@ public class User implements Serializable {
     @OneToOne(mappedBy = "user")
     protected Contacts contacts;
 
-    public String getAge() {
+    public Integer getAge() {
         if (birthDate != null) {
-            long userAge = Period.between(birthDate, LocalDate.now(ZoneId.systemDefault())).getYears();
-            return formatAge(userAge);
+            return Period.between(birthDate, LocalDate.now(ZoneId.systemDefault())).getYears();
         }
         return null;
     }
@@ -71,18 +70,5 @@ public class User implements Serializable {
                 contacts.copy(other.contacts);
             }
         }
-    }
-
-    private String formatAge(long age) {
-        if (age <= 20) {
-            return age + " лет";
-        }
-        if (age % 10 == 1) {
-            return age + " год";
-        }
-        if (age % 10 < 5) {
-            return age + " года";
-        }
-        return age + " лет";
     }
 }

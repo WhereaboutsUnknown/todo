@@ -20,7 +20,7 @@ public class WorkerMapper {
         WorkerDto dto = new WorkerDto();
         dto.setId(worker.getId());
         dto.setName(worker.getName());
-        dto.setAge(worker.getAge());
+        dto.setAge(formatAge(worker.getAge()));
         dto.setSkills(worker.getInfo());
         User user = worker.getUser();
         if (user != null) {
@@ -36,7 +36,7 @@ public class WorkerMapper {
         WorkerFullDto dto = new WorkerFullDto();
         dto.setId(worker.getId());
         dto.setName(worker.getName());
-        dto.setAge(worker.getAge());
+        dto.setAge(formatAge(worker.getAge()));
         dto.setSkills(worker.getInfo());
         User user = worker.getUser();
         if (user != null) {
@@ -78,5 +78,21 @@ public class WorkerMapper {
 
         worker.setUser(user);
         return worker;
+    }
+
+    private static String formatAge(Integer age) {
+        if (age == null) {
+            return "";
+        }
+        if (age <= 20) {
+            return age + " лет";
+        }
+        if (age % 10 == 1) {
+            return age + " год";
+        }
+        if (age % 10 < 5) {
+            return age + " года";
+        }
+        return age + " лет";
     }
 }
