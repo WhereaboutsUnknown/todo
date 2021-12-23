@@ -9,7 +9,7 @@ import com.sagansar.todo.model.worker.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorkerMapper {
+public class WorkerMapper extends ViewDataMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkerMapper.class);
 
@@ -78,21 +78,5 @@ public class WorkerMapper {
 
         worker.setUser(user);
         return worker;
-    }
-
-    private static String formatAge(Integer age) {
-        if (age == null) {
-            return "";
-        }
-        if (age <= 20) {
-            return age + " лет";
-        }
-        if (age % 10 == 1) {
-            return age + " год";
-        }
-        if (age % 10 < 5) {
-            return age + " года";
-        }
-        return age + " лет";
     }
 }

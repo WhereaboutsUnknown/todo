@@ -4,7 +4,7 @@ import com.sagansar.todo.controller.dto.ManagerDto;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
 
-public class ManagerMapper {
+public class ManagerMapper extends ViewDataMapper {
 
     public static ManagerDto managerToDto(Manager manager) {
         if (manager == null) {
@@ -13,7 +13,7 @@ public class ManagerMapper {
         ManagerDto dto = new ManagerDto();
         dto.setId(manager.getId());
         dto.setName(manager.getFullName());
-        dto.setAge(manager.getAge());
+        dto.setAge(formatAge(manager.getAge()));
         User user = manager.getUser();
         if (user != null) {
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));

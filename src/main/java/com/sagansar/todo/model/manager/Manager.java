@@ -58,7 +58,7 @@ public class Manager {
         return null;
     }
 
-    public String getAge() {
+    public Integer getAge() {
         if (user != null) {
             return user.getAge();
         }
