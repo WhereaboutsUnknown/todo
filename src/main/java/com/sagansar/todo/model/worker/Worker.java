@@ -30,6 +30,9 @@ public class Worker {
     @Column(name = "active")
     private boolean active;
 
+    @Column(name = "age")
+    private Integer age;
+
     public void block() {
         active = false;
     }
@@ -38,9 +41,13 @@ public class Worker {
         active = true;
     }
 
-    public String getAge() {
+    public Integer getAge() {
         if (user != null) {
-            return user.getAge();
+            Integer userAge = user.getAge();
+            if (userAge != null) {
+                age = userAge;
+                return userAge;
+            }
         }
         return null;
     }
