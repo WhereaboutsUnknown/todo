@@ -28,6 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/invite*").permitAll()
                 .antMatchers("/invite/api*").permitAll()
                 .antMatchers("/error/**").permitAll()
+                .antMatchers("/logout").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
