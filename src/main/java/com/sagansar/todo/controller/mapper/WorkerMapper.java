@@ -2,6 +2,7 @@ package com.sagansar.todo.controller.mapper;
 
 import com.sagansar.todo.controller.dto.WorkerDto;
 import com.sagansar.todo.controller.dto.WorkerFullDto;
+import com.sagansar.todo.controller.dto.WorkerLineDto;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.Contacts;
 import com.sagansar.todo.model.general.User;
@@ -46,6 +47,17 @@ public class WorkerMapper extends ViewDataMapper {
             dto.setSurname(user.getSurname());
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
         }
+        return dto;
+    }
+
+    public static WorkerLineDto workerToLine(Worker worker) {
+        if (worker == null) {
+            return null;
+        }
+        WorkerLineDto dto = new WorkerLineDto();
+        dto.setId(worker.getId());
+        dto.setName(worker.getName());
+        dto.setSkills(worker.getInfo());
         return dto;
     }
 
