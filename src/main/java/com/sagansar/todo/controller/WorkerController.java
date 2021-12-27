@@ -166,8 +166,7 @@ public class WorkerController {
                 "or");
 
         List<Worker> workers = workerRepository.findAll(filter, pageable).getContent();
-        WorkerSkillSorter.sort(workers, skills);
-        return workers.stream()
+        return WorkerSkillSorter.sort(workers, skills).stream()
                 .map(WorkerMapper::workerToLine)
                 .collect(Collectors.toList());
     }

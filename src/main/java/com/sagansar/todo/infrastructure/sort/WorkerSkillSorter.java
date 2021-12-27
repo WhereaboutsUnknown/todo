@@ -2,12 +2,15 @@ package com.sagansar.todo.infrastructure.sort;
 
 import com.sagansar.todo.model.worker.Worker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkerSkillSorter {
 
-    public static void sort(List<Worker> workers, String[] skills) {
-        workers.sort((a, b) -> compareBySkills(a, b, skills));
+    public static List<Worker> sort(List<Worker> workers, String[] skills) {
+        List<Worker> newList = new ArrayList<>(workers);
+        newList.sort((a, b) -> compareBySkills(a, b, skills));
+        return newList;
     }
 
     private static int compareBySkills(Worker first, Worker second, String[] skills) {
