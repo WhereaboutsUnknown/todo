@@ -3,16 +3,19 @@ package com.sagansar.todo.controller;
 import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.controller.dto.WorkerDto;
 import com.sagansar.todo.controller.dto.WorkerFullDto;
+import com.sagansar.todo.controller.dto.WorkerLineDto;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.mapper.WorkerMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UnauthorizedException;
+import com.sagansar.todo.infrastructure.sort.WorkerSkillSorter;
 import com.sagansar.todo.infrastructure.specifications.FilterCompiler;
-import com.sagansar.todo.infrastructure.specifications.SearchSpecification;
+import com.sagansar.todo.infrastructure.specifications.SearchCriteria;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
@@ -29,6 +32,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @Transactional
@@ -141,8 +145,30 @@ public class WorkerController {
                     .collect(Collectors.toList()),
                     operator
             );
+            filter = filterCompiler.append(filter, new SearchCriteria("active", ":", "true"), FilterCompiler.Operator.AND);
         }
         return workerRepository.findAll(filter, pageable)
                 .map(WorkerMapper::workerToDto);
+    }
+
+    @GetMapping("/search/for")
+    public List<WorkerLineDto> findWorkersForTask(@RequestParam(name = "task") Long taskId,
+                                                  Pageable pageable) throws BadRequestException {
+        if (!securityService.checkUserRights(RoleEnum.MANAGER) && !securityService.isAdmin()) {
+            throw new UnauthorizedException("Недостаточно полномочий для доступа", true);
+        }
+        TodoTask task = todoTaskRepository.findById(taskId).orElseThrow(() -> new BadRequestException("Отсутствует задача!"));
+        String[] skills = task.getStack().replace(", ", ",").split(",");
+        Specification<Worker> filter = filterCompiler.compile(
+                Stream.of(skills)
+                .map(s -> new SearchCriteria("info", "~", s))
+                .collect(Collectors.toList()),
+                "or");
+
+        List<Worker> workers = workerRepository.findAll(filter, pageable).getContent();
+        WorkerSkillSorter.sort(workers, skills);
+        return workers.stream()
+                .map(WorkerMapper::workerToLine)
+                .collect(Collectors.toList());
     }
 }
