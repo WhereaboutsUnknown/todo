@@ -20,16 +20,20 @@ public class FilterCompiler<T> {
         boolean first = true;
         for (SearchCriteria expression : criteria) {
             if (!first) {
-                if (Operator.AND.equals(operatorType)) {
-                    specification = specification.and(new SearchSpecification<>(expression));
-                }
-                if (Operator.OR.equals(operatorType)) {
-                    specification = specification.or(new SearchSpecification<>(expression));
-                }
+                specification = append(specification, expression, operatorType);
             }
             first = false;
         }
         return specification;
+    }
+
+    public Specification<T> append(Specification<T> original, SearchCriteria addition, Operator operator) {
+        if (Operator.AND.equals(operator)) {
+            original = original.and(new SearchSpecification<>(addition));
+        } else if (Operator.OR.equals(operator)) {
+            original = original.or(new SearchSpecification<>(addition));
+        }
+        return original;
     }
 
     public SearchCriteria compile(String data) {
@@ -44,7 +48,7 @@ public class FilterCompiler<T> {
         return searchCriteria;
     }
 
-    private enum Operator {
+    public enum Operator {
         AND,
         OR;
 
