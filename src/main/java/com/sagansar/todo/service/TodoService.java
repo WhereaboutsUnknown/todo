@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -175,6 +176,24 @@ public class TodoService {
     }
 
     /**
+     * Cancel task and remove all Workers from it
+     *
+     * @param taskId task ID
+     * @return cancelled task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask cancelTask(@NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTaskForCancellation(taskId);
+        workerGroupTaskRepository.deleteAllByTaskId(taskId);
+        task.setWorker(null);
+
+        TodoStatus status = getStatus(TodoStatus.Status.CANCELED);
+        task.setStatus(status);
+
+        return todoTaskRepository.save(task);
+    }
+
+    /**
      * Validate TodoTask for claim step and get valid one
      *
      * @param taskId task ID
@@ -221,6 +240,25 @@ public class TodoService {
         TodoStatus.Status statusEnum = task.getStatus().status();
         if (TodoStatus.Status.DRAFT.equals(statusEnum)) {
             throw new BadRequestException("Задача уже была опубликована!");
+        }
+        return task;
+    }
+
+    /**
+     * Validate TodoTask for cancellation and get valid one
+     *
+     * @param taskId task ID
+     * @return valid TodoTask
+     * @throws BadRequestException in case of invalid task ID
+     */
+    private TodoTask getValidTaskForCancellation(@NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTask(taskId);
+        TodoStatus.Status statusEnum = task.getStatus().status();
+        if (TodoStatus.Status.APPROVED.equals(statusEnum)
+                || TodoStatus.Status.SEALED.equals(statusEnum)
+                || TodoStatus.Status.ARCHIVE.equals(statusEnum)
+                || TodoStatus.Status.DRAFT.equals(statusEnum)) {
+            throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
         }
         return task;
     }
