@@ -132,6 +132,23 @@ public class TodoService {
     }
 
     /**
+     * Set Worker as responsible for task
+     *
+     * @param task task
+     * @param worker Worker
+     * @return saved task
+     * @throws BadRequestException if worker is not associated with this task
+     */
+    public TodoTask setWorkerResponsible(@NonNull TodoTask task, @NonNull Worker worker) throws BadRequestException {
+        WorkerGroupTask link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()))
+                .orElseThrow(() -> new BadRequestException("Работник не является исполнителем данной задачи!"));
+        link.setResponsible(true);
+        task.setWorker(worker);
+        workerGroupTaskRepository.save(link);
+        return todoTaskRepository.save(task);
+    }
+
+    /**
      * Validate TodoTask for claim step and get valid one
      *
      * @param taskId task ID
