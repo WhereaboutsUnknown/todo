@@ -164,6 +164,7 @@ public class WorkerController {
                 .map(s -> new SearchCriteria("info", "~", s))
                 .collect(Collectors.toList()),
                 "or");
+        filter = filterCompiler.append(filter, new SearchCriteria("active", ":", "true"), FilterCompiler.Operator.AND);
 
         List<Worker> workers = workerRepository.findAll(filter, pageable).getContent();
         return WorkerSkillSorter.sort(workers, skills).stream()
