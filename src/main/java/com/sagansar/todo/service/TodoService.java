@@ -12,6 +12,8 @@ import com.sagansar.todo.repository.TodoStatusRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerGroupTaskRepository;
 import com.sagansar.todo.repository.WorkerResponseRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ import java.util.Optional;
 
 @Service
 public class TodoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TodoService.class);
 
     private final TodoTaskRepository todoTaskRepository;
 
@@ -149,6 +153,28 @@ public class TodoService {
     }
 
     /**
+     * Remove Worker from task
+     *
+     * @param worker Worker
+     * @param taskId task ID
+     * @return changed task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask deleteWorkerFromTask(@NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTaskForWorkerDeletion(taskId);
+        Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
+        if (link.isEmpty()) {
+            logger.warn("Невозможно удалить работника {} с задачи {}: он не является исполнителем данной задачи", worker.getName(), taskId);
+            return task;
+        }
+        if (task.getWorker() != null && worker.getId().equals(task.getWorker().getId())) {
+            task.setWorker(null);
+        }
+        workerGroupTaskRepository.delete(link.get());
+        return task;
+    }
+
+    /**
      * Validate TodoTask for claim step and get valid one
      *
      * @param taskId task ID
@@ -159,6 +185,18 @@ public class TodoService {
         TodoTask task = getValidTask(taskId);
         TodoStatus.Status statusEnum = task.getStatus().status();
         if (!TodoStatus.Status.DISCUSSION.equals(statusEnum) && !TodoStatus.Status.TODO.equals(statusEnum)) {
+            throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
+        }
+        return task;
+    }
+
+    private TodoTask getValidTaskForWorkerDeletion(@NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTask(taskId);
+        TodoStatus.Status statusEnum = task.getStatus().status();
+        if (!TodoStatus.Status.DRAFT.equals(statusEnum)
+                && !TodoStatus.Status.TODO.equals(statusEnum)
+                && !TodoStatus.Status.DISCUSSION.equals(statusEnum)
+                && !TodoStatus.Status.GO.equals(statusEnum)) {
             throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
         }
         return task;
