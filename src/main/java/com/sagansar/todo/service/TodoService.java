@@ -190,6 +190,13 @@ public class TodoService {
         return task;
     }
 
+    /**
+     * Validate TodoTask for removing Workers and get valid one
+     *
+     * @param taskId task ID
+     * @return valid TodoTask
+     * @throws BadRequestException in case of invalid task ID
+     */
     private TodoTask getValidTaskForWorkerDeletion(@NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId);
         TodoStatus.Status statusEnum = task.getStatus().status();
