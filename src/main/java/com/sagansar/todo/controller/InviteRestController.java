@@ -2,6 +2,7 @@ package com.sagansar.todo.controller;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.work.Invite;
+import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.service.InviteService;
@@ -29,7 +30,7 @@ public class InviteRestController {
     public Map<String, Object> processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
         Invite invite = inviteService.processInviteAnswer(inviteId, accept);
         TodoTask task = invite.getTask();
-        if (task == null) {
+        if (task == null || statusInvalid(task)) {
             throw new BadRequestException("Задача недоступна!");
         }
         Worker worker = invite.getWorker();
@@ -40,5 +41,16 @@ public class InviteRestController {
         response.put("message", "Ответ получен, " + (accept ? todoService.addWorker(task, worker) : "Вы успешно отказались от задачи!"));
         //response.put("message", inviteId + ":" + accept);
         return response;
+    }
+
+    private boolean statusInvalid(TodoTask task) {
+        TodoStatus status = task.getStatus();
+        if (status == null) {
+            return true;
+        }
+        TodoStatus.Status statusEnum = status.status();
+        return !TodoStatus.Status.TODO.equals(statusEnum)
+                && !TodoStatus.Status.DISCUSSION.equals(statusEnum)
+                && !TodoStatus.Status.GO.equals(statusEnum);
     }
 }
