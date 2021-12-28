@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface WorkerGroupTaskRepository extends JpaRepository<WorkerGroupTask, Long> {
-    List<WorkerGroupTask> findAllByTaskId(Long taskId);
+    void deleteAllByTaskId(Long taskId);
 }
