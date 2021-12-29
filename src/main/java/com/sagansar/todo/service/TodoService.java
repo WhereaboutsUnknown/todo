@@ -146,13 +146,15 @@ public class TodoService {
     /**
      * Remove Worker from task
      *
+     * @param manager Manager of current task
      * @param worker Worker
      * @param taskId task ID
      * @return changed task
      * @throws BadRequestException in case of invalid task ID
      */
-    public TodoTask deleteWorkerFromTask(@NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
+    public TodoTask deleteWorkerFromTask(@NonNull Manager manager, @NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTaskForWorkerDeletion(taskId);
+        checkManagerRightsOnTask(manager, task);
         Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
         if (link.isEmpty()) {
             logger.warn("Невозможно удалить работника {} с задачи {}: он не является исполнителем данной задачи", worker.getName(), taskId);
@@ -168,12 +170,14 @@ public class TodoService {
     /**
      * Cancel task and remove all Workers from it
      *
+     * @param manager Manager of current task
      * @param taskId task ID
      * @return cancelled task
      * @throws BadRequestException in case of invalid task ID
      */
-    public TodoTask cancelTask(@NonNull Long taskId) throws BadRequestException {
+    public TodoTask cancelTask(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTaskForCancellation(taskId);
+        checkManagerRightsOnTask(manager, task);
         workerGroupTaskRepository.deleteAllByTaskId(taskId);
         task.setWorker(null);
 
