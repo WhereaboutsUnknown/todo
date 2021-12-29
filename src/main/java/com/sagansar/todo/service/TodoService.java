@@ -3,6 +3,7 @@ package com.sagansar.todo.service;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.manager.Manager;
+import com.sagansar.todo.model.work.Invite;
 import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.work.WorkerGroupTask;
@@ -67,7 +68,7 @@ public class TodoService {
     /**
      * Publish created task
      *
-     * @param manager manager of current task
+     * @param manager Manager of current task
      * @param taskId task ID
      * @param visibleToAll false if only invited Workers see this task, true if everyone does
      * @return published task
@@ -112,26 +113,12 @@ public class TodoService {
     /**
      * Add Worker to task group, set as responsible if no one responded yet
      *
-     * @param task task
-     * @param worker Worker
+     * @param invite accepted invite
      * @return success message
      */
-    public String addWorker(@NonNull TodoTask task, @NonNull Worker worker) {
-        Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
-        if (link.isEmpty()) {
-            WorkerGroupTask workerGroupTask = new WorkerGroupTask();
-            workerGroupTask.setWorker(worker);
-            workerGroupTask.setTask(task);
-            if (task.getWorker() == null) {
-                task.setWorker(worker);
-                workerGroupTask.setResponsible(true);
-            }
-            workerGroupTaskRepository.save(workerGroupTask);
-            if (!TodoStatus.Status.GO.equals(task.getStatus().status())) {
-                TodoStatus go = todoStatusRepository.getById(TodoStatus.Status.GO.getCode());
-                task.setStatus(go);
-                todoTaskRepository.save(task);
-            }
+    public String processAcceptedInvite(@NonNull Invite invite) {
+        if (invite.isAccepted()) {
+            addWorkerToTask(invite.getTask(), invite.getWorker());
         }
         return "задача успешно поручена Вам!";
     }
@@ -139,12 +126,15 @@ public class TodoService {
     /**
      * Set Worker as responsible for task
      *
-     * @param task task
+     * @param manager Manager of current task
+     * @param taskId task ID
      * @param worker Worker
      * @return saved task
-     * @throws BadRequestException if worker is not associated with this task
+     * @throws BadRequestException if worker is not associated with this task or in case of incorrect task ID
      */
-    public TodoTask setWorkerResponsible(@NonNull TodoTask task, @NonNull Worker worker) throws BadRequestException {
+    public TodoTask setWorkerResponsible(@NonNull Manager manager, @NonNull Long taskId, @NonNull Worker worker) throws BadRequestException {
+        TodoTask task = getValidTask(taskId);
+        checkManagerRightsOnTask(manager, task);
         WorkerGroupTask link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()))
                 .orElseThrow(() -> new BadRequestException("Работник не является исполнителем данной задачи!"));
         link.setResponsible(true);
@@ -281,6 +271,31 @@ public class TodoService {
     }
 
     /**
+     * Add Worker to task group, set as responsible if no one responded yet
+     *
+     * @param task task
+     * @param worker Worker
+     */
+    private void addWorkerToTask(@NonNull TodoTask task, @NonNull Worker worker) {
+        Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
+        if (link.isEmpty()) {
+            WorkerGroupTask workerGroupTask = new WorkerGroupTask();
+            workerGroupTask.setWorker(worker);
+            workerGroupTask.setTask(task);
+            if (task.getWorker() == null) {
+                task.setWorker(worker);
+                workerGroupTask.setResponsible(true);
+            }
+            workerGroupTaskRepository.save(workerGroupTask);
+            if (!TodoStatus.Status.GO.equals(task.getStatus().status())) {
+                TodoStatus go = todoStatusRepository.getById(TodoStatus.Status.GO.getCode());
+                task.setStatus(go);
+                todoTaskRepository.save(task);
+            }
+        }
+    }
+
+    /**
      * Create new task
      *
      * @param creator manager profile that is an applier of current form
@@ -315,7 +330,7 @@ public class TodoService {
     private void checkManagerRightsOnTask(Manager manager, TodoTask task) throws BadRequestException {
         Manager taskManager = task.getManager();
         if (taskManager == null || !manager.getId().equals(taskManager.getId())) {
-            throw new BadRequestException("Невозможно опубликовать: за задачу отвечает другой менеджер");
+            throw new BadRequestException("Ошибка: за задачу отвечает другой менеджер");
         }
     }
 

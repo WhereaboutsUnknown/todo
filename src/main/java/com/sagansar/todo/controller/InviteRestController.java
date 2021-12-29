@@ -38,7 +38,7 @@ public class InviteRestController {
             throw new BadRequestException("Приглашение не адресовано исполнителю!");
         }
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Ответ получен, " + (accept ? todoService.addWorker(task, worker) : "Вы успешно отказались от задачи!"));
+        response.put("message", "Ответ получен, " + (accept ? todoService.processAcceptedInvite(invite) : "Вы успешно отказались от задачи!"));
         //response.put("message", inviteId + ":" + accept);
         return response;
     }
