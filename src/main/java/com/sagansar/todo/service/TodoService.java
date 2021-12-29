@@ -197,6 +197,22 @@ public class TodoService {
     }
 
     /**
+     * Get completed task for archiving
+     *
+     * @param manager Manager manager
+     * @param taskId task ID
+     * @return valid task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask getTaskForArchiving(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.APPROVED, TodoStatus.Status.DECLINE
+        ));
+        checkManagerRightsOnTask(manager, task);
+        return task;
+    }
+
+    /**
      * Validate TodoTask for existence and having one of valid statuses and get valid one
      *
      * @param taskId task ID
