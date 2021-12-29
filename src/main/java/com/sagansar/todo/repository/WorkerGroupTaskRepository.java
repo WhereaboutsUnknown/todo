@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface WorkerGroupTaskRepository extends JpaRepository<WorkerGroupTask, Long> {
     void deleteAllByTaskId(Long taskId);
+
+    List<WorkerGroupTask> findAllByTaskId(Long taskId);
 }
