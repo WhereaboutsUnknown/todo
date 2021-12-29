@@ -31,7 +31,7 @@ public class ArchivedTask {
 
     @OneToOne
     @JoinColumn(name = "archived_by", nullable = false)
-    private Manager manager;
+    private Manager archivedBy;
 
     @OneToOne
     @JoinColumn(name = "worker_id")
