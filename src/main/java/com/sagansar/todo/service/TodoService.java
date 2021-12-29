@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TodoService {
@@ -75,7 +76,9 @@ public class TodoService {
      * @throws BadRequestException in case of invalid task ID
      */
     public TodoTask publishTask(@NonNull Manager manager, @NonNull Long taskId, boolean visibleToAll) throws BadRequestException {
-        TodoTask task = getValidTaskForPublishing(taskId);
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.DRAFT
+        ));
         checkManagerRightsOnTask(manager, task);
         task.setStatus(getStatus(TodoStatus.Status.TODO));
         task.setVisibleToAll(visibleToAll);
@@ -93,7 +96,9 @@ public class TodoService {
      * @throws BadRequestException in case of invalid task ID
      */
     public TodoTask claimTask(@NonNull Worker worker, @NonNull Long taskId, String message) throws BadRequestException {
-        TodoTask task = getValidTaskForClaim(taskId);
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION
+        ));
         if (!task.isVisibleToAll()) {
             throw new BadRequestException("Стать исполнителем для этой задачи можно только по приглашению!");
         }
@@ -153,7 +158,9 @@ public class TodoService {
      * @throws BadRequestException in case of invalid task ID
      */
     public TodoTask deleteWorkerFromTask(@NonNull Manager manager, @NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
-        TodoTask task = getValidTaskForWorkerDeletion(taskId);
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.DRAFT, TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO
+        ));
         checkManagerRightsOnTask(manager, task);
         Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
         if (link.isEmpty()) {
@@ -176,7 +183,9 @@ public class TodoService {
      * @throws BadRequestException in case of invalid task ID
      */
     public TodoTask cancelTask(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
-        TodoTask task = getValidTaskForCancellation(taskId);
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO, TodoStatus.Status.DONE, TodoStatus.Status.REVIEW
+        ));
         checkManagerRightsOnTask(manager, task);
         workerGroupTaskRepository.deleteAllByTaskId(taskId);
         task.setWorker(null);
@@ -188,73 +197,19 @@ public class TodoService {
     }
 
     /**
-     * Validate TodoTask for claim step and get valid one
+     * Validate TodoTask for existence and having one of valid statuses and get valid one
      *
      * @param taskId task ID
-     * @return valid TodoTask
-     * @throws BadRequestException in case of invalid task ID
+     * @return existing TodoTask with status
+     * @throws BadRequestException in case of no such task or task having no status
      */
-    private TodoTask getValidTaskForClaim(@NonNull Long taskId) throws BadRequestException {
+    private TodoTask getValidTask(@NonNull Long taskId, Set<TodoStatus.Status> validStatuses) throws BadRequestException {
         TodoTask task = getValidTask(taskId);
-        TodoStatus.Status statusEnum = task.getStatus().status();
-        if (!TodoStatus.Status.DISCUSSION.equals(statusEnum) && !TodoStatus.Status.TODO.equals(statusEnum)) {
-            throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
+        TodoStatus.Status status = task.getStatus().status();
+        if (validStatuses.contains(status)) {
+            return task;
         }
-        return task;
-    }
-
-    /**
-     * Validate TodoTask for removing Workers and get valid one
-     *
-     * @param taskId task ID
-     * @return valid TodoTask
-     * @throws BadRequestException in case of invalid task ID
-     */
-    private TodoTask getValidTaskForWorkerDeletion(@NonNull Long taskId) throws BadRequestException {
-        TodoTask task = getValidTask(taskId);
-        TodoStatus.Status statusEnum = task.getStatus().status();
-        if (!TodoStatus.Status.DRAFT.equals(statusEnum)
-                && !TodoStatus.Status.TODO.equals(statusEnum)
-                && !TodoStatus.Status.DISCUSSION.equals(statusEnum)
-                && !TodoStatus.Status.GO.equals(statusEnum)) {
-            throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
-        }
-        return task;
-    }
-
-    /**
-     * Validate TodoTask for publishing step and get valid one
-     *
-     * @param taskId task ID
-     * @return valid TodoTask
-     * @throws BadRequestException in case of invalid task ID
-     */
-    private TodoTask getValidTaskForPublishing(@NonNull Long taskId) throws BadRequestException {
-        TodoTask task = getValidTask(taskId);
-        TodoStatus.Status statusEnum = task.getStatus().status();
-        if (TodoStatus.Status.DRAFT.equals(statusEnum)) {
-            throw new BadRequestException("Задача уже была опубликована!");
-        }
-        return task;
-    }
-
-    /**
-     * Validate TodoTask for cancellation and get valid one
-     *
-     * @param taskId task ID
-     * @return valid TodoTask
-     * @throws BadRequestException in case of invalid task ID
-     */
-    private TodoTask getValidTaskForCancellation(@NonNull Long taskId) throws BadRequestException {
-        TodoTask task = getValidTask(taskId);
-        TodoStatus.Status statusEnum = task.getStatus().status();
-        if (TodoStatus.Status.APPROVED.equals(statusEnum)
-                || TodoStatus.Status.SEALED.equals(statusEnum)
-                || TodoStatus.Status.ARCHIVE.equals(statusEnum)
-                || TodoStatus.Status.DRAFT.equals(statusEnum)) {
-            throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + statusEnum);
-        }
-        return task;
+        throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + status);
     }
 
     /**
