@@ -1,6 +1,7 @@
 package com.sagansar.todo.model.manager;
 
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.work.TodoTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
@@ -8,6 +9,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,6 +31,9 @@ public class Manager {
     @ManyToOne
     @JoinColumn(name = "unit_id")
     private Unit unit;
+
+    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
+    private Set<TodoTask> tasks;
 
     public void block() {
         active = false;
