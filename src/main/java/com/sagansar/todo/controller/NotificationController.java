@@ -3,7 +3,6 @@ package com.sagansar.todo.controller;
 import com.sagansar.todo.controller.dto.NotificationMessage;
 import com.sagansar.todo.controller.mapper.NotificationMapper;
 import com.sagansar.todo.model.general.User;
-import com.sagansar.todo.model.work.Notification;
 import com.sagansar.todo.repository.NotificationRepository;
 import com.sagansar.todo.service.NotificationService;
 import com.sagansar.todo.service.SecurityService;
