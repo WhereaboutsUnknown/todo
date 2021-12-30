@@ -223,7 +223,7 @@ public class TodoService {
     /**
      * Get completed task for archiving
      *
-     * @param manager Manager manager
+     * @param manager Manager
      * @param taskId task ID
      * @return valid task
      * @throws BadRequestException in case of invalid task ID
