@@ -36,8 +36,8 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public List<Notification> getNotifications(@NonNull User user) {
-        return notificationRepository.findAllByUserId(user.getId());
+    public List<Notification> getNotifications(@NonNull Integer userId) {
+        return notificationRepository.findAllByUserId(userId);
     }
 
     public void deleteNotifications(@NonNull List<Long> ids) {
