@@ -36,6 +36,16 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendResponseAcceptedNotification(@NonNull User user, String taskHeader) {
+        String message = "Вы назначены исполнителем задачи \"" + taskHeader + "\"!";
+        sendNotification(user, message);
+    }
+
+    public void sendResponseDeclinedNotification(@NonNull User user, String taskHeader) {
+        String message = "Ваш отклик на задачу \"" + taskHeader + "\" был отклонен";
+        sendNotification(user, message);
+    }
+
     public void sendNotification(@NonNull User user, String message) {
         Notification notification = createNotification(user, message);
         notificationRepository.save(notification);
