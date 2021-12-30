@@ -33,4 +33,7 @@ public class WorkerResponse {
     @ManyToOne
     @JoinColumn(name = "task")
     private TodoTask task;
+
+    @Column(name = "checked")
+    private boolean checked;
 }
