@@ -237,6 +237,20 @@ public class TodoService {
     }
 
     /**
+     * Accept Worker response on task
+     *
+     * @param manager Manager
+     * @param task task
+     * @param worker Worker
+     * @throws BadRequestException in case of denied access
+     */
+    public void acceptWorkerForTask(@NonNull Manager manager, @NonNull TodoTask task, @NonNull Worker worker) throws BadRequestException {
+        checkManagerRightsOnTask(manager, task);
+        addWorkerToTask(task, worker);
+        notificationService.sendResponseAcceptedNotification(worker.getUser(), task.getHeader());
+    }
+
+    /**
      * Validate TodoTask for existence and having one of valid statuses and get valid one
      *
      * @param taskId task ID
