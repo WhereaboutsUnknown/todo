@@ -31,6 +31,11 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendTaskDoneNotification(@NonNull User user, String taskHeader) {
+        String message = "Ваша задача \"" + taskHeader + "\" была выполнена!";
+        sendNotification(user, message);
+    }
+
     public void sendNotification(@NonNull User user, String message) {
         Notification notification = createNotification(user, message);
         notificationRepository.save(notification);

@@ -197,6 +197,30 @@ public class TodoService {
     }
 
     /**
+     * Mark task as done
+     *
+     * @param worker Worker
+     * @param taskId task ID
+     * @return changed task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask done(@NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.GO
+        ));
+        checkWorkerRightsOnTask(worker, task);
+        Manager taskManager = task.getManager();
+        if (taskManager == null || taskManager.getUser() == null) {
+            throw new BadRequestException("За задачей не закреплен менеджер");
+        }
+        TodoStatus done = getStatus(TodoStatus.Status.DONE);
+        task.setStatus(done);
+        todoTaskRepository.save(task);
+        notificationService.sendTaskDoneNotification(taskManager.getUser(), task.getHeader());
+        return task;
+    }
+
+    /**
      * Get completed task for archiving
      *
      * @param manager Manager manager
@@ -305,7 +329,15 @@ public class TodoService {
     private void checkManagerRightsOnTask(Manager manager, TodoTask task) throws BadRequestException {
         Manager taskManager = task.getManager();
         if (taskManager == null || !manager.getId().equals(taskManager.getId())) {
-            throw new BadRequestException("Ошибка: за задачу отвечает другой менеджер");
+            throw new BadRequestException("За задачу отвечает другой менеджер");
+        }
+    }
+
+    private void checkWorkerRightsOnTask(Worker worker, TodoTask task) throws BadRequestException {
+        WorkerGroupTask workerGroupTask = workerGroupTaskRepository.findByTaskIdAndResponsibleTrue(task.getId())
+                .orElseThrow(() -> new BadRequestException("Не найден ответственный исполнитель!"));
+        if (!worker.getId().equals(workerGroupTask.getWorker().getId())) {
+            throw new BadRequestException("За задачу отвечает другой исполнитель");
         }
     }
 
