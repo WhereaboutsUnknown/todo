@@ -36,10 +36,6 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public List<Notification> getNotifications(@NonNull Integer userId) {
-        return notificationRepository.findAllByUserId(userId);
-    }
-
     public void deleteNotifications(@NonNull List<Long> ids) {
         notificationRepository.deleteAllById(ids);
     }
