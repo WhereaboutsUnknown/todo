@@ -27,11 +27,11 @@ public class TodoTask {
     @Column(name = "creator_id")
     private Integer creatorId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "worker_id")
     private Worker worker;
 
