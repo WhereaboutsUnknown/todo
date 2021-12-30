@@ -6,20 +6,20 @@
 </head>
 <body>
   <!--<div th:fragment="variative-lightbox(employeeCard, editProfileForm, employeeButtonHref, editButtonId)">-->
-  <div th:fragment="variative-lightbox(editProfileForm, editId)">
+  <div th:fragment="variative-lightbox(worker, editProfileForm, editId, personPopup, personId)">
     <div th:if="${editProfileForm}" class="lightbox" th:id="${editId}">
       <figure>
         <a href="#" class="close"></a>
-        <div th:replace="fragments/profile-edit.html :: edit-form(isWorker=true)"></div>
+        <div th:replace="fragments/profile-edit.html :: edit-form(isWorker=worker)"></div>
       </figure>
     </div>
 
-    <div class="lightbox" id="example2">
+    <!--<div th:if="" class="lightbox" th:id="">
       <figure>
         <a href="#" class="close"></a>
-        <figcaption></figcaption>
+        <div th:replace=""></div>
       </figure>
-    </div>
+    </div>-->
   </div>
 </body>
 </html>
