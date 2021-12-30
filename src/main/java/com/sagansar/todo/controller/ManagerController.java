@@ -7,16 +7,15 @@ import com.sagansar.todo.controller.mapper.ManagerMapper;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.model.external.TaskEstimateTable;
 import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
+import com.sagansar.todo.model.manager.Unit;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
-import com.sagansar.todo.service.InviteService;
-import com.sagansar.todo.service.SecurityService;
-import com.sagansar.todo.service.TodoService;
-import com.sagansar.todo.service.ValidationService;
+import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,6 +44,8 @@ public class ManagerController {
     private final TodoService todoService;
 
     private final InviteService inviteService;
+
+    private final ArchiveService archiveService;
 
     @GetMapping("")
     public ManagerDto getUserManagerProfile() {
@@ -106,5 +107,26 @@ public class ManagerController {
         dto.setInvited(invited);
 
         return dto; //TODO возможно, нужно сперва получать список программистов, отсортированных по подходящим скиллам, выбирать из них и отправлять массив, для кого видна
+    }
+
+    @PostMapping("/{managerId}/tasks/{taskId}/archive")
+    public TaskFullDto archiveTask(@PathVariable(name = "managerId") Integer managerId,
+                                   @PathVariable(name = "taskId") Long taskId,
+                                   @RequestBody List<TaskEstimateTable> estimateTables) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        if (taskId == null) {
+            throw new BadRequestException("В запросе отсутствует ID задачи!");
+        }
+        TodoTask task = todoService.getTaskForArchiving(manager, taskId);
+        if (manager.getUnit() == null) {
+            throw new BadRequestException("Менеджер не относится ни к одному отделу!");
+        }
+        Unit unit = manager.getUnit();
+        if (!unit.getId().equals(task.getUnitId())) {
+            throw new BadRequestException("Задача не относится к отделу " + unit.getName());
+        }
+        Manager creator = managerRepository.findById(task.getCreatorId())
+                .orElseThrow(() -> new BadRequestException("У задачи не заполнено поле создателя!"));
+        return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimateTables));
     }
 }
