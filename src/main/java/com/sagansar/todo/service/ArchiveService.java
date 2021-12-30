@@ -45,11 +45,11 @@ public class ArchiveService {
      * @return archived task
      * @throws BadRequestException in case of null task
      */
-    public TodoTask archiveTask(TodoTask task, Manager creator, Unit unit, List<TaskEstimateTable> estimateTables) throws BadRequestException {
+    public TodoTask archiveTask(Manager manager, TodoTask task, Manager creator, Unit unit, List<TaskEstimateTable> estimateTables) throws BadRequestException {
         if (task == null) {
             throw new BadRequestException("Отсутствует задача для архивации!");
         }
-        ArchivedTask archivedTask = createArchivedTask(task);
+        ArchivedTask archivedTask = createArchivedTask(task, manager);
         archivedTask.setUnit(unit);
         archivedTask.setCreator(creator);
         Map<Integer, Integer> estimates = estimateTables.stream()
@@ -65,12 +65,12 @@ public class ArchiveService {
         return task;
     }
 
-    private ArchivedTask createArchivedTask(@NonNull TodoTask task) {
+    private ArchivedTask createArchivedTask(@NonNull TodoTask task, @NonNull Manager manager) {
         ArchivedTask archivedTask = new ArchivedTask();
         archivedTask.setHeader(task.getHeader());
         archivedTask.setDescription(task.getDescription());
         archivedTask.setStack(task.getStack());
-        archivedTask.setArchivedBy(task.getManager());
+        archivedTask.setArchivedBy(manager);
         archivedTask.setCreationTime(task.getCreationTime());
         archivedTask.setSuccessful(task.getStatus() != null && (TodoStatus.Status.APPROVED.equals(task.getStatus().status())));
         archivedTask.setWorker(task.getWorker());
