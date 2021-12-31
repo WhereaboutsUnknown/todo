@@ -106,7 +106,7 @@ public class ManagerController {
         List<Integer> invited = inviteService.sendInvitesToAll(workersToInvite, task);
         dto.setInvited(invited);
 
-        return dto; //TODO возможно, нужно сперва получать список программистов, отсортированных по подходящим скиллам, выбирать из них и отправлять массив, для кого видна
+        return dto;
     }
 
     @PostMapping("/{managerId}/tasks/{taskId}/archive")
