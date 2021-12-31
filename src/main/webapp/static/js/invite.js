@@ -16,10 +16,10 @@ function sendInviteAnswer(accept) {
     const xhr = new XMLHttpRequest();
     const invite = $("#invite-block").attr('value');
 
-    xhr.open("GET", window.location.origin + "/invite/api?id=" + invite + "&accept=" + accept)
+    xhr.open("POST", window.location.origin + "/invite/api?id=" + invite + "&accept=" + accept)
     xhr.setRequestHeader("Content-type", "application/json; charset = utf-8");
     xhr.setRequestHeader("X-CSRF-TOKEN", token);
-    xhr.send(JSON.stringify(invite));
+    xhr.send();
     xhr.addEventListener("load", function () {
         if (xhr.status === 200) {
             let data = JSON.parse(xhr.response);
