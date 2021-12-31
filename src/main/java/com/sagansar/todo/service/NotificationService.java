@@ -58,9 +58,9 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
-    public void sendWorkReviewNotification(@NonNull List<User> users, String taskHeader, boolean approved) {
+    public void sendWorkReviewNotification(@NonNull User user, String taskHeader, boolean approved) {
         String message = "Задача \"" + taskHeader + "\" " + (approved ? "принята заказчиком!" : "возвращена на доработку!");
-        users.forEach(user -> sendNotification(user, message));
+        sendNotification(user, message);
     }
 
     public void sendNotification(@NonNull User user, String message) {

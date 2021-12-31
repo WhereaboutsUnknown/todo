@@ -227,6 +227,30 @@ public class TodoService {
     }
 
     /**
+     * Make decision on work result for task
+     *
+     * @param manager Manager
+     * @param taskId task ID
+     * @param approved work result approved/task returned
+     * @return changed task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask review(@NonNull Manager manager, @NonNull Long taskId, boolean approved) throws BadRequestException {
+        TodoTask task = getValidTask(taskId, Set.of(
+                TodoStatus.Status.DONE
+        ));
+        checkManagerRightsOnTask(manager, task);
+        TodoStatus decision = getStatus(approved ? TodoStatus.Status.APPROVED : TodoStatus.Status.GO);
+        task.setStatus(decision);
+        todoTaskRepository.save(task);
+        workerGroupTaskRepository.findAllByTaskId(taskId).stream()
+                .map(WorkerGroupTask::getWorker)
+                .map(Worker::getUser)
+                .forEach(user -> notificationService.sendWorkReviewNotification(user, task.getHeader(), approved));
+        return task;
+    }
+
+    /**
      * Get completed task for archiving
      *
      * @param manager Manager
