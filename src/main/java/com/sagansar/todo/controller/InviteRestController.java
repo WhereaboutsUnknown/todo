@@ -26,7 +26,7 @@ public class InviteRestController {
 
     private final InviteService inviteService;
 
-    @GetMapping ("")
+    @PostMapping ("")
     public Map<String, Object> processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
         Invite invite = inviteService.processInviteAnswer(inviteId, accept);
         TodoTask task = invite.getTask();
