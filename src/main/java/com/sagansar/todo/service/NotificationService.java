@@ -46,6 +46,11 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendCancelledNotification(@NonNull User user, String taskHeader) {
+        String message = "Задача \"" + taskHeader + "\" была снята заказчиком, её выполнение больше не требуется";
+        sendNotification(user, message);
+    }
+
     public void sendNotification(@NonNull User user, String message) {
         Notification notification = createNotification(user, message);
         notificationRepository.save(notification);

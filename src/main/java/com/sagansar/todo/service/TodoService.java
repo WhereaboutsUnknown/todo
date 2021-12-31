@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TodoService {
@@ -187,7 +188,12 @@ public class TodoService {
                 TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO, TodoStatus.Status.DONE, TodoStatus.Status.REVIEW
         ));
         checkManagerRightsOnTask(manager, task);
-        workerGroupTaskRepository.deleteAllByTaskId(taskId);
+        workerGroupTaskRepository.deleteAll(
+                workerGroupTaskRepository.findAllByTaskId(taskId).stream()
+                    .peek(workerGroupTask -> notificationService.sendCancelledNotification(
+                            workerGroupTask.getWorker().getUser(),
+                            workerGroupTask.getTask().getHeader()))
+                    .collect(Collectors.toList()));
         task.setWorker(null);
 
         TodoStatus status = getStatus(TodoStatus.Status.CANCELED);
