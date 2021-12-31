@@ -2,6 +2,7 @@ package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.WarningException;
+import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.Invite;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
@@ -63,6 +64,14 @@ public class InviteService {
         return invited;
     }
 
+    /**
+     * Process Worker answer on task invite
+     *
+     * @param inviteId invite ID
+     * @param accept task accepted/declined
+     * @return invite
+     * @throws BadRequestException in case of invalid invite ID
+     */
     public Invite processInviteAnswer(Long inviteId, boolean accept) throws BadRequestException {
         if (inviteId == null) {
             logger.error("Отсутствует ID приглашения");
@@ -72,8 +81,18 @@ public class InviteService {
                 .orElseThrow(() -> new BadRequestException("Приглашение не найдено!"));
         invite.setAccepted(accept);
         invite.setChecked(true);
+        Manager manager = invite.getTask().getManager();
+        if (manager != null && manager.getUser() != null && manager.isActive()) {
+            notificationService.sendInviteResponseNotification(
+                    manager.getUser(),
+                    invite.getTask().getHeader(),
+                    invite.getWorker().getName(),
+                    accept
+            );
+        } else {
+            logger.error("У задачи {} отсутствует менеджер", invite.getTask().getId());
+        }
         return inviteRepository.save(invite);
-        //TODO: уведомления о полученном ответе на приглашение
     }
 
     private Invite createInvite(Worker worker, TodoTask task) {
