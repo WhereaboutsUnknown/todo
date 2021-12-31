@@ -1,8 +1,10 @@
 package com.sagansar.todo.controller;
 
+import com.sagansar.todo.controller.dto.InviteDto;
 import com.sagansar.todo.controller.dto.ManagerDto;
 import com.sagansar.todo.controller.dto.TaskFullDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
+import com.sagansar.todo.controller.mapper.InviteMapper;
 import com.sagansar.todo.controller.mapper.ManagerMapper;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
@@ -128,5 +130,15 @@ public class ManagerController {
         Manager creator = managerRepository.findById(task.getCreatorId())
                 .orElseThrow(() -> new BadRequestException("У задачи не заполнено поле создателя!"));
         return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimateTables));
+    }
+
+    @GetMapping("/{managerId}/tasks/{taskId}/invites")
+    public List<InviteDto> getTaskInvites(@PathVariable(name = "managerId") Integer managerId,
+                                          @PathVariable(name = "taskId") Long taskId) {
+        securityService.getAuthorizedManager(managerId);
+        return inviteService.findInvitesOnTask(taskId).stream()
+                .filter(invite -> managerId.equals(invite.getTask().getManager().getId()))
+                .map(InviteMapper::inviteToDto)
+                .collect(Collectors.toList());
     }
 }

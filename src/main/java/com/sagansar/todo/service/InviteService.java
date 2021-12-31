@@ -95,6 +95,10 @@ public class InviteService {
         return inviteRepository.save(invite);
     }
 
+    public List<Invite> findInvitesOnTask(@NonNull Long taskId) {
+        return inviteRepository.findAllByTaskId(taskId);
+    }
+
     private Invite createInvite(Worker worker, TodoTask task) {
         Invite invite = new Invite();
         invite.setTask(task);
