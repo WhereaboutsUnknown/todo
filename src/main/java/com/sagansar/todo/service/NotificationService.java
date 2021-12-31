@@ -51,6 +51,13 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendInviteResponseNotification(@NonNull User user, String taskHeader, String worker, boolean accepted) {
+        String message = "Исполнитель " + worker + " "
+                + (accepted ? "принял приглашение на задачу" : "отказался от задачи")
+                + " \"" + taskHeader + "\"!";
+        sendNotification(user, message);
+    }
+
     public void sendNotification(@NonNull User user, String message) {
         Notification notification = createNotification(user, message);
         notificationRepository.save(notification);
