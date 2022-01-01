@@ -15,8 +15,10 @@ import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.manager.Unit;
 import com.sagansar.todo.model.work.TodoTask;
+import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
+import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,8 @@ public class ManagerController {
     private final TodoTaskRepository todoTaskRepository;
 
     private final ManagerRepository managerRepository;
+
+    private final WorkerRepository workerRepository;
 
     private final SecurityService securityService;
 
@@ -127,9 +131,7 @@ public class ManagerController {
                                    @PathVariable(name = "taskId") Long taskId,
                                    @RequestBody List<TaskEstimateTable> estimateTables) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
-        if (taskId == null) {
-            throw new BadRequestException("В запросе отсутствует ID задачи!");
-        }
+        validationService.checkNullSafety(manager, taskId, estimateTables);
         TodoTask task = todoService.getTaskForArchiving(manager, taskId);
         if (manager.getUnit() == null) {
             throw new BadRequestException("Менеджер не относится ни к одному отделу!");
@@ -158,9 +160,7 @@ public class ManagerController {
                                   @PathVariable(name = "taskId") Long taskId,
                                   @RequestBody Boolean review) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
-        if (taskId == null) {
-            throw new BadRequestException("В запросе отсутствует ID задачи!");
-        }
+        validationService.checkNullSafety(taskId);
         return TaskMapper.taskToFull(todoService.review(manager, taskId, review));
     }
 
@@ -168,9 +168,29 @@ public class ManagerController {
     public TaskFullDto cancelTask(@PathVariable(name = "managerId") Integer managerId,
                                   @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
-        if (taskId == null) {
-            throw new BadRequestException("В запросе отсутствует ID задачи!");
-        }
+        validationService.checkNullSafety(taskId);
         return TaskMapper.taskToFull(todoService.cancel(manager, taskId));
+    }
+
+    @PutMapping("/{managerId}/tasks/{taskId}/worker")
+    public TaskFullDto setResponsibleWorker(@PathVariable(name = "managerId") Integer managerId,
+                                  @PathVariable(name = "taskId") Long taskId,
+                                  @RequestParam(name = "id") Integer workerId) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        validationService.checkNullSafety(taskId, workerId);
+        Worker worker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new BadRequestException("Работник не найден!"));
+        return TaskMapper.taskToFull(todoService.setWorkerResponsible(manager, taskId, worker));
+    }
+
+    @DeleteMapping("/{managerId}/tasks/{taskId}/worker")
+    public TaskFullDto removeWorker(@PathVariable(name = "managerId") Integer managerId,
+                                  @PathVariable(name = "taskId") Long taskId,
+                                  @RequestParam(name = "id") Integer workerId) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        validationService.checkNullSafety(taskId, workerId);
+        Worker worker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new BadRequestException("Работник не найден!"));
+        return TaskMapper.taskToFull(todoService.deleteWorkerFromTask(manager, worker, taskId));
     }
 }
