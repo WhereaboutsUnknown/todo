@@ -3,10 +3,7 @@ package com.sagansar.todo.service;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.manager.Manager;
-import com.sagansar.todo.model.work.Invite;
-import com.sagansar.todo.model.work.TodoStatus;
-import com.sagansar.todo.model.work.TodoTask;
-import com.sagansar.todo.model.work.WorkerGroupTask;
+import com.sagansar.todo.model.work.*;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.model.worker.WorkerResponse;
 import com.sagansar.todo.repository.TodoStatusRepository;
@@ -64,6 +61,20 @@ public class TodoService {
      */
     public TodoTask createTask(@NonNull Manager creator, @NonNull TaskForm taskForm) {
         return newTask(creator, taskForm);
+    }
+
+    /**
+     * Create new task draft from archived task
+     *
+     * @param creator manager profile that is an applier of current form
+     * @param template archived task
+     * @param deadline deadline date and time
+     * @return created task
+     */
+    public TodoTask createTask(@NonNull Manager creator, @NonNull ArchivedTask template, @NonNull LocalDateTime deadline) {
+        TodoTask task = newTask(creator, template);
+        task.setDeadline(deadline);
+        return task;
     }
 
     /**
@@ -341,22 +352,22 @@ public class TodoService {
      * Create new task
      *
      * @param creator manager profile that is an applier of current form
-     * @param taskForm task form submitted
+     * @param template task data source
      * @return created task
      */
-    private TodoTask newTask(@NonNull Manager creator, @NonNull TaskForm taskForm) {
+    private TodoTask newTask(@NonNull Manager creator, @NonNull TaskTemplate template) {
         TodoTask task = new TodoTask();
         TodoStatus draft = getStatus(TodoStatus.Status.DRAFT);
 
         task.setStatus(draft);
         task.setCreationTime(LocalDateTime.now(ZoneId.systemDefault()));
         task.setCreatorId(creator.getId());
-        task.setDeadline(taskForm.getDeadline());
-        task.setHeader(taskForm.getHeader());
-        task.setDescription(taskForm.getDescription());
+        task.setDeadline(template.getDeadline());
+        task.setHeader(template.getHeader());
+        task.setDescription(template.getDescription());
         task.setManager(creator);
-        task.setStack(taskForm.getStack());
-        task.setUnitId(taskForm.getUnitId());
+        task.setStack(template.getStack());
+        task.setUnitId(template.getUnitId());
 
         return task;
     }
