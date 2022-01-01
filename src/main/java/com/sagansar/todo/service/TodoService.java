@@ -183,7 +183,7 @@ public class TodoService {
      * @return cancelled task
      * @throws BadRequestException in case of invalid task ID
      */
-    public TodoTask cancelTask(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
+    public TodoTask cancel(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO, TodoStatus.Status.DONE, TodoStatus.Status.REVIEW
         ));
