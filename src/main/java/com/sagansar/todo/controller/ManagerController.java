@@ -94,6 +94,17 @@ public class ManagerController {
         return TaskMapper.taskToShort(todoService.createTask(manager, taskForm));
     }
 
+    @GetMapping("/{managerId}/tasks/{taskId}")
+    public TaskFullDto getTask(@PathVariable(name = "managerId") Integer managerId,
+                               @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
+        securityService.getAuthorizedManager(managerId);
+        if (taskId == null) {
+            throw new BadRequestException("В запросе отсутствует ID задачи!");
+        }
+        return TaskMapper.taskToFull(todoTaskRepository.findById(taskId)
+                .orElseThrow(() -> new BadRequestException("Задача не найдена!")));
+    }
+
     @PostMapping("/{managerId}/tasks/{taskId}")
     public TaskFullDto publishTask(@PathVariable(name = "managerId") Integer managerId,
                                    @PathVariable(name = "taskId") Long taskId,
