@@ -141,4 +141,15 @@ public class ManagerController {
                 .map(InviteMapper::inviteToDto)
                 .collect(Collectors.toList());
     }
+
+    @PutMapping("/{managerId}/tasks/{taskId}")
+    public TaskFullDto reviewTask(@PathVariable(name = "managerId") Integer managerId,
+                                  @PathVariable(name = "taskId") Long taskId,
+                                  @RequestBody Boolean review) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        if (taskId == null) {
+            throw new BadRequestException("В запросе отсутствует ID задачи!");
+        }
+        return TaskMapper.taskToFull(todoService.review(manager, taskId, review));
+    }
 }
