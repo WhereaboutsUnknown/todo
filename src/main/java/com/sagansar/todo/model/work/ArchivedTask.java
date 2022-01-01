@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity(name = "archived_task")
-public class ArchivedTask {
+public class ArchivedTask implements TaskTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,4 +52,14 @@ public class ArchivedTask {
 
     @Column(name = "successful")
     private boolean successful;
+
+    @Override
+    public LocalDateTime getDeadline() {
+        return null;
+    }
+
+    @Override
+    public Integer getUnitId() {
+        return unit == null ? null : unit.getId();
+    }
 }
