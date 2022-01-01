@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -30,6 +31,9 @@ public class Statistics {
 
     @Column(name = "rejected")
     private Integer rejected;
+
+    @Column(name = "last_calc")
+    private LocalDateTime calculatedAt;
 
     @OneToOne
     @JoinColumn(name = "worker")
