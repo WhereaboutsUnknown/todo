@@ -86,6 +86,16 @@ public class ValidationService {
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortFilter);
     }
 
+    public void checkNullSafety(Object... args) throws BadRequestException {
+        int i = 1;
+        for (Object arg : args) {
+            if (arg == null) {
+                throw new BadRequestException("Некорректный аргумент " + i + ": значение не может быть NULL");
+            }
+            i++;
+        }
+    }
+
     private Sort validateSort(String sort, String direction) throws BadRequestException {
         if (!StringUtils.hasText(sort)) {
             throw new BadRequestException("Не указан параметр для сортировки");
