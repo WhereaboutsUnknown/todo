@@ -163,4 +163,14 @@ public class ManagerController {
         }
         return TaskMapper.taskToFull(todoService.review(manager, taskId, review));
     }
+
+    @DeleteMapping("/{managerId}/tasks/{taskId}")
+    public TaskFullDto cancelTask(@PathVariable(name = "managerId") Integer managerId,
+                                  @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        if (taskId == null) {
+            throw new BadRequestException("В запросе отсутствует ID задачи!");
+        }
+        return TaskMapper.taskToFull(todoService.cancel(manager, taskId));
+    }
 }
