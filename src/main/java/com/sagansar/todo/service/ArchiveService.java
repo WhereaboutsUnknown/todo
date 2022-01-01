@@ -65,6 +65,21 @@ public class ArchiveService {
         return task;
     }
 
+    /**
+     * Find archived task
+     *
+     * @param id task ID
+     * @return archived task
+     * @throws BadRequestException in case of invalid ID
+     */
+    public ArchivedTask getArchivedTask(Long id) throws BadRequestException {
+        if (id == null) {
+            throw new BadRequestException("Отсутствует ID архивной задачи!");
+        }
+        return archivedTaskRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Архивная задача не найдена!"));
+    }
+
     private ArchivedTask createArchivedTask(@NonNull TodoTask task, @NonNull Manager manager) {
         ArchivedTask archivedTask = new ArchivedTask();
         archivedTask.setHeader(task.getHeader());
