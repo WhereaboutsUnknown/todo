@@ -1,6 +1,7 @@
 package com.sagansar.todo.model.worker;
 
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.work.Statistics;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
@@ -32,6 +33,9 @@ public class Worker {
 
     @Column(name = "age")
     private Integer age;
+
+    @OneToOne(mappedBy = "worker")
+    private Statistics statistics;
 
     public void block() {
         active = false;
