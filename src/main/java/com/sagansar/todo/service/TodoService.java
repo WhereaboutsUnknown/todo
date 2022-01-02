@@ -270,7 +270,7 @@ public class TodoService {
      */
     public TodoTask getTaskForArchiving(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
-                TodoStatus.Status.APPROVED, TodoStatus.Status.DECLINE
+                TodoStatus.Status.APPROVED, TodoStatus.Status.GO, TodoStatus.Status.DONE
         ));
         checkManagerRightsOnTask(manager, task);
         return task;
