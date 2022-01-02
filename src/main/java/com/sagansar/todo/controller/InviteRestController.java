@@ -5,6 +5,7 @@ import com.sagansar.todo.model.work.Invite;
 import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
+import com.sagansar.todo.service.ArchiveService;
 import com.sagansar.todo.service.InviteService;
 import com.sagansar.todo.service.TodoService;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,8 @@ public class InviteRestController {
 
     private final InviteService inviteService;
 
+    private final ArchiveService archiveService;
+
     @PostMapping ("")
     public Map<String, Object> processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
         Invite invite = inviteService.processInviteAnswer(inviteId, accept);
@@ -39,7 +42,7 @@ public class InviteRestController {
         }
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Ответ получен, " + (accept ? todoService.processAcceptedInvite(invite) : "Вы успешно отказались от задачи!"));
-        //response.put("message", inviteId + ":" + accept);
+        archiveService.increaseRejected(worker);
         return response;
     }
 
