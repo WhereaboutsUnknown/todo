@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
-public class MainController implements ErrorController { //TODO: добавить кастомные веб-страницы для ошибок 404, 403 и других
+public class MainController implements ErrorController {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;

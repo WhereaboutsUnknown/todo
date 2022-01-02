@@ -40,7 +40,7 @@ public class UserAuthDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; //TODO: account expiration
+        return true;
     }
 
     @Override
@@ -50,11 +50,11 @@ public class UserAuthDetails implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; //TODO: credentials expiration
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; //TODO: is enabled
+        return true;
     }
 }
