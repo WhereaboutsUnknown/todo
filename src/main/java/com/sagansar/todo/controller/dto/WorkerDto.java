@@ -24,4 +24,7 @@ public class WorkerDto {
 
     @JsonProperty
     private ContactsDto contacts;
+
+    @JsonProperty
+    private StatisticsBasic statistics;
 }

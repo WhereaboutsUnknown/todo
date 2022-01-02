@@ -18,4 +18,7 @@ public class WorkerLineDto {
 
     @JsonProperty
     private String skills;
+
+    @JsonProperty
+    private StatisticsBasic statistics;
 }

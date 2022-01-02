@@ -27,6 +27,7 @@ public class WorkerMapper extends ViewDataMapper {
         if (user != null) {
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
         }
+        dto.setStatistics(StatisticsMapper.statisticsToBasic(worker.getStatistics()));
         return dto;
     }
 
@@ -47,6 +48,7 @@ public class WorkerMapper extends ViewDataMapper {
             dto.setSurname(user.getSurname());
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
         }
+        dto.setStatistics(StatisticsMapper.statisticsToBasic(worker.getStatistics()));
         return dto;
     }
 
@@ -58,6 +60,7 @@ public class WorkerMapper extends ViewDataMapper {
         dto.setId(worker.getId());
         dto.setName(worker.getName());
         dto.setSkills(worker.getInfo());
+        dto.setStatistics(StatisticsMapper.statisticsToBasic(worker.getStatistics()));
         return dto;
     }
 
