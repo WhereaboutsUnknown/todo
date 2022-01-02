@@ -45,6 +45,17 @@ public class User implements Serializable {
     @OneToOne(mappedBy = "user")
     protected Contacts contacts;
 
+    @Column(name = "active")
+    protected boolean active;
+
+    public void block() {
+        active = false;
+    }
+
+    public void unblock() {
+        active = true;
+    }
+
     public Integer getAge() {
         if (birthDate != null) {
             return Period.between(birthDate, LocalDate.now(ZoneId.systemDefault())).getYears();
