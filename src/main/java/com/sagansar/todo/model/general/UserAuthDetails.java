@@ -45,7 +45,10 @@ public class UserAuthDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; //TODO: account blocking
+        if (this.user != null) {
+            return user.active;
+        }
+        return false;
     }
 
     @Override
