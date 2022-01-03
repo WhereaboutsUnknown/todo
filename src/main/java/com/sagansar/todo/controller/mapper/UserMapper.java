@@ -35,6 +35,9 @@ public class UserMapper {
         } else if (roles.contains("FREELANCER")) {
             dto.setRole("Сотрудник");
         }
+        if (roles.contains("SUPERVISOR")) {
+            dto.setRole(dto.getRole() + ", Руководитель");
+        }
         dto.setActive(user.isActive());
         return dto;
     }
