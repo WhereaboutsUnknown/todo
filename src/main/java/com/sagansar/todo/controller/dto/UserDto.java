@@ -13,6 +13,9 @@ import java.time.LocalDate;
 public class UserDto {
 
     @JsonProperty
+    protected  Integer id;
+
+    @JsonProperty
     protected String username;
 
     @JsonProperty
@@ -29,4 +32,7 @@ public class UserDto {
 
     @JsonProperty
     protected LocalDate birthDate;
+
+    @JsonProperty
+    protected boolean active;
 }
