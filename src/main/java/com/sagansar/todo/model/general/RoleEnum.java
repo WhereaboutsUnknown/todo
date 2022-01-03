@@ -4,6 +4,7 @@ public enum RoleEnum {
     ADMIN,
     MANAGER,
     FREELANCER,
+    SUPERVISOR,
     USER;
 
     public static RoleEnum fromId(int id) {
@@ -14,6 +15,8 @@ public enum RoleEnum {
                 return MANAGER;
             case 3:
                 return FREELANCER;
+            case 4:
+                return SUPERVISOR;
             default:
                 return USER;
         }
