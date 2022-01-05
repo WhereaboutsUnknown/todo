@@ -92,9 +92,10 @@ public class MainController implements ErrorController {
     }
 
     @RequestMapping("/console")
-    public String adminConsole(ModelAndView modelAndView) {
+    public ModelAndView adminConsole(ModelAndView modelAndView) {
         if (securityService.isAdmin()) {
-            return "redirect:/my"; //TODO: need to make method return html admin console
+            modelAndView.setViewName("console");
+            return modelAndView;
         }
         throw new AccessDeniedException("Этот раздел доступен только администратору");
     }
