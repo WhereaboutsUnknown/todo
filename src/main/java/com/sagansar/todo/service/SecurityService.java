@@ -3,6 +3,7 @@ package com.sagansar.todo.service;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UnauthorizedException;
 import com.sagansar.todo.infrastructure.validation.Validator;
+import com.sagansar.todo.model.external.RegistrationForm;
 import com.sagansar.todo.model.general.Contacts;
 import com.sagansar.todo.model.general.Role;
 import com.sagansar.todo.model.general.RoleEnum;
@@ -23,12 +24,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.passay.CharacterOccurrencesRule.ERROR_CODE;
 
@@ -161,6 +164,35 @@ public class SecurityService {
         manager.setUser(user);
         manager.setActive(true);
         return managerRepository.save(manager);
+    }
+
+    public User registerUser(RegistrationForm registrationForm, RoleEnum role) throws BadRequestException {
+        if (registrationForm == null) {
+            throw new BadRequestException("Отсутствует форма регистрации");
+        }
+        String username = registrationForm.getUsername();
+        String password = registrationForm.getPassword();
+        checkUsername(username);
+        passwordValidator.validate(password);
+        User user = registerUser(createUser(username, password, role));
+        if (RoleEnum.MANAGER.equals(role)) {
+            registerManager(user);
+        } else if (RoleEnum.FREELANCER.equals(role)) {
+            registerWorker(user);
+        }
+        return user;
+    }
+
+    public void checkUsername(String username) throws BadRequestException {
+        if (!StringUtils.hasText(username)) {
+            throw new BadRequestException("Имя пользователя не может быть пустым!");
+        }
+        if (!username.matches("$[A-Za-z0-9]+^")) {
+            throw new BadRequestException("Имя пользователя должно содержать только цифры и латинские буквы!");
+        }
+        if (userRepository.existsByUsername(username)) {
+            throw new BadRequestException("Пользователь с таким именем уже зарегистрирован!");
+        }
     }
 
     private User registerUser(@NonNull User user) throws BadRequestException {
