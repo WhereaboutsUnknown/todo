@@ -1,59 +1,91 @@
 package com.sagansar.todo.controller;
 
+import com.sagansar.todo.controller.dto.UnitBasic;
+import com.sagansar.todo.controller.dto.UserDto;
+import com.sagansar.todo.controller.mapper.UserMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.general.User;
-import com.sagansar.todo.model.work.TodoTask;
-import com.sagansar.todo.repository.TodoTaskRepository;
+import com.sagansar.todo.model.manager.Manager;
+import com.sagansar.todo.model.worker.Worker;
+import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.UserRepository;
-import com.sagansar.todo.service.InviteService;
-import com.sagansar.todo.telegram.TelegramBotService;
+import com.sagansar.todo.repository.WorkerRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@PreAuthorize("hasAuthority('ADMIN')")
 @RestController
+@Transactional
 @AllArgsConstructor
 @ResponseBody
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdministratorController {
-
-    private final InviteService inviteService;
-
-    private final TodoTaskRepository todoTaskRepository;
-
-    private final TelegramBotService telegramBotService;
 
     private final UserRepository userRepository;
 
-    @GetMapping("/test/1")
-    public void test1() throws BadRequestException {
-        throw new BadRequestException("BadRequestException thrown");
+    private final ManagerRepository managerRepository;
+
+    private final WorkerRepository workerRepository;
+
+    @PostMapping("/workers")
+    public UserDto createWorker() {
+        return null;
     }
 
-    @GetMapping("/test/httperr")
-    public void test2(@RequestParam(name = "code") Integer code) {
-        HttpStatus httpStatus = HttpStatus.resolve(code);
-        if (httpStatus == null) {
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    @PostMapping("/managers")
+    public UserDto createManager() {
+        return null;
+    }
+
+    @PostMapping("/units")
+    public UnitBasic createUnit() {
+        return null;
+    }
+
+    @PutMapping("/managers/{id}")
+    public boolean changeManagerStatus(@PathVariable Integer id, @RequestParam boolean block) throws BadRequestException {
+        return setUserStatus(id, block);
+    }
+
+    @PutMapping("/workers/{id}")
+    public boolean changeWorkerStatus(@PathVariable Integer id, @RequestParam boolean block) throws BadRequestException {
+        return setUserStatus(id, block);
+    }
+
+    @GetMapping("/managers")
+    public List<UserDto> getManagers(Pageable pageable) {
+        return managerRepository.findAll(pageable).stream()
+                .map(Manager::getUser)
+                .map(UserMapper::userToDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/workers")
+    public List<UserDto> getWorkers(Pageable pageable) {
+        return workerRepository.findAll(pageable).stream()
+                .map(Worker::getUser)
+                .map(UserMapper::userToDto)
+                .collect(Collectors.toList());
+    }
+
+    private boolean setUserStatus(Integer id, boolean block) throws BadRequestException {
+        if (id == null) {
+            throw new BadRequestException("Требуется ID пользователя");
         }
-        throw new ResponseStatusException(httpStatus, "Успешно отловлена ошибка со статусом " + code);
-    }
-
-    @GetMapping("/test/invite")
-    public List<Integer> testInvite(@RequestParam(name = "taskId") Long taskId,
-                                    @RequestParam(name = "workers")List<Integer> workers) throws BadRequestException {
-        TodoTask task = todoTaskRepository.findById(taskId).orElseThrow(() -> new BadRequestException("Неверный id задачи!"));
-        return inviteService.sendInvitesToAll(workers, task);
-    }
-
-    @GetMapping("/test/url")
-    public boolean sendUrlWithTg(@RequestParam(name = "id") Integer id, @RequestParam(name = "token") String token) throws BadRequestException {
-        User user = userRepository.findById(id).orElseThrow(() -> new BadRequestException("Неверный id пользователя!"));
-        return telegramBotService.sendMessage("Click on: ", user, "http://localhost:8080/invite?token=" + token);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Пользователь не найден!"));
+        if (block) {
+            user.block();
+        } else {
+            user.unblock();
+        }
+        return user.isActive();
     }
 }
