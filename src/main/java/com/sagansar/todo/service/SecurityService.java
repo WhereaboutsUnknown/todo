@@ -195,6 +195,28 @@ public class SecurityService {
         }
     }
 
+    public User setSupervisor(@NonNull User user, boolean grantSupervisor) throws BadRequestException {
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        if (!roles.contains(RoleEnum.MANAGER.name())) {
+            throw new BadRequestException("У пользователя отсутствует роль менеджера!");
+        }
+        boolean isSupervisor = roles.contains(RoleEnum.SUPERVISOR.name());
+        if (grantSupervisor && !isSupervisor) {
+            user.setRoles(user.getRoles().stream()
+                    .filter(role -> !RoleEnum.SUPERVISOR.name().equals(role.getName()))
+                    .collect(Collectors.toSet()));
+            return userRepository.save(user);
+        }
+        if (!grantSupervisor && isSupervisor) {
+            Role supervisor = roleRepository.findByName(RoleEnum.SUPERVISOR.name());
+            user.getRoles().add(supervisor);
+            return userRepository.save(user);
+        }
+        return user;
+    }
+
     private User registerUser(@NonNull User user) throws BadRequestException {
         user.setActive(true);
         return userRepository.save(user);
