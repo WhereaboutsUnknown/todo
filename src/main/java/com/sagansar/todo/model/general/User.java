@@ -77,8 +77,12 @@ public class User implements Serializable {
             if (other.birthDate != null) {
                 birthDate = other.birthDate;
             }
-            if (other.contacts != null && contacts != null) {
-                contacts.copy(other.contacts);
+            if (other.contacts != null) {
+                if (contacts != null) {
+                    contacts.copy(other.contacts);
+                } else {
+                    contacts = other.contacts;
+                }
             }
         }
     }
