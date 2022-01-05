@@ -42,7 +42,7 @@ public class User implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     protected Set<Role> roles;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     protected Contacts contacts;
 
     @Column(name = "active")
