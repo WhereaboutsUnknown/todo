@@ -1,6 +1,10 @@
 package com.sagansar.todo;
 
+import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.infrastructure.validation.Validator;
 import com.sagansar.todo.service.UserDetailsServiceImpl;
+import org.passay.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,6 +16,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -61,5 +68,45 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public PasswordGenerator passwordGenerator() {
+        return new PasswordGenerator();
+    }
+
+    @Bean
+    public Validator passwordValidator() {
+        Rule length = new LengthRule(8, 32);
+        Rule noWhitespaces = new WhitespaceRule();
+        Rule upper = new CharacterRule(EnglishCharacterData.UpperCase, 1);
+        Rule lower = new CharacterRule(EnglishCharacterData.LowerCase, 1);
+        Rule digit = new CharacterRule(EnglishCharacterData.Digit, 1);
+        Rule special = new CharacterRule(EnglishCharacterData.Special, 1);
+
+        return new Validator() {
+
+            private final PasswordValidator lengthValidator = new PasswordValidator(length);
+            private final PasswordValidator whitespacesValidator = new PasswordValidator(noWhitespaces);
+            private final PasswordValidator symbolValidator = new PasswordValidator(upper, lower, digit, special);
+
+            @Override
+            public boolean validate(String password) throws BadRequestException {
+                if (!StringUtils.hasText(password)) {
+                    throw new BadRequestException("Строка пароля пустая");
+                }
+                PasswordData passwordData = new PasswordData(password);
+                if (!lengthValidator.validate(passwordData).isValid()) {
+                    throw new BadRequestException("Длина пароля должна быть от 8 до 32 символов");
+                }
+                if (!whitespacesValidator.validate(passwordData).isValid()) {
+                    throw new BadRequestException("Пароль не должен содержать пробелов");
+                }
+                if (!symbolValidator.validate(passwordData).isValid()) {
+                    throw new BadRequestException("Пароль должен содержать хотя бы один символ каждого типа: в нижнем регистре, в верхнем регистре, специальный символ, цифру");
+                }
+                return true;
+            }
+        };
     }
 }
