@@ -2,32 +2,32 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="common_header(title,link)">
   <title th:replace="${title}">TODO</title>
-  <!-- Common styles and scripts -->
   <link rel="stylesheet" type="text/css" media="all" th:href="@{/static/css/header.css}">
   <link rel="shortcut icon" th:href="@{/static/images/favicon.ico}">
 </head>
 <body>
 <header th:fragment="common-header">
   <nav class="navbar">
+    <a class="menu-item-logo-href" th:href="@{/my}"><img class="logo-image" src="" th:src="@{/static/images/menu-logo.png}" alt="Main page"></a>
+    <img class="navbar-image" src="" th:src="@{/static/images/menu-burger.png}" alt="Menu">
     <ul class="navbar-content">
-      <!--<img class="logo" th:src="@{/static/images/logo-text-2.png}" alt="logo">-->
-      <li class="menu-item-logo">
-        <a class="menu-item-logo-href" th:href="@{/}">// TODO</a>
-      </li>
       <li class="menu-item">
-        <a class="menu-item-href menu-item-active" th:href="@{/}" th:text="${firstHref}"></a>
+        <a class="menu-item-href menu-item-active" th:href="@{/tasks}" th:text="ЗАДАЧИ"></a>
       </li>
-      <li class="menu-item">
-        <a class="menu-item-href menu-item-active" th:href="@{/}" th:text="${secondHref}"></a>
+      <li class="menu-item" th:if="${role} != 'ADMIN'">
+        <a class="menu-item-href menu-item-active" th:href="@{/invites}" th:text="ПРИГЛАШЕНИЯ"></a>
       </li>
-      <li class="menu-item">
-        <a class="menu-item-href" th:href="@{/}" th:text="${thirdHref}" th:classappend="${isAdmin} ? menu-item-active : ''"></a>
+      <li class="menu-item" th:if="${role} == 'MANAGER'">
+        <a class="menu-item-href menu-item-active" th:href="@{/responses}" th:text="ОТКЛИКИ"></a>
       </li>
-      <li class="menu-item">
-        <a class="menu-item-href" th:href="@{/}"></a>
+      <li class="menu-item" th:if="${role} == 'MANAGER'">
+        <a class="menu-item-href menu-item-active" th:href="@{/workers}" th:text="СОТРУДНИКИ"></a>
       </li>
-      <li class="menu-item">
-        <a class="menu-item-href" th:href="@{/}"></a>
+      <li class="menu-item" th:if="${isSupervisor}">
+        <a class="menu-item-href menu-item-active" th:href="@{/unit}" th:text="ОТДЕЛ"></a>
+      </li>
+      <li class="menu-item" th:if="${role} == 'ADMIN'">
+        <a class="menu-item-href menu-item-active" th:href="@{/console}" th:text="КОНСОЛЬ"></a>
       </li>
       <li class="menu-item logout">
         <form th:action="@{/logout}" method="post">
