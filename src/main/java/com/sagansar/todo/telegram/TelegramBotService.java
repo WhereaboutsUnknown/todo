@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.request.ForceReply;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.telegram.model.BotResponse;
 import com.sagansar.todo.telegram.model.CustomBotCommand;
 import com.sagansar.todo.telegram.model.TelegramChat;
@@ -35,6 +36,8 @@ public class TelegramBotService {
 
     private final TelegramBot bot;
 
+    private final SecurityService securityService;
+
     private final TelegramChatRepository chatRepository;
 
     private final BotResponseRepository responseRepository;
@@ -48,10 +51,12 @@ public class TelegramBotService {
     private final Map<String, Function<TelegramChat, String>> commands = new HashMap<>();
 
     public TelegramBotService(TelegramBot bot,
+                              SecurityService securityService,
                               TelegramChatRepository chatRepository,
                               BotResponseRepository responseRepository,
                               CustomBotCommandRepository customBotCommandRepository) {
         this.bot = bot;
+        this.securityService = securityService;
         this.chatRepository = chatRepository;
         this.responseRepository = responseRepository;
         this.customBotCommandRepository = customBotCommandRepository;
@@ -180,6 +185,9 @@ public class TelegramBotService {
         }
         Long chatId = message.chat().id();
         String username = message.chat().username();
+        if (username == null) {
+            username = message.chat().id().toString();
+        }
         TelegramChat chat = getChat(chatId, username);
         String text = message.text();
         String result;
@@ -226,6 +234,17 @@ public class TelegramBotService {
 
     private void deleteFromChatCache(Long chatId) {
         chatCache.remove(chatId);
+    }
+
+    private String performWorkerRegistration(TelegramChat chat) {
+        String username = chat.getUsername();
+        String password = securityService.generatePassword();
+        if (securityService.registerWorkerFromTelegram(username, password)) {
+            return "Вы зарегистрированы в сервисе TODO!" +
+                    "\nВаш логин: " + username +
+                    "\nВаш пароль: " + password;
+        }
+        return "Ошибка при регистрации пользователя!";
     }
 
     @PostConstruct
@@ -281,7 +300,7 @@ public class TelegramBotService {
                 responseRepository.findById(TelegramBotMessages.ON_STOP.getId()).orElse(new BotResponse() {
                     @Override
                     public String getMessage() {
-                        return "Здравствуйте, я - Ваш личный бот-ассистент в приложении TODO! Чтобы узнать, что я могу для Вас сделать, введите /help";
+                        return "К сожалению, Вы не сможете получать уведомления о новых задачах и свежие новости, пока я выключен. Если Вы захотите снова получать уведомления, просто введите команду /start. Хорошего Вам дня!";
                     }
                 }).getMessage()
         );
@@ -307,6 +326,10 @@ public class TelegramBotService {
         reg(
                 "/help",
                 (chat) -> response(TelegramBotMessages.HELP)
+        );
+        reg(
+                "/signup",
+                this::performWorkerRegistration
         );
     }
 
