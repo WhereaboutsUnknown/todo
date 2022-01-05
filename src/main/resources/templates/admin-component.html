@@ -9,7 +9,7 @@
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
 </head>
 <body>
-    <div th:replace="fragments/header.html :: header(firstHref='ЗАКАЗЫ', secondHref='ОТДЕЛЫ', thirdHref='УПРАВЛЕНИЕ', isAdmin=true)"></div>
+    <div th:replace="fragments/header.html :: header(role='ADMIN', isSupervisor=false)"></div>
 Это для админа
 </body>
 </html>

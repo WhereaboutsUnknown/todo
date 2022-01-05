@@ -46,16 +46,19 @@ public class MainController implements ErrorController {
     }
 
     @RequestMapping(path = "/my")
-    public String my() {
+    public ModelAndView my(ModelAndView modelAndView) {
 
         Set<String> roles = userDetailsService.getCurrentUserRoles();
         if (roles.contains("ADMIN")) {
-            return "admin.component.html";
+            modelAndView.setViewName("admin-component");
         }
-        if (roles.contains("MANAGER")) {
-            return "manager.component.html";
+        else if (roles.contains("MANAGER")) {
+            modelAndView.addObject("supervisor", roles.contains("SUPERVISOR"));
+            modelAndView.setViewName("manager.component");
+        } else if (roles.contains("WORKER")) {
+            modelAndView.setViewName("worker.component");
         }
-        return "worker.component.html";
+        return modelAndView;
     }
 
     @RequestMapping(path = "/")

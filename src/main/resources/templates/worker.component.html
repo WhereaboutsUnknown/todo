@@ -15,7 +15,7 @@
 <body>
     <div th:replace="fragments/person.popup.html :: person-popup(isWorker=true)"></div>
     <div th:replace="fragments/lightbox.html :: variative-lightbox(worker=true, editProfileForm=true)"></div>
-    <div th:replace="fragments/header.html :: header(firstHref='ЗАКАЗЫ', secondHref='ОТДЕЛЫ', isAdmin=false)"></div>
+    <div th:replace="fragments/header.html :: header(role='WORKER', isSupervisor=false)"></div>
     <div class="main-field">
         <div class="employee-card">
             <div th:replace="fragments/employee-card.html :: employee-card(isWorker=true)"></div>

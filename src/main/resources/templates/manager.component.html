@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
     <title>Личный кабинет | TODO</title>
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
 </head>
 <body>
-    <div th:replace="fragments/header.html :: header(firstHref='ЗАКАЗЫ', secondHref='ОТДЕЛЫ', isAdmin=false)"></div>
+    <div th:replace="fragments/header.html :: header(role='MANAGER', isSupervisor=${supervisor})"></div>
 Это для менеджера
 </body>
 </html>
