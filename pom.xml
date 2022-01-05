@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>todo</name>
-    <description>Demo project for Spring Boot</description>
+    <description>TODO</description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -97,6 +97,13 @@
             <groupId>com.github.pengrad</groupId>
             <artifactId>java-telegram-bot-api</artifactId>
             <version>5.5.0</version>
+        </dependency>
+
+        <!--Password generation-->
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>1.6.1</version>
         </dependency>
     </dependencies>
 
