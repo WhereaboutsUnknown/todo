@@ -4,7 +4,6 @@ import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.validation.Validator;
 import com.sagansar.todo.service.UserDetailsServiceImpl;
 import org.passay.*;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,21 +17,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http.csrf()
+                .ignoringAntMatchers("/file-service/upload")
+                .and()
+                .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/login*").permitAll()
                 .antMatchers("/loginError*").permitAll()
                 .antMatchers("/*.css", "/*.png").permitAll()
                 .antMatchers("/test/*").permitAll() //TODO: for API testing, hide/delete later
-                .antMatchers("/files/*").permitAll()
+                .antMatchers("/file-service/**").permitAll()
                 .antMatchers("/invite*").permitAll()
                 .antMatchers("/invite/api*").permitAll()
                 .antMatchers("/error/**").permitAll()
