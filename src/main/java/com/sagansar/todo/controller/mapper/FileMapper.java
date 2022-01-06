@@ -17,7 +17,7 @@ public class FileMapper {
         return view;
     }
 
-    private static boolean isVideo(String fileName) {
+    public static boolean isVideo(String fileName) {
         return fileName.toUpperCase().endsWith(".MP4") || fileName.toUpperCase().endsWith(".AVI");
     }
 }
