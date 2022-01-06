@@ -54,4 +54,7 @@ public class TaskFullDto {
 
     @JsonProperty
     private List<Integer> invited;
+
+    @JsonProperty
+    private List<FileBasic> files;
 }

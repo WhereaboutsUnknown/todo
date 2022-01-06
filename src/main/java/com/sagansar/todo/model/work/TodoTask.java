@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -48,6 +49,9 @@ public class TodoTask {
 
     @OneToMany(mappedBy = "task")
     private Set<WorkerGroupTask> group;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    private List<TaskFile> files;
 
     @Column(name = "main_stack")
     private String stack;
