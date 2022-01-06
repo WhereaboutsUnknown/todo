@@ -11,6 +11,7 @@ import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.external.TaskEstimateTable;
 import com.sagansar.todo.model.external.TaskForm;
+import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.manager.Unit;
@@ -77,9 +78,16 @@ public class ManagerController {
     }
 
     @GetMapping("/{managerId}/tasks")
-    public List<TaskShortDto> getManagedTasks(@PathVariable(name = "managerId") Integer managerId) {
-        securityService.getAuthorizedManager(managerId);
-        return todoTaskRepository.findAllByManagerId(managerId).stream()
+    public List<TaskShortDto> getManagedTasks(@PathVariable(name = "managerId") Integer managerId,
+                                              @RequestParam(name = "unit", required = false) boolean needUnit) {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        List<TodoTask> tasks;
+        if (needUnit && securityService.checkUserRights(RoleEnum.SUPERVISOR)) {
+            tasks = todoTaskRepository.findAllByUnitId(manager.getUnit().getId());
+        } else {
+            tasks = todoTaskRepository.findAllByManagerId(managerId);
+        }
+        return tasks.stream()
                 .map(task -> {
                     TaskShortDto dto = TaskMapper.taskToShort(task);
                     dto.setPerson(PersonMapper.workerToName(task.getWorker()));

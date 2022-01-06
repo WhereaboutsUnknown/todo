@@ -11,7 +11,7 @@
     <a class="menu-item-logo-href" th:href="@{/my}"><img class="logo-image" src="" th:src="@{/static/images/menu-logo.png}" alt="Main page"></a>
     <img class="navbar-image" src="" th:src="@{/static/images/menu-burger.png}" alt="Menu">
     <ul class="navbar-content">
-      <li class="menu-item">
+      <li class="menu-item" th:if="${role} != 'MANAGER'">
         <a class="menu-item-href menu-item-active" th:href="@{/tasks}" th:text="ЗАДАЧИ"></a>
       </li>
       <li class="menu-item" th:if="${role} != 'ADMIN'">
