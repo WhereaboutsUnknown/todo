@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 
 @Getter
@@ -67,6 +68,13 @@ public class Worker {
             if (other.user != null && user != null) {
                 user.copy(other.user);
             }
+        }
+    }
+
+    @PostConstruct
+    public void fillName() {
+        if (!StringUtils.hasText(name) && user != null) {
+            name = user.getFirstName() + " " + user.getPatronym() + " " + user.getSurname();
         }
     }
 }
