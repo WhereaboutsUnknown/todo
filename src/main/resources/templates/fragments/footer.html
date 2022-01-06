@@ -1,0 +1,57 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title,link)">
+    <title th:replace="${title}">TODO</title>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{/static/css/header.css}">
+</head>
+<body>
+<footer th:fragment="common-footer">
+    <div class="contact-info-container">
+        <div class="home-site-container">
+            <a class="home-site-link" href="https://ric-1c.ru">
+                <img class="home-site-logo" src="https://ric-1c.ru/local/templates/aspro-allcorp2/files/ric.svg" alt="Logo">
+            </a>
+        </div>
+        <div class="contacts-container">
+            <span class="contacts-header">
+                Контакты
+            </span>
+            <div class="phone-schedule-block">
+                <div class="icon phone-img"></div>
+                <div class="phone-schedule">
+                    <div class="phone">
+                        <a href="tel:+73433517026">+7 (343) 351-70-26</a>
+                    </div>
+                    <div class="schedule">
+                        Пн. – Чт.: с 9:00 до 18:00
+                        <br>
+                        Пт.: с 9:00 до 17:00
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="address-block">
+                <div class="icon location-img"></div>
+                <div class="address">
+                    г. Екатеринбург, ул. Фурманова, 124
+                </div>
+            </div>
+            <div class="email-block">
+                <div class="icon email-img"></div>
+                <a href="mailto:1c@ric-1c.ru">1c@ric-1c.ru</a>
+            </div>
+        </div>
+    </div>
+    <div class="line"></div>
+    <div class="sm-and-copyright-container">
+        <div class="copyright-container">
+            УрФУ, 2022
+        </div>
+        <div class="social-media-container">
+            <a class="social-media-link vk" href="https://vk.com/1c_ekaterinburg"></a>
+            <a class="social-media-link youtube" href="https://www.youtube.com/channel/UCJMdrqPLD8E8baP1JYMDfoA"></a>
+            <a class="social-media-link facebook" href="https://www.facebook.com/ric1c/"></a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,136 @@
+footer {
+    background: #333543;
+    padding: 30px;
+    margin-bottom: 0;
+    width: 99%;
+    height: 400px;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Arial', sans-serif;
+    font-size: 1.2em;
+}
+
+.contact-info-container {
+    flex: 6;
+    overflow: hidden;
+    display: flex;
+    padding: 0 30px 0 30px;
+}
+
+.sm-and-copyright-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    padding: 0 30px 0 30px;
+}
+
+.home-site-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.contacts-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.copyright-container {
+    flex: 1;
+    padding-top: 5px;
+    color: white;
+}
+
+.social-media-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    background: url('../images/social-media-sprite.png') no-repeat;
+    background-size: 160px 50px;
+    background-position: 50% 50%;
+}
+
+.line {
+    width: 96%;
+    border: none;
+    border-top: solid 1px #434553;
+    margin: 10px;
+}
+
+.home-site-logo {
+    width: 400px;
+    height: auto;
+}
+
+.contacts-header {
+    color: white;
+    font-weight: bold;
+    margin: 0 0 20px 40px;
+}
+
+.phone-schedule-block {
+    flex: 1;
+    display: flex;
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+}
+
+.phone-img {
+    background: url('../images/contacts-sprite.png') 0 0 no-repeat;
+}
+
+.phone-shedule {
+    flex: 1;
+    display: flex;
+}
+
+.contacts-container a {
+    color: white;
+    margin-left: 10px;
+    line-height: 30px;
+    text-decoration: none;
+}
+
+.schedule {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #aaaaaa;
+}
+
+.address-block {
+    flex: 1;
+    display: flex;
+}
+
+.location-img {
+    background: url('../images/contacts-sprite.png') 0 -35px no-repeat;
+}
+
+.address {
+    color: white;
+    margin-left: 10px;
+    line-height: 30px;
+}
+
+.email-block {
+    flex: 2;
+    display: flex;
+}
+
+.email-img {
+    background: url('../images/contacts-sprite.png') 0 -70px no-repeat;
+}
+
+.social-media-link {
+    display: block;
+    height: 50px;
+    width: 50px;
+    margin: 1px;
+}
