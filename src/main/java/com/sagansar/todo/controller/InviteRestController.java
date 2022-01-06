@@ -39,10 +39,6 @@ public class InviteRestController {
     @PostMapping ("")
     public Map<String, Object> processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
         Invite invite = inviteService.processInviteAnswer(inviteId, accept);
-        TodoTask task = invite.getTask();
-        if (task == null || statusInvalid(task)) {
-            throw new BadRequestException("Задача недоступна!");
-        }
         Worker worker = invite.getWorker();
         if (worker == null) {
             throw new BadRequestException("Приглашение не адресовано исполнителю!");
@@ -62,16 +58,5 @@ public class InviteRestController {
         return invites.stream()
                 .map(InviteMapper::inviteToDto)
                 .collect(Collectors.toList());
-    }
-
-    private boolean statusInvalid(TodoTask task) {
-        TodoStatus status = task.getStatus();
-        if (status == null) {
-            return true;
-        }
-        TodoStatus.Status statusEnum = status.status();
-        return !TodoStatus.Status.TODO.equals(statusEnum)
-                && !TodoStatus.Status.DISCUSSION.equals(statusEnum)
-                && !TodoStatus.Status.GO.equals(statusEnum);
     }
 }

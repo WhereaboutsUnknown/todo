@@ -4,6 +4,7 @@ import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.WarningException;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.Invite;
+import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.InviteRepository;
@@ -79,6 +80,13 @@ public class InviteService {
         }
         Invite invite = inviteRepository.findById(inviteId)
                 .orElseThrow(() -> new BadRequestException("Приглашение не найдено!"));
+        TodoTask task = invite.getTask();
+        if (task == null || statusInvalid(task)) {
+            invite.setAccepted(false);
+            invite.setChecked(true);
+            inviteRepository.save(invite);
+            throw new BadRequestException("Задача недоступна!");
+        }
         invite.setAccepted(accept);
         invite.setChecked(true);
         Manager manager = invite.getTask().getManager();
@@ -109,5 +117,16 @@ public class InviteService {
         invite.setWorker(worker);
         invite.setCreationTime(LocalDateTime.now(ZoneId.systemDefault()));
         return invite;
+    }
+
+    private boolean statusInvalid(TodoTask task) {
+        TodoStatus status = task.getStatus();
+        if (status == null) {
+            return true;
+        }
+        TodoStatus.Status statusEnum = status.status();
+        return !TodoStatus.Status.TODO.equals(statusEnum)
+                && !TodoStatus.Status.DISCUSSION.equals(statusEnum)
+                && !TodoStatus.Status.GO.equals(statusEnum);
     }
 }
