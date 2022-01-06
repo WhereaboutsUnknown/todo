@@ -49,7 +49,9 @@ public class InviteRestController {
         }
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Ответ получен, " + (accept ? todoService.processAcceptedInvite(invite) : "Вы успешно отказались от задачи!"));
-        archiveService.increaseRejected(worker);
+        if (!accept) {
+            archiveService.increaseRejected(worker);
+        }
         return response;
     }
 
