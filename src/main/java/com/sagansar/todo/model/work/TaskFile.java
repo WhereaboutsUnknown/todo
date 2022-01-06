@@ -1,5 +1,6 @@
 package com.sagansar.todo.model.work;
 
+import com.sagansar.todo.model.general.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,4 +31,8 @@ public class TaskFile {
     @ManyToOne
     @JoinColumn(name = "task")
     private TodoTask task;
+
+    @ManyToOne
+    @JoinColumn(name = "load_by")
+    private User creator;
 }
