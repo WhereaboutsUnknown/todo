@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,6 +28,9 @@ public class TaskFile {
 
     @Column(name = "deleted")
     private boolean deleted;
+
+    @Column(name = "load_date")
+    private LocalDateTime uploadDate;
 
     @ManyToOne
     @JoinColumn(name = "task")
