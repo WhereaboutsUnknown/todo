@@ -137,11 +137,10 @@ public class ManagerController {
             throw new BadRequestException("Менеджер не относится ни к одному отделу!");
         }
         Unit unit = manager.getUnit();
-        if (!unit.getId().equals(task.getUnitId())) {
+        if (!unit.getId().equals(task.getUnit().getId())) {
             throw new BadRequestException("Задача не относится к отделу " + unit.getName());
         }
-        Manager creator = managerRepository.findById(task.getCreatorId())
-                .orElseThrow(() -> new BadRequestException("У задачи не заполнено поле создателя!"));
+        Manager creator = task.getCreator();
         return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimateTables));
     }
 

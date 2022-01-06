@@ -12,6 +12,4 @@ public interface TaskTemplate {
     String getDescription();
 
     String getStack();
-
-    Integer getUnitId();
 }

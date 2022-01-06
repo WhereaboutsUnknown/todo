@@ -361,13 +361,13 @@ public class TodoService {
 
         task.setStatus(draft);
         task.setCreationTime(LocalDateTime.now(ZoneId.systemDefault()));
-        task.setCreatorId(creator.getId());
+        task.setCreator(creator);
         task.setDeadline(template.getDeadline());
         task.setHeader(template.getHeader());
         task.setDescription(template.getDescription());
         task.setManager(creator);
         task.setStack(template.getStack());
-        task.setUnitId(template.getUnitId());
+        task.setUnit(creator.getUnit());
 
         return task;
     }

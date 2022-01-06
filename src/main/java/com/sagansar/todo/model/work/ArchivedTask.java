@@ -57,9 +57,4 @@ public class ArchivedTask implements TaskTemplate {
     public LocalDateTime getDeadline() {
         return null;
     }
-
-    @Override
-    public Integer getUnitId() {
-        return unit == null ? null : unit.getId();
-    }
 }
