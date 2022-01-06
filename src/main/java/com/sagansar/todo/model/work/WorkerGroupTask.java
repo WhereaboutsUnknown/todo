@@ -19,12 +19,12 @@ public class WorkerGroupTask {
     @Column(name = "in_charge")
     private boolean responsible;
 
-    @OneToOne
+    @ManyToOne
     @NonNull
     @JoinColumn(name = "worker")
     private Worker worker;
 
-    @OneToOne
+    @ManyToOne
     @NonNull
     @JoinColumn(name = "task")
     private TodoTask task;

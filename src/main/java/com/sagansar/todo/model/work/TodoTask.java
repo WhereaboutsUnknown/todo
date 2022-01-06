@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,6 +45,9 @@ public class TodoTask {
     @ManyToOne
     @JoinColumn(name = "status_id")
     private TodoStatus status;
+
+    @OneToMany(mappedBy = "task")
+    private Set<WorkerGroupTask> group;
 
     @Column(name = "main_stack")
     private String stack;
