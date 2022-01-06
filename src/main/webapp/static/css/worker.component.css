@@ -4,7 +4,7 @@ body {
     font-size: 15px;
     font-family: "PT Sans", sans-serif;
     overflow-x: hidden;
-    background: whitesmoke;
+    background: #fafafa;
 }
 h3{
     font-size: 15px;
@@ -19,6 +19,7 @@ h2{
 .employee-card{
     margin: 10px;
     width: 300px;
+    background-color: white;
 }
 .employee-card p {
     white-space: nowrap;
@@ -29,13 +30,13 @@ h2{
     border: 1px solid white;
     padding: 0 10px 10px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 .work-skills{
     border: 1px solid white;
     padding: 0 10px 10px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 5px;
     vertical-align: top;
     margin-top: 10px;
 }
@@ -43,7 +44,7 @@ h2{
     border: 1px solid white;
     padding: 0 10px 10px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 5px;
     vertical-align: top;
     margin-top: 10px;
     flex: 1;
@@ -135,8 +136,6 @@ h2{
     background-image: url("/static/images/delete-icon.png");
 }*/
 .workspace-tasks{
-    background-color: white;
-    border-radius: 10px;
     margin: 10px 10px 10px 0;
     display: flex;
     flex-direction: column;

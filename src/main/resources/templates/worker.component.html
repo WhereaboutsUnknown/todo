@@ -11,6 +11,7 @@
     <link rel="stylesheet" th:href="@{/static/css/task.container.css}">
     <link rel="stylesheet" th:href="@{/static/css/lightbox.css}">
     <link rel="stylesheet" th:href="@{/static/css/profile.edit.css}">
+    <link rel="stylesheet" th:href="@{/static/css/footer.css}">
 </head>
 <body>
     <div th:replace="fragments/person.popup.html :: person-popup(isWorker=true)"></div>
@@ -42,6 +43,7 @@
             </div>
         </div>
     </div>
+    <div th:replace="fragments/footer.html :: common-footer"></div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     <script type="text/javascript" th:src="@{/static/js/worker.profile.js}"></script>

@@ -4,9 +4,11 @@
     <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
     <title>Личный кабинет | TODO</title>
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
+    <link rel="stylesheet" th:href="@{/static/css/footer.css}">
 </head>
 <body>
     <div th:replace="fragments/header.html :: header(role='MANAGER', isSupervisor=${supervisor})"></div>
 Это для менеджера
+    <div th:replace="fragments/footer.html :: common-footer"></div>
 </body>
 </html>
