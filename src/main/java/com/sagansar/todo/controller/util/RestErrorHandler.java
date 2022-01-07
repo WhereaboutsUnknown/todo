@@ -1,6 +1,7 @@
 package com.sagansar.todo.controller.util;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.infrastructure.exceptions.WarningException;
 import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
@@ -112,6 +113,14 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 new RestError(HttpStatus.OK, ex.getResponseMessage(), "400");
         return new ResponseEntity<>(
                 error, new HttpHeaders(), error.getStatus());
+    }
+
+    @ExceptionHandler({UserBlockedException.class})
+    public ResponseEntity<Object> handleUserBlocked(UserBlockedException ex, WebRequest request) {
+        ex.printStackTrace();
+        RestError error =
+                new RestError(HttpStatus.FORBIDDEN, ex.getResponseMessage(), "403");
+        return new ResponseEntity<>(error, new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler({ AccessDeniedException.class })
