@@ -57,6 +57,7 @@ header {
     margin-left: 5px;
     list-style-type: none;
     text-align: center;
+    max-width: 200px;
 }
 
 @media (max-width: 1250px) {
@@ -66,6 +67,7 @@ header {
 
     .navbar-content {
         display: none;
+        z-index: 1;
     }
 
     .navbar-content:hover, .navbar-image:hover + .navbar-content {
@@ -80,6 +82,8 @@ header {
     .navbar-content .menu-item {
         border: solid 1px white;
         background: #4a8dfb;
+        max-width: 100%;
+        margin-left: 0;
         width: 30%;
         flex-basis: 50px;
         /*padding-bottom: 30px;*/
@@ -113,15 +117,33 @@ header {
         background-color: white;
     }
 
+    .navbar-content .menu-item.logout form {
+        width: 100%;
+    }
+
     .navbar-content .menu-item.logout {
         justify-content: center;
+        margin-left: 0;
         padding: 0;
+        max-height: 50px;
     }
 
     .menu-item.logout .menu-item-img {
         position: relative;
-        top: 5px;
-        left: -10%;
+        top: -45px;
+    }
+
+    .navbar-content .menu-item-button {
+        border: none;
+        top: 0;
+        left: 0;
+        margin: 0;
+        width: 100%;
+        height: 50px;
+    }
+
+    .navbar-content .menu-item-button:hover {
+        box-shadow: none;
     }
 }
 
@@ -150,7 +172,7 @@ header {
 }
 
 .logout {
-    margin-right: auto;
+    margin-left: auto;
     flex: 1;
 }
 
@@ -172,8 +194,8 @@ header {
 .menu-item-button {
     z-index: 1;
     position: relative;
-    top: 0;
-    left: 157px;
+    top: 5px;
+    left: 30px;
     height: 38px;
     width: 25px;
     color: transparent;
@@ -188,12 +210,12 @@ header {
 
 .menu-item-img {
     position: relative;
-    top: 12px;
-    left: 120px;
+    top: 17px;
+    left: -7px;
 }
 
 .menu-item-active:hover {
-    color: #fdd663;
+    color: #ffffff;
     text-shadow: whitesmoke 1px 0 2px;
     cursor: pointer;
 }
