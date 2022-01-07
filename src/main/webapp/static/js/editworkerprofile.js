@@ -15,18 +15,11 @@ function updateProfileEditForm(data) {
 
 function updateProfile() {
     if ($(document).ready() && profileCache && !isNaN(profileCache.id)) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://localhost:8080/" + profileCache.id + "/profile")
-        xhr.setRequestHeader("Content-type", "application/json; charset = utf-8");
-        xhr.send();
-        xhr.addEventListener("load", function () {
-            if (xhr.status === 200) {
-                let data = JSON.parse(xhr.response);
-                console.log(data);
-                updateWorkerProfile(data);
-                updateProfileEditForm(data);
-                profileCache = data;
-            }
+        rest("GET", "/" + profileCache.id + "/profile", null, function (data) {
+            console.log(data);
+            updateWorkerProfile(data);
+            updateProfileEditForm(data);
+            profileCache = data;
         });
     }
 }
@@ -65,35 +58,25 @@ $(document).on('submit','#profile-edit-form', function (event) {
     form['facebook'] = $("#edit-facebook").val();
     form['other'] = $("#edit-other").val();
 
-    const token = $("meta[name='_csrf']").attr("content");
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:8080/worker/" + profileCache.id)
-    xhr.setRequestHeader("Content-type", "application/json; charset = utf-8");
-    xhr.setRequestHeader("X-CSRF-TOKEN", token);
-    xhr.send(JSON.stringify(form));
-    xhr.addEventListener("load", function () {
-        if (xhr.status === 200) {
-            let data = JSON.parse(xhr.response);
-            if (data.error) {
-                console.error("POST http://localhost:8080/worker/" + profileCache.id, data.errors[0], data.error);
-                Swal.fire({
-                    text: data.error,
-                    type: 'error',
-                    confirmButtonColor: '#fb2a79'
-                });
-                return;
-            }
-            console.log(data);
-
-            updateWorkerProfile(data);
-            updateProfileEditForm(data);
-            profileCache = data;
-
+    rest("POST", "/worker/" + profileCache.id, form, function (data) {
+        if (data.error) {
+            console.error("POST " + api() + "/worker/" + profileCache.id, data.errors[0], data.error);
             Swal.fire({
-                text: 'Изменения успешно сохранены',
-                confirmButtonColor: '#195fd4'
+                text: data.error,
+                type: 'error',
+                confirmButtonColor: '#fb2a79'
             });
+            return;
         }
-    })
+        console.log(data);
+
+        updateWorkerProfile(data);
+        updateProfileEditForm(data);
+        profileCache = data;
+
+        Swal.fire({
+            text: 'Изменения успешно сохранены',
+            confirmButtonColor: '#195fd4'
+        });
+    });
 });
