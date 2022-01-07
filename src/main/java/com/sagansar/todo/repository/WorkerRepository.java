@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface WorkerRepository extends JpaRepository<Worker, Integer>, JpaSpecificationExecutor<Worker> {
 
     Worker findByUserId(Integer userId);
+
+    boolean existsByUserUsernameAndActiveTrue(String username);
 }

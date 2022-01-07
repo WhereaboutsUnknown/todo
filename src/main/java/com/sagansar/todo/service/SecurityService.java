@@ -53,20 +53,18 @@ public class SecurityService {
     private final Validator passwordValidator;
 
     public User getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
-            return null;
-        }
-        Object principal = auth.getPrincipal();
-
-        UserDetails user;
-
-        if (principal instanceof UserDetails) {
-            user = (UserDetails) principal;
-        } else {
-            throw new RuntimeException("Unable to load user!");
-        }
+        UserDetails user = getCurrentUserDetails();
         return userRepository.findByUsername(user.getUsername());
+    }
+
+    public boolean isManagerProfileActive() {
+        UserDetails user = getCurrentUserDetails();
+        return managerRepository.existsByUserUsernameAndActiveTrue(user.getUsername());
+    }
+
+    public boolean isWorkerProfileActive() {
+        UserDetails user = getCurrentUserDetails();
+        return workerRepository.existsByUserUsernameAndActiveTrue(user.getUsername());
     }
 
     public boolean checkUserRights(RoleEnum role) {
@@ -215,6 +213,20 @@ public class SecurityService {
             return userRepository.save(user);
         }
         return user;
+    }
+
+    public UserDetails getCurrentUserDetails() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return null;
+        }
+        Object principal = auth.getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            return  (UserDetails) principal;
+        } else {
+            throw new RuntimeException("Unable to load user!");
+        }
     }
 
     private User registerUser(@NonNull User user) throws BadRequestException {
