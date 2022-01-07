@@ -63,6 +63,8 @@ header {
 @media (max-width: 1250px) {
     .navbar-image {
         display: flex;
+        margin-top: 20px;
+        margin-right: 40px;
     }
 
     .navbar-content {
