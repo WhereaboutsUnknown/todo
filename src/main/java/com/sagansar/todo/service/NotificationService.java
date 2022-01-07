@@ -58,6 +58,12 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendTaskManagerNotification(@NonNull User user, String taskHeader, boolean isTaskManager) {
+        String message = "Вы " + (isTaskManager ? "назначены" : "больше не являетесь")
+                + " ответственным за задачу \"" + taskHeader + "\"!";
+        sendNotification(user, message);
+    }
+
     public void sendWorkReviewNotification(@NonNull User user, String taskHeader, boolean approved) {
         String message = "Задача \"" + taskHeader + "\" " + (approved ? "принята заказчиком!" : "возвращена на доработку!");
         sendNotification(user, message);

@@ -291,6 +291,43 @@ public class TodoService {
     }
 
     /**
+     * Set task Manager
+     *
+     * @param manager Manager
+     * @param taskId task ID
+     * @return changed task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask setTaskManager(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTask(taskId);
+        Manager previous = task.getManager();
+        task.setManager(manager);
+        if (previous != null) {
+            notificationService.sendTaskManagerNotification(previous.getUser(), task.getHeader(), false);
+        }
+        notificationService.sendTaskManagerNotification(manager.getUser(), task.getHeader(), true);
+        return todoTaskRepository.save(task);
+    }
+
+    /**
+     * Remove Manager from task
+     *
+     * @param taskId task ID
+     * @return changed task
+     * @throws BadRequestException in case of invalid task ID
+     */
+    public TodoTask removeTaskManager(@NonNull Long taskId) throws BadRequestException {
+        TodoTask task = getValidTask(taskId);
+        Manager manager = task.getManager();
+        if (manager == null) {
+            return task;
+        }
+        task.setManager(null);
+        notificationService.sendTaskManagerNotification(manager.getUser(), task.getHeader(), false);
+        return todoTaskRepository.save(task);
+    }
+
+    /**
      * Validate TodoTask for existence and having one of valid statuses and get valid one
      *
      * @param taskId task ID

@@ -24,6 +24,7 @@ import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -199,5 +200,26 @@ public class ManagerController {
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new BadRequestException("Работник не найден!"));
         return TaskMapper.taskToFull(todoService.deleteWorkerFromTask(manager, worker, taskId));
+    }
+
+    @PreAuthorize("hasAuthority('SUPERVISOR')")
+    @PutMapping("/{supervisorId}/tasks/{taskId}/manager")
+    public TaskFullDto setTaskManager(@PathVariable(name = "supervisorId") Integer supervisorId,
+                                            @PathVariable(name = "taskId") Long taskId,
+                                            @RequestParam(name = "id") Integer managerId) throws BadRequestException {
+        securityService.getAuthorizedManager(supervisorId);
+        validationService.checkNullSafety(taskId, managerId);
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new BadRequestException("Менеджер не найден!"));
+        return TaskMapper.taskToFull(todoService.setTaskManager(manager, taskId));
+    }
+
+    @PreAuthorize("hasAuthority('SUPERVISOR')")
+    @DeleteMapping("/{supervisorId}/tasks/{taskId}/manager")
+    public TaskFullDto removeTaskManager(@PathVariable(name = "supervisorId") Integer supervisorId,
+                                    @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
+        securityService.getAuthorizedManager(supervisorId);
+        validationService.checkNullSafety(taskId);
+        return TaskMapper.taskToFull(todoService.removeTaskManager(taskId));
     }
 }
