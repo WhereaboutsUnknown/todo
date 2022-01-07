@@ -113,12 +113,6 @@ footer {
     background: url('../images/contacts-sprite.png') 0 -35px no-repeat;
 }
 
-.address {
-    color: white;
-    margin-left: 10px;
-    line-height: 30px;
-}
-
 .email-block {
     flex: 2;
     display: flex;
