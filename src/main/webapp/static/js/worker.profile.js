@@ -5,7 +5,7 @@ window.addEventListener("DOMContentLoaded", () => {
     function tasks() {
         if (profileCache && !isNaN(profileCache.id)) {
             let list = $("#task-block-list");
-            list.empty();
+            list.find('*').not('.persistent').remove();
             rest(
                 "GET",
                 "/worker/" + profileCache.id + "/tasks",
@@ -50,7 +50,7 @@ window.addEventListener("DOMContentLoaded", () => {
     function appendIfNonEmpty(element, value, needHref) {
         if (value ) {
             element.empty();
-            element.append(needHref ? `<a href="${needHref + value}">${needHref + value}</a>` : `${value}`);
+            element.append(needHref ? `<a href="${needHref + value}">${value}</a>` : `${value}`);
             element.parent('.contacts-info-item').attr('style', '');
         } else {
             element.parent('.contacts-info-item').attr('style', 'display: none');
@@ -61,9 +61,9 @@ window.addEventListener("DOMContentLoaded", () => {
         $("#profile-name").empty().append(`${data.name}`);
         $("#profile-age").empty().append(`${data.age}`);
         $("#work-skills-info").empty().append(`${data.skills}`);
-        appendIfNonEmpty($("#contacts-phone"), data.contacts.phoneNumber, false);
+        appendIfNonEmpty($("#contacts-phone"), data.contacts.phoneNumber, 'tel:');
         appendIfNonEmpty($("#contacts-vk"),  data.contacts.vk, 'https://vk.com/');
-        appendIfNonEmpty($("#contacts-email"), data.contacts.email, false);
+        appendIfNonEmpty($("#contacts-email"), data.contacts.email, 'mailto:');
         appendIfNonEmpty($("#contacts-telegram"), data.contacts.telegram, 'https://t.me/');
         appendIfNonEmpty($("#contacts-facebook"), data.contacts.facebook, 'https://facebook.com/');
         appendIfNonEmpty($("#contacts-other"), data.contacts.other, false);
@@ -72,9 +72,9 @@ window.addEventListener("DOMContentLoaded", () => {
     function updatePopupManager(data) {
         $("#popup-profile-name").empty().append(`${data.name}`);
         $("#popup-profile-age").empty().append(`${data.age}`);
-        appendIfNonEmpty($("#popup-contacts-phone"), data.contacts.phoneNumber, false);
+        appendIfNonEmpty($("#popup-contacts-phone"), data.contacts.phoneNumber, 'tel:');
         appendIfNonEmpty($("#popup-contacts-vk"), data.contacts.vk, 'https://vk.com/');
-        appendIfNonEmpty($("#popup-contacts-email"), data.contacts.email, false);
+        appendIfNonEmpty($("#popup-contacts-email"), data.contacts.email, 'mailto:');
         appendIfNonEmpty($("#popup-contacts-telegram"), data.contacts.telegram, 'https://t.me/');
         appendIfNonEmpty($("#popup-contacts-facebook"), data.contacts.facebook, 'https://facebook.com/');
         appendIfNonEmpty($("#popup-contacts-other"), data.contacts.other, false);
@@ -108,6 +108,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     function req() {
         rest("GET", "/worker", null, function (data) {
+            if (data.error) {
+                console.error("GET " + api() + "/worker", data.status.value, data.error);
+                showError(data.error);
+                return;
+            }
             console.log(data);
 //                $(".profilePhoto").attr("src", `${data[0].photo}`);
             updateWorkerProfile(data);
@@ -191,11 +196,7 @@ window.addEventListener("DOMContentLoaded", () => {
         rest("POST", "/worker/" + profileCache.id, form, function (data) {
             if (data.error) {
                 console.error("POST " + api() + "/worker/" + profileCache.id, data.errors[0], data.error);
-                Swal.fire({
-                    text: data.error,
-                    type: 'error',
-                    confirmButtonColor: '#fb2a79'
-                });
+                showError(data.error);
                 return;
             }
             console.log(data);
@@ -204,10 +205,44 @@ window.addEventListener("DOMContentLoaded", () => {
             updateProfileEditForm(data);
             profileCache = data;
 
-            Swal.fire({
-                text: 'Изменения успешно сохранены',
-                confirmButtonColor: '#195fd4'
-            });
+            showOk('Изменения успешно сохранены');
         });
+    });
+
+    $(document).on('click', '#confirm-delete', function () {
+        rest("DELETE", "/profile/worker/" + profileCache.id, null, function (data) {
+            if (data.error) {
+                console.error("DELETE " + api() + "/profile/worker/" + profileCache.id, data.errors[0], data.error);
+                showError(data.error);
+                return;
+            }
+            console.log(data);
+            showDone(data.message);
+            redirectTimer(3000, root());
+        });
+    });
+
+    $(document).on('submit', '#avatar-edit-form', function (event) {
+        event.preventDefault();
+
+        let element = $("#avatar-submit");
+        element.attr("disabled", "disabled");
+        element.addClass("inactivated");
+        setTimeout(function () {
+            $("#profile-edit-submit").removeAttr("disabled").removeClass("inactivated");
+        }, 5000);
+
+        const selectedFile = document.getElementById('edit-avatar-file').files[0];
+        let formData = new FormData(document.getElementById('avatar-edit-form'));
+
+        submitForm("/file-service/upload/avatar?file=" + selectedFile.name, formData, function (data) {
+            if (data.error) {
+                console.error("POST " + api() + "/file-service/upload/avatar?=" + selectedFile.name, data.errors[0], data.error);
+                showError(data.error);
+                return;
+            }
+            showDone(data.message);
+            redirectTimer(2000, root());
+        })
     });
 });
