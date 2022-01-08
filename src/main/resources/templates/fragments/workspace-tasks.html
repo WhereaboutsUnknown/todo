@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="workspace-tasks(isWorker)" class="workspace-tasks">
+  <div class="refresh-block">
+    <button class="basic-button refresh-button" id="refresh-button"><img src="" th:src="@{/static/images/round-arrow.png}" alt="Обновить"></button>
+  </div>
+  <div class="task-block-list-container">
+    <ul class="task-block-list" id="task-block-list">
+      <li th:if="${!isWorker}" class="persistent">
+        <div class="task-block task-creation-block persistent" id="create-task-btn">
+          <div class="task-creation-button persistent">
+              Новая задача
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="page-numbers">
+    <a href="#prev" class="prev">Назад</a>
+    <a href="#example1">1</a>
+    <span>&hellip;</span>
+    <a href="#3">3</a>
+    <a href="#next" class="next">Вперёд</a>
+  </div>
+</div>
+</body>
+</html>
