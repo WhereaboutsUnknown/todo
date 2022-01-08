@@ -1,11 +1,12 @@
 package com.sagansar.todo.controller.mapper;
 
 import com.sagansar.todo.controller.dto.FileBasic;
-import com.sagansar.todo.model.work.TaskFile;
+import com.sagansar.todo.model.general.AbstractFile;
+import com.sagansar.todo.model.general.Extension;
 
 public class FileMapper {
 
-    public static FileBasic fileToBasic(TaskFile file) {
+    public static FileBasic fileToBasic(AbstractFile file) {
         if (file == null) {
             return null;
         }
@@ -18,6 +19,6 @@ public class FileMapper {
     }
 
     public static boolean isVideo(String fileName) {
-        return fileName.toUpperCase().endsWith(".MP4") || fileName.toUpperCase().endsWith(".AVI");
+        return Extension.resolve(fileName).isVideo();
     }
 }
