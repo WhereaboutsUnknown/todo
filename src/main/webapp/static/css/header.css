@@ -226,3 +226,7 @@ header {
     box-shadow: 0 0 5px 1px white;
     cursor: pointer;
 }
+
+.logo-image {
+    margin-top: 8px;
+}
