@@ -101,6 +101,76 @@ input[type='date'] {
 .profile-edit-contacts input:invalid {
     border: 2px solid #fb2a79;
 }
+
+.avatar-edit-form input, .avatar-edit-form label {
+    margin: 5px 0 5px 20px;
+}
+
 input:invalid {
     border: 2px solid #fb2a79;
+}
+
+.profile-delete-container {
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 450px;
+    height: 200px;
+    margin: auto;
+    background: black;
+    color: white;
+    border: 1px solid black;
+    box-shadow: 2px 2px 5px 2px #898989;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+}
+
+.profile-delete-message {
+    flex: 2;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.profile-delete-hint {
+    flex: 2;
+    font-size: 0.9em;
+}
+
+.profile-delete-btn-container {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.profile-delete-btn {
+    flex: 1;
+    line-height: 40px;
+    width: 100px;
+    color: white;
+    outline: inherit;
+    border: inherit;
+}
+
+.confirm-delete {
+    background: #fb2a79;
+}
+
+.cancel-delete {
+    background: #195fd4;
+}
+
+.cancel-delete a {
+    position: relative;
+    background: transparent;
+    display: block;
+    z-index: 11;
+    bottom: 100%;
+    height: 40px;
+    border-radius: 10px;
 }
