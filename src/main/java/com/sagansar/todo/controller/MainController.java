@@ -1,19 +1,19 @@
 package com.sagansar.todo.controller;
 
-import com.sagansar.todo.controller.dto.UserDto;
+import com.sagansar.todo.controller.mapper.FileMapper;
+import com.sagansar.todo.controller.util.AccountError;
+import com.sagansar.todo.controller.util.ErrorView;
 import com.sagansar.todo.controller.util.HttpStatusError;
-import com.sagansar.todo.repository.RoleRepository;
-import com.sagansar.todo.repository.UserRepository;
+import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.model.work.TaskFile;
+import com.sagansar.todo.model.work.TodoTask;
+import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -23,19 +23,16 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
+@RequiredArgsConstructor
 public class MainController implements ErrorController {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private SecurityService securityService;
+    private final SecurityService securityService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final TodoTaskRepository todoTaskRepository;
 
     @RequestMapping(path = "/login")
     public String login(@RequestParam(name = "error", required = false) String error, Model model) {
@@ -47,15 +44,20 @@ public class MainController implements ErrorController {
 
     @RequestMapping(path = "/my")
     public ModelAndView my(ModelAndView modelAndView) {
-
         Set<String> roles = userDetailsService.getCurrentUserRoles();
         if (roles.contains("ADMIN")) {
             modelAndView.setViewName("admin-component");
         }
         else if (roles.contains("MANAGER")) {
+            if (securityService.isManagerProfileDeleted()) {
+                return blocked();
+            }
             modelAndView.addObject("supervisor", roles.contains("SUPERVISOR"));
             modelAndView.setViewName("manager.component");
-        } else if (roles.contains("WORKER")) {
+        } else if (roles.contains("FREELANCER")) {
+            if (securityService.isWorkerProfileDeleted()) {
+                return blocked();
+            }
             modelAndView.setViewName("worker.component");
         }
         return modelAndView;
@@ -66,14 +68,57 @@ public class MainController implements ErrorController {
         return "redirect:/my";
     }
 
-    /*@PostMapping("/registration")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public void register(@RequestBody UserDto userDto, Model model) {
-        if (userDto == null) {
-            model.addAttribute("emptyRequest", true);
-            return model;
+    @PreAuthorize("hasAnyAuthority('FREELANCER', 'ADMIN')")
+    @RequestMapping("/tasks")
+    public ModelAndView tasks(ModelAndView modelAndView) {
+        modelAndView.setViewName("task-pool");
+        return internalPage(modelAndView);
+    }
+
+    @RequestMapping("/tasks/{id}")
+    public ModelAndView task(@PathVariable(name = "id") Long id, ModelAndView modelAndView) throws BadRequestException {
+        TodoTask task = todoTaskRepository.findById(id).orElse(null);
+        if (task != null) {
+            modelAndView.addObject("taskId", task.getId());
+            TaskFile videoFile = task.getFiles().stream()
+                    .filter(file -> FileMapper.isVideo(file.getName()))
+                    .findAny()
+                    .orElse(null);
+            boolean hasVideo = videoFile != null;
+            modelAndView.addObject("video", hasVideo);
+            modelAndView.addObject("videoId", (hasVideo ? videoFile.getId() : ""));
+            modelAndView.setViewName("task");
+            return internalPage(modelAndView);
         }
-    }*/
+        return error(HttpStatusError.NOT_FOUND);
+    }
+
+    @RequestMapping("/invites")
+    public ModelAndView invites(ModelAndView modelAndView) {
+        modelAndView.setViewName("invites");
+        return internalPage(modelAndView);
+    }
+
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @RequestMapping("/responses")
+    public ModelAndView responses(ModelAndView modelAndView) {
+        modelAndView.setViewName("responses");
+        return internalPage(modelAndView);
+    }
+
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @RequestMapping("/workers")
+    public ModelAndView workers(ModelAndView modelAndView) {
+        modelAndView.setViewName("workers");
+        return internalPage(modelAndView);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SUPERVISOR', 'ADMIN')")
+    @RequestMapping("/unit")
+    public ModelAndView unit(ModelAndView modelAndView) {
+        modelAndView.setViewName("unit");
+        return internalPage(modelAndView);
+    }
 
     @RequestMapping("/error")
     public ModelAndView handleError(HttpServletRequest request, ModelAndView modelAndView) {
@@ -85,21 +130,62 @@ public class MainController implements ErrorController {
         }
         HttpStatusError error = HttpStatusError.error(statusCode);
         String message = (throwable == null || !StringUtils.hasText(throwable.getMessage())) ? error.getMessage() : throwable.getMessage();
-        modelAndView.addObject("httpStatusName", error.getTitle());
-        modelAndView.addObject("httpStatus", error.getSelector());
-        modelAndView.addObject("header", error.getHeader());
-        modelAndView.addObject("message", message);
-        modelAndView.setViewName("error");
-
-        return modelAndView;
+        return error(message, error);
     }
 
     @RequestMapping("/console")
     public ModelAndView adminConsole(ModelAndView modelAndView) {
         if (securityService.isAdmin()) {
             modelAndView.setViewName("console");
-            return modelAndView;
+            return internalPage(modelAndView);
         }
-        throw new AccessDeniedException("Этот раздел доступен только администратору");
+        return error("Этот раздел доступен только администратору! Вы можете вернуться на домашнюю страницу или обратиться к администратору за помощью",
+                HttpStatusError.FORBIDDEN);
+    }
+
+    private ModelAndView blocked() {
+        if (securityService.isUserBlocked()) {
+            return error("Этот аккаунт был заблокирован. Обратитесь к администратору", AccountError.USER_BLOCKED);
+        }
+        return error("Ваш профиль был удален, но его можно восстановить, нажав на кнопку ниже", AccountError.PROFILE_DELETED);
+    }
+
+    private ModelAndView error(HttpStatusError error) {
+        return error(error.getMessage(), error);
+    }
+
+    private ModelAndView error(String message, ErrorView error) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("title", error.getTitle());
+        modelAndView.addObject("errorClass", error.getSelector());
+        modelAndView.addObject("header", error.getHeader());
+        modelAndView.addObject("message", message);
+        modelAndView.setViewName("error");
+        return modelAndView;
+    }
+
+    private ModelAndView internalPage(ModelAndView modelAndView) {
+        Set<String> roles = userDetailsService.getCurrentUserRoles();
+        String role = null;
+        boolean supervisor = roles.contains("SUPERVISOR");
+        if (roles.contains("ADMIN")) {
+            role = "ADMIN";
+        } else if (roles.contains("MANAGER")) {
+            if (securityService.isManagerProfileDeleted()) {
+                return blocked();
+            }
+            role = "MANAGER";
+        } else if (roles.contains("FREELANCER")) {
+            if (securityService.isWorkerProfileDeleted()) {
+                return blocked();
+            }
+            role = "FREELANCER";
+        }
+        if (role == null) {
+            throw new AccessDeniedException("Доступ ограничен!");
+        }
+        modelAndView.addObject("userRole", role);
+        modelAndView.addObject("supervisor", supervisor);
+        return modelAndView;
     }
 }

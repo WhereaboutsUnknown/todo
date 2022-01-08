@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="${httpStatusName + ' | TODO'}">Ошибка! | TODO</title>
+  <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
+  <title th:text="${title + ' | TODO'}">Ошибка! | TODO</title>
   <link rel="stylesheet" th:href="@{/static/css/error.css}">
   <link rel="stylesheet" href="sweetalert2.min.css">
+  <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon">
 </head>
-<body th:classappend="${httpStatus}">
-<div class="error-container" th:classappend="${httpStatus}">
+<body th:classappend="${errorClass}">
+<div class="error-container" th:classappend="${errorClass}">
   <div class="error-block">
     <div class="error-message-container">
       <h1 class="error-header" th:text="${header}">
@@ -18,9 +19,14 @@
       </p>
     </div>
     <div class="error-buttons-container">
-      <a class="go-home" id="error-ok" href="./">Домой</a>
+      <a th:if="${errorClass != 'blocked' && errorClass != 'deleted'}" class="error-btn go-home" id="error-ok" href="./">Домой</a>
+      <button th:if="${errorClass == 'deleted'}" class="error-btn restore" id="restore-profile">Восстановить</button>
     </div>
   </div>
 </div>
+<script th:if="${errorClass == 'deleted'}" src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script th:if="${errorClass == 'deleted'}" src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script th:if="${errorClass == 'deleted'}" type="text/javascript" th:src="@{/static/js/main.js}"></script>
+<script th:if="${errorClass == 'deleted'}" type="text/javascript" th:src="@{/static/js/restore-profile.js}"></script>
 </body>
 </html>

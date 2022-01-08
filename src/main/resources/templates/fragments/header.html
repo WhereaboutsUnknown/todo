@@ -8,25 +8,26 @@
 <body>
 <header th:fragment="common-header">
   <nav class="navbar">
-    <a class="menu-item-logo-href" th:href="@{/my}"><img class="logo-image" src="" th:src="@{/static/images/menu-logo.png}" alt="Main page"></a>
+    <a th:if="${!main}" class="menu-item-logo-href" th:href="@{/my}"><img class="logo-image" src="" th:src="@{/static/images/menu-logo.png}" alt="Main page"></a>
+    <div th:if="${main}"><img class="logo-image" src="" th:src="@{/static/images/menu-logo.png}" alt="Logo"></div>
     <img class="navbar-image" src="" th:src="@{/static/images/menu-burger.png}" alt="Menu">
     <ul class="navbar-content">
-      <li class="menu-item" th:if="${role} != 'MANAGER'">
+      <li class="menu-item" th:if="${role != 'MANAGER'}">
         <a class="menu-item-href menu-item-active" th:href="@{/tasks}" th:text="ЗАДАЧИ"></a>
       </li>
-      <li class="menu-item" th:if="${role} != 'ADMIN'">
+      <li class="menu-item">
         <a class="menu-item-href menu-item-active" th:href="@{/invites}" th:text="ПРИГЛАШЕНИЯ"></a>
       </li>
-      <li class="menu-item" th:if="${role} == 'MANAGER'">
+      <li class="menu-item" th:if="${role != 'FREELANCER'}">
         <a class="menu-item-href menu-item-active" th:href="@{/responses}" th:text="ОТКЛИКИ"></a>
       </li>
-      <li class="menu-item" th:if="${role} == 'MANAGER'">
+      <li class="menu-item" th:if="${role != 'FREELANCER'}">
         <a class="menu-item-href menu-item-active" th:href="@{/workers}" th:text="СОТРУДНИКИ"></a>
       </li>
-      <li class="menu-item" th:if="${isSupervisor}">
+      <li class="menu-item" th:if="${isSupervisor || role == 'ADMIN'}">
         <a class="menu-item-href menu-item-active" th:href="@{/unit}" th:text="ОТДЕЛ"></a>
       </li>
-      <li class="menu-item" th:if="${role} == 'ADMIN'">
+      <li class="menu-item" th:if="${role == 'ADMIN'}">
         <a class="menu-item-href menu-item-active" th:href="@{/console}" th:text="КОНСОЛЬ"></a>
       </li>
       <li class="menu-item logout">
