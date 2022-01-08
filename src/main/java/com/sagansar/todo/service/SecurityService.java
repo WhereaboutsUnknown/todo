@@ -2,6 +2,7 @@ package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UnauthorizedException;
+import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.infrastructure.validation.Validator;
 import com.sagansar.todo.model.external.RegistrationForm;
 import com.sagansar.todo.model.general.Contacts;
@@ -57,14 +58,19 @@ public class SecurityService {
         return userRepository.findByUsername(user.getUsername());
     }
 
-    public boolean isManagerProfileActive() {
+    public boolean isManagerProfileDeleted() {
         UserDetails user = getCurrentUserDetails();
-        return managerRepository.existsByUserUsernameAndActiveTrue(user.getUsername());
+        return !managerRepository.existsByUserUsernameAndActiveTrue(user.getUsername());
     }
 
-    public boolean isWorkerProfileActive() {
+    public boolean isWorkerProfileDeleted() {
         UserDetails user = getCurrentUserDetails();
-        return workerRepository.existsByUserUsernameAndActiveTrue(user.getUsername());
+        return !workerRepository.existsByUserUsernameAndActiveTrue(user.getUsername());
+    }
+
+    public boolean isUserBlocked() {
+        UserDetails user = getCurrentUserDetails();
+        return !userRepository.existsByUsernameAndActiveTrue(user.getUsername());
     }
 
     public boolean checkUserRights(RoleEnum role) {
@@ -151,14 +157,14 @@ public class SecurityService {
     }
 
     public Worker registerWorker(@NonNull User user) {
-        Worker worker = createWorker();
+        Worker worker = workerRepository.findByUserId(user.getId()).orElse(createWorker());
         worker.setUser(user);
         worker.setActive(true);
         return workerRepository.save(worker);
     }
 
     public Manager registerManager(@NonNull User user) {
-        Manager manager = createManager();
+        Manager manager = managerRepository.findByUserId(user.getId()).orElse(createManager());
         manager.setUser(user);
         manager.setActive(true);
         return managerRepository.save(manager);
@@ -227,6 +233,63 @@ public class SecurityService {
         } else {
             throw new RuntimeException("Unable to load user!");
         }
+    }
+
+    public void restoreCurrentUserProfile() throws BadRequestException {
+        User user = getCurrentUser();
+        if (user == null) {
+            throw new BadRequestException("Пользователь не найден!");
+        }
+        if (!user.isActive()) {
+            throw new UserBlockedException("Невозможно восстановить профиль: пользователь заблокирован");
+        }
+        if (checkUserRights(RoleEnum.FREELANCER)) {
+            Worker worker = workerRepository.findByUserId(user.getId())
+                    .orElse(registerWorker(user));
+            if (!worker.isActive()) {
+                setWorkerProfileBlock(worker, false);
+            }
+        }
+        if (checkUserRights(RoleEnum.MANAGER)) {
+            Manager manager = managerRepository.findByUserId(user.getId())
+                    .orElse(registerManager(user));
+            if (!manager.isActive()) {
+                setManagerProfileBlock(manager, false);
+            }
+        }
+    }
+
+    public Manager blockManagerProfile(Integer managerId, boolean block) throws BadRequestException {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new BadRequestException("Профиль менеджера не найден"));
+        return setManagerProfileBlock(manager, block);
+    }
+
+    public Worker blockWorkerProfile(Integer workerId, boolean block) throws BadRequestException {
+        Worker worker = workerRepository.findById(workerId)
+                .orElseThrow(() -> new BadRequestException("Профиль исполнителя не найден"));
+        return setWorkerProfileBlock(worker, block);
+    }
+
+    private Manager setManagerProfileBlock(Manager manager, boolean block) {
+        if ((manager.isActive() && !block) || (!manager.isActive() && block)) {
+            return manager;
+        }
+        manager.setActive(!block);
+        return managerRepository.save(manager);
+    }
+
+    private Worker setWorkerProfileBlock(Worker worker, boolean block) {
+        if ((worker.isActive() && !block) || (!worker.isActive() && block)) {
+            return worker;
+        }
+        worker.setActive(!block);
+        return workerRepository.save(worker);
+    }
+
+    public void addUserAvatar(User user, Long avatarId) {
+        user.setAvatar(avatarId);
+        userRepository.save(user);
     }
 
     private User registerUser(@NonNull User user) throws BadRequestException {
