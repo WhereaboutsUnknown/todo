@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum HttpStatusError {
+public enum HttpStatusError implements ErrorView {
     NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "404 Page Not Found",
