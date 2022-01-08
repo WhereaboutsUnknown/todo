@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="profile-delete-popup" class="profile-delete-container">
+  <div class="profile-delete-message">
+    Вы действительно хотите удалить профиль?
+  </div>
+  <div class="profile-delete-hint">
+    Его можно будет восстановить
+  </div>
+  <div class="profile-delete-btn-container">
+    <button class="confirm-delete profile-delete-btn basic-button" id="confirm-delete">УДАЛИТЬ</button>
+    <button class="cancel-delete profile-delete-btn basic-button" id="cancel-delete">ОТМЕНИТЬ<a href="#"></a></button>
+  </div>
+</div>
+</body>
+</html>
