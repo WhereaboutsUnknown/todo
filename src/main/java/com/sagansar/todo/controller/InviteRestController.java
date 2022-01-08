@@ -2,10 +2,9 @@ package com.sagansar.todo.controller;
 
 import com.sagansar.todo.controller.dto.InviteDto;
 import com.sagansar.todo.controller.mapper.InviteMapper;
+import com.sagansar.todo.controller.util.RestResponse;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.work.Invite;
-import com.sagansar.todo.model.work.TodoStatus;
-import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.service.ArchiveService;
 import com.sagansar.todo.service.InviteService;
@@ -16,9 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,18 +34,16 @@ public class InviteRestController {
     private final SecurityService securityService;
 
     @PostMapping ("")
-    public Map<String, Object> processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
+    public RestResponse processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
         Invite invite = inviteService.processInviteAnswer(inviteId, accept);
         Worker worker = invite.getWorker();
         if (worker == null) {
             throw new BadRequestException("Приглашение не адресовано исполнителю!");
         }
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Ответ получен, " + (accept ? todoService.processAcceptedInvite(invite) : "Вы успешно отказались от задачи!"));
         if (!accept) {
             archiveService.increaseRejected(worker);
         }
-        return response;
+        return new RestResponse("Ответ принят, " + (accept ? todoService.processAcceptedInvite(invite) : "Вы успешно отказались от задачи!"));
     }
 
     @GetMapping("/worker/{workerId}")
