@@ -9,6 +9,7 @@ import com.sagansar.todo.controller.mapper.ManagerMapper;
 import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.model.external.TaskEstimateTable;
 import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.general.RoleEnum;
@@ -22,12 +23,10 @@ import com.sagansar.todo.repository.TodoTaskRepository;
 import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.*;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,23 +58,22 @@ public class ManagerController {
     public ManagerDto getUserManagerProfile() {
         User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не найден");
+            throw new UserBlockedException("Пользователь не найден");
         }
-        Manager manager = managerRepository.findByUserId(currentUser.getId());
-        if (manager == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Не найден профиль менеджера");
-        }
+        Manager manager = managerRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new UserBlockedException("Профиль менеджера не создан или был удален"));
         if (!manager.isActive()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль менеджера был заблокирован");
+            throw new UserBlockedException("Профиль менеджера не активен");
         }
         return ManagerMapper.managerToDto(manager);
     }
 
     @GetMapping("/{managerId}")
-    public ManagerDto getManager(@PathVariable(name = "managerId") Integer managerId) {
+    public ManagerDto getManager(@PathVariable(name = "managerId") Integer managerId) throws BadRequestException {
+        validationService.checkNullSafety(managerId);
         return managerRepository.findById(managerId)
                 .map(ManagerMapper::managerToDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Не найден профиль менеджера"));
+                .orElseThrow(() -> new BadRequestException("Профиль менеджера не найден!"));
     }
 
     @GetMapping("/{managerId}/tasks")
@@ -96,8 +94,6 @@ public class ManagerController {
                 })
                 .collect(Collectors.toList());
     }
-
-    //TODO: назначение менеджера на задачу, получение списка менеджеров (возможно, отдельный контроллер отделов)
 
     @PostMapping("/{managerId}/tasks")
     public TaskShortDto createTask(@PathVariable(name = "managerId") Integer managerId,
