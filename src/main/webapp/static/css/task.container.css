@@ -114,3 +114,22 @@
     border-color: #fada59;
     box-shadow: 0 0 1px 2px #fce0ae;
 }
+
+.task-creation-block {
+    box-shadow: none;
+    border: solid 2px lightgray;
+    color: gray;
+}
+
+.task-creation-button {
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.task-creation-block:hover {
+    background: url('../images/icons-plus.png') 50% / 100px no-repeat #eeeeee;
+    color: white;
+}
