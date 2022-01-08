@@ -62,6 +62,12 @@
     </div>
     <input class="profile-edit-section profile-edit-submit basic-button" type="submit" id="profile-edit-submit">
   </form>
+  <iframe name="post-devnull-frame" id="devnull-frame" style="display: none;"></iframe>
+  <form name="avatar" action="none" method="post" enctype="multipart/form-data" class="profile-edit-form avatar-edit-form" id="avatar-edit-form">
+      <label for="edit-avatar-file" title="Загрузить фото"><img src="" th:src="@{/static/images/icons-other.png}" alt="Загрузить фото">Загрузить фото</label>
+      <input type="file" name="file" id="edit-avatar-file" class="avatar-input" />
+      <input class="profile-edit-section profile-edit-submit basic-button" type="submit" id="avatar-submit">
+  </form>
 </div>
 </body>
 </html>
