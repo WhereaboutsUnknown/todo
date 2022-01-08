@@ -48,6 +48,9 @@ public class User implements Serializable {
     @Column(name = "active")
     protected boolean active;
 
+    @Column(name = "avatar_id")
+    protected Long avatar;
+
     public void block() {
         active = false;
     }

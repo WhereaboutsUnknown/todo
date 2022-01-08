@@ -17,6 +17,7 @@ public class ManagerMapper extends ViewDataMapper {
         User user = manager.getUser();
         if (user != null) {
             dto.setContacts(ContactsMapper.contactsToDto(user.getContacts()));
+            dto.setAvatar(user.getAvatar());
         }
         return dto;
     }

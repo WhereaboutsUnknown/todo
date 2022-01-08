@@ -27,4 +27,7 @@ public class WorkerDto {
 
     @JsonProperty
     private StatisticsBasic statistics;
+
+    @JsonProperty
+    private Long avatar;
 }

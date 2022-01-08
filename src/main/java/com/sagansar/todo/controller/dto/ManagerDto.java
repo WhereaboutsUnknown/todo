@@ -21,4 +21,7 @@ public class ManagerDto {
 
     @JsonProperty
     private ContactsDto contacts;
+
+    @JsonProperty
+    private Long avatar;
 }

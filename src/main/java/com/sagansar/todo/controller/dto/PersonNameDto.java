@@ -15,4 +15,7 @@ public class PersonNameDto {
 
     @JsonProperty
     private String name;
+
+    @JsonProperty
+    private Long avatar;
 }
