@@ -9,6 +9,7 @@ import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.mapper.WorkerMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UnauthorizedException;
+import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.infrastructure.sort.WorkerSkillSorter;
 import com.sagansar.todo.infrastructure.specifications.FilterCompiler;
 import com.sagansar.todo.infrastructure.specifications.SearchCriteria;
@@ -61,16 +62,23 @@ public class WorkerController {
     public WorkerFullDto getUserWorkerProfile() {
         User currentUser = securityService.getCurrentUser();
         if (currentUser == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не найден");
+            throw new UserBlockedException("Пользователь не найден");
         }
-        Worker worker = workerRepository.findByUserId(currentUser.getId());
-        if (worker == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Не найден профиль исполнителя");
-        }
+        Worker worker = workerRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new UserBlockedException("Профиль исполнителя не создан или был удален"));
         if (!worker.isActive()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Профиль исполнителя был заблокирован");
+            throw new UserBlockedException("Профиль исполнителя не активен");
         }
         return WorkerMapper.workerToFullDto(worker);
+    }
+
+    @GetMapping("/{workerId}")
+    public WorkerDto getWorker(@PathVariable Integer workerId) throws BadRequestException {
+        securityService.checkUserRights(RoleEnum.MANAGER);
+        validationService.checkNullSafety(workerId);
+        return workerRepository.findById(workerId)
+                .map(WorkerMapper::workerToDto)
+                .orElseThrow(() -> new BadRequestException("Профиль сотрудника не найден!"));
     }
 
     @GetMapping("/{workerId}/tasks")
