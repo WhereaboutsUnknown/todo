@@ -60,10 +60,8 @@ public class AdministratorController {
         if (!StringUtils.hasText(name)) {
             throw new BadRequestException("Наименование отдела не может быть пустым!");
         }
-        Manager manager = managerRepository.findByUserId(userId);
-        if (manager == null) {
-            throw new BadRequestException("Менеджер не найден!");
-        }
+        Manager manager = managerRepository.findByUserId(userId)
+                .orElseThrow(() -> new BadRequestException("Менеджер не найден!"));
         Unit unit = new Unit();
         unit.setName(name);
         unit.setManagers(List.of(manager));
