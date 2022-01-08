@@ -10,7 +10,7 @@
             <div class="employee-card popup-content" style="display: none">
                 <div class="my-profile">
                     <h3>Личная информация</h3>
-                    <img src="img/user.jpg" th:src="@{/static/images/userfem.png}" width="80" height="80" alt="Фото">
+                    <img id="popup-avatar" src="img/user.jpg" th:src="@{/static/images/userfem.png}" width="80" height="80" alt="Фото">
                     <p id="popup-profile-name"></p>
                     <p id="popup-profile-age"></p>
                 </div>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="button-profile popup-buttons">
                     <a href="#button-1" class="button-1">Связанные задачи</a>
-                    <a th:if="${!isWorker}" href="#button-2">Поручить задачу</a>
+                    <a th:if="${!isWorker}" href="#button-2">Пригласить</a>
                 </div>
             </div>
         </div>

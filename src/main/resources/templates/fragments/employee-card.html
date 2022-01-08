@@ -8,7 +8,7 @@
 <div th:fragment="employee-card(isWorker)">
   <div class="my-profile">
     <h3>Личная информация</h3>
-    <img src="img/user.jpg" th:src="@{/static/images/user.jpg}" width="80" height="80" alt="Фото">
+    <img src="/static/images/user.jpg" th:src="@{/file-service/user/avatar}" width="80" height="80" alt="Фото">
     <p id="profile-name"></p>
     <p id="profile-age"></p>
   </div>
