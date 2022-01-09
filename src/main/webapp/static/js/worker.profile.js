@@ -34,7 +34,7 @@ window.addEventListener("DOMContentLoaded", () => {
     function updateStatistics(data) {
         if (data) {
             const workerStars = data.points;
-            appendIfNonEmpty($('#star-rating-counter'), (workerStars ? workerStars : 0.0), false);
+            appendIfNonEmpty($('#star-rating-counter'), (workerStars ? Math.floor(workerStars * 100) / 100 : 0.0), false);
             const scale = $('#success-scale');
             if (data.doneShare) {
                 scale.addClass(resolveShareSelector(data.doneShare));
