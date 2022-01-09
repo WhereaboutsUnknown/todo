@@ -18,7 +18,7 @@ class WorkerControllerTest {
     @Autowired
     WorkerController workerController;
 
-    @Test
+    /*@Test
     void specification_filter() {
         List<String> criteria = List.of("name~Иван", "info~Spring");
         String op = "or";
@@ -31,6 +31,6 @@ class WorkerControllerTest {
         } catch (BadRequestException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
 }
