@@ -7,12 +7,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
+    <link rel="stylesheet" th:href="@{/static/css/main.component.css}">
+    <link rel="stylesheet" th:href="@{/static/css/task-pool.css}">
+    <link rel="stylesheet" th:href="@{/static/css/task.container.css}">
     <link rel="stylesheet" th:href="@{/static/css/footer.css}">
     <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon">
 </head>
 <body>
 <div th:replace="fragments/header.html :: header(role=${userRole}, isSupervisor=${supervisor}, main=false)"></div>
-Задачи
+<div class="task-pool-container">
+    <div th:replace="fragments/search-fragment.html :: search-fragment(block='task-pool')"></div>
+    <div th:replace="fragments/workspace-tasks.html :: workspace-tasks(creation=false)"></div>
+</div>
 <div th:replace="fragments/footer.html :: common-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" th:src="@{/static/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/search.js}"></script>
 </body>
 </html>

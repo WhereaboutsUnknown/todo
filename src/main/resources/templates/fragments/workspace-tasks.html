@@ -5,13 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-<div th:fragment="workspace-tasks(isWorker)" class="workspace-tasks">
+<div th:fragment="workspace-tasks(creation)" class="workspace-tasks">
   <div class="refresh-block">
     <button class="basic-button refresh-button" id="refresh-button"><img src="" th:src="@{/static/images/round-arrow.png}" alt="Обновить"></button>
   </div>
   <div class="task-block-list-container">
     <ul class="task-block-list" id="task-block-list">
-      <li th:if="${!isWorker}" class="persistent">
+      <li th:if="${creation}" class="persistent">
         <div class="task-block task-creation-block persistent" id="create-task-btn">
           <div class="task-creation-button persistent">
               Новая задача

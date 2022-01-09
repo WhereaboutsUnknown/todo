@@ -1,0 +1,17 @@
+.task-pool-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 1000px;
+    background-color: white;
+}
+
+.task-pool-container .workspace-tasks {
+    margin: 0;
+}
+
+@media (max-width: 1000px) {
+    .task-pool-container {
+        width: 99%;
+    }
+}

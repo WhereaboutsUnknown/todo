@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="search-fragment(block)" class="search-tools-container">
+  <div class="tool-container search-tool">
+    <form class="search-form">
+      <input type="search" class="search-form-input" id="search-input" placeholder="Поиск...">
+      <input type="submit" class="basic-button search-btn" id="search-btn" value="Найти">
+    </form>
+  </div>
+  <div class="tool-container extended-search-tool">
+    <a class="extended-search-anchor" href="#extended-search-block">Расширенный поиск...</a>
+  </div>
+  <div class="tool-container sort-tool">
+    <select name="sort-select" class="sort-select">
+      <option disabled>Сортировать по</option>
+      <option th:if="${block == 'task-pool'}" selected value="deadline">срокам</option>
+      <option th:if="${block == 'task-pool'}" value="creationTime">времени создания</option>
+    </select>
+    <div class="sort-direction-btn" id="sort-direction-btn">
+    </div>
+  </div>
+</div>
+</body>
+</html>
