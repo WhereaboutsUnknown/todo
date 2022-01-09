@@ -1,0 +1,195 @@
+.worker-statistics-container {
+    width: 300px;
+    background: #2f2f2f;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: 'Arial', sans-serif;
+    border-bottom: solid 2px whitesmoke;
+}
+
+.worker-statistics-inline-container {
+    background: transparent;
+    display: flex;
+    justify-content: start;
+    font-family: 'Arial', sans-serif;
+}
+
+.success-scale {
+    width: 140px;
+    height: 10px;
+    background: url('https://colorscheme.ru/img/color-harmony-pastels/10/26.png') no-repeat;
+    margin-left: 75px;
+}
+
+.worker-statistics-inline-container div {
+    margin: 0;
+    margin-left: 5px;
+}
+
+.worker-statistics-inline-container .star-rating {
+    margin-top: 9px;
+}
+
+.worker-statistics-inline-container .success-scale {
+    margin-top: 12px;
+}
+
+.worker-statistics-inline-container .success-rate-container {
+    margin-top: 3px;
+}
+
+.success-rate-container {
+    display: flex;
+    justify-content: start;
+    padding: 5px;
+}
+
+.success-rate-success {
+    color: lightgreen;
+    margin-left: 80px;
+}
+
+.success-rate-slash {
+    color: gold;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.success-rate-fail {
+    color: red;
+}
+
+.stars {
+    margin-left: 80px;
+}
+
+.star-rating {
+    color: white;
+    margin-left: 85px;
+    margin-bottom: 10px;
+}
+
+.star {
+    font-size: x-large;
+    width: 20px;
+    display: inline-block;
+    color: white;
+}
+.star:last-child {
+    margin-right: 0;
+}
+.star:before {
+    content:'\2605';
+}
+.star.rate100 {
+    color: gold;
+}
+.star.rate75:after {
+    content:'\2605';
+    color: gold;
+    position: absolute;
+    margin-left: -20px;
+    width: 13px;
+    overflow: hidden;
+}
+.star.rate50:after {
+    content:'\2605';
+    color: gold;
+    position: absolute;
+    margin-left: -20px;
+    width: 10px;
+    overflow: hidden;
+}
+.star.rate25:after {
+    content:'\2605';
+    color: gold;
+    position: absolute;
+    margin-left: -20px;
+    width: 7px;
+    overflow: hidden;
+}
+
+.share95 {
+    background-position: 5%;
+}
+
+.share90 {
+    background-position: 10%;
+}
+
+.share85 {
+    background-position: 15%;
+}
+
+.share80 {
+    background-position: 20%;
+}
+
+.share75 {
+    background-position: 25%;
+}
+
+.share70 {
+    background-position: 30%;
+}
+
+.share65 {
+    background-position: 35%;
+}
+
+.share60 {
+    background-position: 40%;
+}
+
+.share55 {
+    background-position: 45%;
+}
+
+.share50 {
+    background-position: 50%;
+}
+
+.share45 {
+    background-position: 55%;
+}
+
+.share40 {
+    background-position: 60%;
+}
+
+.share35 {
+    background-position: 65%;
+}
+
+.share30 {
+    background-position: 70%;
+}
+
+.share25 {
+    background-position: 75%;
+}
+
+.share20 {
+    background-position: 80%;
+}
+
+.share15 {
+    background-position: 85%;
+}
+
+.share10 {
+    background-position: 90%;
+}
+
+.share5 {
+    background-position: 95%;
+}
+
+.share0 {
+    background-position: 100%;
+}
+
+.share100 {
+    background-position: 0;
+}

@@ -23,16 +23,16 @@ public class StatisticsFull {
     private Integer failed;
 
     @JsonProperty
-    private Integer doneShare;
+    private Double doneShare;
 
     @JsonProperty
-    private Integer failedShare;
+    private Double failedShare;
 
     @JsonProperty
     private Integer rejected;
 
     @JsonProperty
-    private Integer rejectedShare;
+    private Double rejectedShare;
 
     @JsonProperty
     private Integer responsible;

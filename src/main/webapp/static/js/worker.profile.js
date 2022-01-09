@@ -14,33 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     console.log(data);
                     for (var i = 0; i < data.length; i++) {
                         tasksCache.set(data[i].id, data[i]);
-                        list.append(
-                            `
-                        <li>
-                            <div class="task-block" id="${data[i].id}">
-                                <h3 class="task-status" id="task-status">${data[i].status}</h3>
-                                <div class="task-block-info">
-                                    <div class="task-block-header">
-                                        <h3 class="task-header" id="task-header">${data[i].header}</h3>
-                                    </div>
-                                    <div class="task-block-stack">
-                                        <p class="task-stack" id="task-stack">${data[i].stack}</p>
-                                    </div>
-                                    <div class="task-block-bottom-container">
-                                        <div class="task-block-bottom-block task-block-person">
-                                            <button title="${data[i].person.name}" class="task-person" id="${data[i].person.id}">
-                                                <img src="/static/images/person-icon.png" alt="${data[i].person.name}">
-                                            </button>
-                                        </div>
-                                        <div class="task-block-bottom-block task-block-deadline">
-                                            <p class="task-deadline" id="task-deadline">${data[i].deadline.replace('T', ' ')}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        `
-                        );
+                        list.append(taskElement(data[i]));
                     }
                 }
             );
@@ -57,10 +31,39 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function updateStatistics(data) {
+        if (data) {
+            const workerStars = data.points;
+            appendIfNonEmpty($('#star-rating-counter'), (workerStars ? workerStars : 0.0), false);
+            const scale = $('#success-scale');
+            if (data.doneShare) {
+                scale.addClass(resolveShareSelector(data.doneShare));
+            } else {
+                scale.attr('background-image', 'none');
+            }
+            if (workerStars) {
+                const starSelectors = resolveStarSelectors(workerStars);
+                if (starSelectors.length === 5) {
+                    for (let i = 0; i < 5; i++) {
+                        $('#star-' + (i + 1)).addClass(starSelectors[i]);
+                    }
+                } else {
+                    console.error("Error on rating rendering: ", starSelectors);
+                }
+            }
+            appendIfNonEmpty($('#tasks-done-counter'), (data.done ? data.done : 0), false);
+            appendIfNonEmpty($('#tasks-failed-counter'), (data.failed ? data.failed : 0), false);
+        }
+        else {
+            console.error("No statistics found!");
+        }
+    }
+
     function updateWorkerProfile(data) {
         $("#profile-name").empty().append(`${data.name}`);
         $("#profile-age").empty().append(`${data.age}`);
         $("#work-skills-info").empty().append(`${data.skills}`);
+        updateStatistics(data.statistics);
         appendIfNonEmpty($("#contacts-phone"), data.contacts.phoneNumber, 'tel:');
         appendIfNonEmpty($("#contacts-vk"),  data.contacts.vk, 'https://vk.com/');
         appendIfNonEmpty($("#contacts-email"), data.contacts.email, 'mailto:');

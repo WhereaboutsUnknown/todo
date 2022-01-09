@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="statistics-block" class="worker-statistics-container" id="worker-statistics">
+  <div class="stars">
+    <span class="star" id="star-1"></span>
+    <span class="star" id="star-2"></span>
+    <span class="star" id="star-3"></span>
+    <span class="star" id="star-4"></span>
+    <span class="star" id="star-5"></span>
+  </div>
+  <div class="star-rating" id="star-rating-counter">
+    0.0
+  </div>
+  <div class="success-scale" id="success-scale"></div>
+  <div class="success-rate-container">
+    <div class=success-rate-success id="tasks-done-counter">
+      0
+    </div>
+    <div class=success-rate-slash>
+      /
+    </div>
+    <div class=success-rate-fail id = "tasks-failed-counter">
+      0
+    </div>
+  </div>
+</div>
+</body>
+</html>

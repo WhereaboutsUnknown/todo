@@ -23,8 +23,8 @@ public class StatisticsBasic {
     private Integer failed;
 
     @JsonProperty
-    private Integer doneShare;
+    private Double doneShare;
 
     @JsonProperty
-    private Integer failedShare;
+    private Double failedShare;
 }

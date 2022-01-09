@@ -17,9 +17,9 @@ public class StatisticsMapper {
         dto.setDone(done);
         dto.setFailed(failed);
         int total = done + failed;
-        int doneShare = calculateShare(done, total);
+        double doneShare = calculateShare(done, total);
         dto.setDoneShare(doneShare);
-        dto.setFailedShare(100 - doneShare);
+        dto.setFailedShare(1.0 - doneShare);
         dto.setPoints(statistics.getPoints());
         return dto;
     }
@@ -34,22 +34,22 @@ public class StatisticsMapper {
         int failed = statistics.getFailed();
         int rejected = statistics.getRejected();
         int total = done + failed + rejected;
-        int doneShare = calculateShare(done, total);
-        int failedShare = calculateShare(failed, total);
+        double doneShare = calculateShare(done, total);
+        double failedShare = calculateShare(failed, total);
         dto.setDone(done);
         dto.setFailed(failed);
         dto.setRejected(rejected);
         dto.setDoneShare(doneShare);
         dto.setFailedShare(failedShare);
-        dto.setRejectedShare(100 - doneShare - failedShare);
+        dto.setRejectedShare(1.0 - doneShare - failedShare);
         dto.setResponsible(statistics.getResponsible());
         dto.setPoints(statistics.getPoints());
         return dto;
     }
 
-    private static int calculateShare(int part, int total) {
+    private static double calculateShare(int part, int total) {
         double partDouble = part * 1.0;
         double totalDouble = total * 1.0;
-        return (int) (partDouble / totalDouble * 100);
+        return partDouble / totalDouble;
     }
 }
