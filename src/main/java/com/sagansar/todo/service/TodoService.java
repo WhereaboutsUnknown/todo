@@ -331,6 +331,12 @@ public class TodoService {
         return todoTaskRepository.save(task);
     }
 
+    public void checkUserRightsOnTaskAsManager(@NonNull Integer userId, @NonNull Long taskId) throws BadRequestException {
+        if (!todoTaskRepository.existsByIdAndManagerUserId(taskId, userId)) {
+            throw new BadRequestException("Недостаточно прав для доступа к задаче!");
+        }
+    }
+
     /**
      * Validate TodoTask for existence and having one of valid statuses and get valid one
      *

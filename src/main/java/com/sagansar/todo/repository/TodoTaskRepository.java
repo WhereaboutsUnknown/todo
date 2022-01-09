@@ -20,4 +20,6 @@ public interface TodoTaskRepository extends JpaRepository<TodoTask, Long>, JpaSp
     List<TodoTask> findAllAvailable();
 
     List<TodoTask> findAllByUnitId(Integer unitId);
+
+    boolean existsByIdAndManagerUserId(Long id, Integer managerUserId);
 }
