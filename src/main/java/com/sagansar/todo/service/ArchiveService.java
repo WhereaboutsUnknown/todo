@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class ArchiveService {
 
-    private static final int ARCHIVED = 11;
+    private static final int ARCHIVED = TodoStatus.Status.ARCHIVE.getCode();
 
     private final ArchivedTaskRepository archivedTaskRepository;
 
