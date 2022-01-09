@@ -119,7 +119,7 @@ public class FileService {
         }
     }
 
-    public File getUserAvatar(Long avatarId) throws BadRequestException {
+    public File getUserAvatar(Long avatarId) {
         try {
             return getUserFile(avatarId);
         } catch (BadRequestException e) {
