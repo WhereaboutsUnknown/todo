@@ -85,7 +85,7 @@ public class InviteService {
             invite.setAccepted(false);
             invite.setChecked(true);
             inviteRepository.save(invite);
-            throw new BadRequestException("Задача недоступна!");
+            throw new BadRequestException("Эта задача больше не доступна!");
         }
         invite.setAccepted(accept);
         invite.setChecked(true);
