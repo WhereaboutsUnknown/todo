@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -82,6 +84,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setNote(message);
         notification.setUser(user);
+        notification.setFireTime(LocalDateTime.now(ZoneId.systemDefault()));
         return notification;
     }
 }

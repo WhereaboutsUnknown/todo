@@ -111,6 +111,10 @@ function taskElement(data) {
                         `;
 }
 
+function notificationElement(data) {
+    return `<div id="${data.id}">${data.note}<i>   ${data.fireTime}</i></div>`;
+}
+
 function taskRedirect(taskId) {
     const toUrl = root() + '/tasks/' + taskId;
     console.log(toUrl)
@@ -121,4 +125,52 @@ function taskRedirect(taskId) {
 
 $(document).on('click', '.task-block', function () {
     taskRedirect($(this).attr('id'));
+});
+
+$(document).on('mouseenter', '#notification-bell', function () {
+    const counter = $('#notification-counter');
+    if (counter.is(':empty')) {
+        return;
+    }
+    counter.empty();
+
+    let data = [];
+
+    $('#notification-list div').each(function () {
+        const noteId = $(this).attr('id');
+        if (!isNaN(noteId)) {
+            data.push(noteId);
+        }
+    });
+
+    rest("PUT", "/notifications", data, function (data) {
+        if (data.error) {
+            console.error("PUT " + api() + "/notifications", data.errors[0], data.error);
+            return;
+        }
+        console.log(data);
+    })
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    rest("GET", "/notifications", null, function (data) {
+        if (data.error) {
+            console.error("GET " + api() + "/notifications", data.errors[0], data.error);
+            return;
+        }
+        console.log(data);
+
+        const notifications = $('#notification-list');
+        let unread = 0;
+
+        for (var i = 0; i < data.length; i++) {
+            notifications.append(notificationElement(data[i]));
+            if (data[i].read === false) {
+                unread++;
+            }
+        }
+        const counter = $('#notification-counter');
+        counter.empty();
+        counter.append(unread > 0 ? unread : '');
+    });
 });

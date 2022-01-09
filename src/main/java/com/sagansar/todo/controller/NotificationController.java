@@ -2,6 +2,7 @@ package com.sagansar.todo.controller;
 
 import com.sagansar.todo.controller.dto.NotificationMessage;
 import com.sagansar.todo.controller.mapper.NotificationMapper;
+import com.sagansar.todo.controller.util.RestResponse;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.repository.NotificationRepository;
 import com.sagansar.todo.service.NotificationService;
@@ -33,16 +34,18 @@ public class NotificationController {
     @GetMapping("")
     public List<NotificationMessage> getNotifications() {
         User currentUser = securityService.getCurrentUser();
-        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Sort sort = Sort.by(Sort.Direction.DESC, "fireTime");
         return notificationRepository.findAllByUserId(currentUser.getId(), sort).stream()
                 .map(NotificationMapper::notificationToMessage)
                 .collect(Collectors.toList());
     }
 
     @PutMapping("")
-    public boolean markReadNotifications(@RequestParam(name = "id") List<Long> ids) {
+    public RestResponse markReadNotifications(@RequestBody List<Long> ids) {
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
-        notificationRepository.findAllById(ids).forEach(notification -> notification.setReadTime(now));
-        return true;
+        notificationRepository.findAllById(ids).stream()
+                .filter(notification -> notification.getReadTime() == null)
+                .forEach(notification -> notification.setReadTime(now));
+        return new RestResponse("Уведомления помечены, как прочтенные");
     }
 }

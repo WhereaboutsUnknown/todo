@@ -26,4 +26,7 @@ public class Notification {
 
     @Column(name = "read_time")
     private LocalDateTime readTime;
+
+    @Column(name = "fire_time")
+    private LocalDateTime fireTime;
 }
