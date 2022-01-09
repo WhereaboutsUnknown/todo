@@ -4,6 +4,7 @@ import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.general.Extension;
 import com.sagansar.todo.model.general.StoredFile;
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.TaskFile;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.repository.StoredFileRepository;
@@ -24,6 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService {
@@ -95,12 +99,14 @@ public class FileService {
         throw new BadRequestException("Загруженный файл отсутствует!");
     }
 
-    public TaskFile getTaskFile(Long id) throws BadRequestException {
+    public TaskFile getTaskFile(Long id, @NonNull User user) throws BadRequestException {
         if (id == null) {
             throw new BadRequestException("Отсутствует идентификатор файла!");
         }
-        return taskFileRepository.findById(id)
+        TaskFile file = taskFileRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Файл не найден!"));
+        checkUserAccessToTaskFile(file, user);
+        return file;
     }
 
     public byte[] getFileContent(TaskFile taskFile) throws BadRequestException {
@@ -117,7 +123,6 @@ public class FileService {
         try {
             return getUserFile(avatarId);
         } catch (BadRequestException e) {
-            logger.error(e.getResponseMessage());
             Path path = Paths.get(appUserFilesStoragePath, "user.jpg");
             return path.toFile();
         }
@@ -163,6 +168,29 @@ public class FileService {
             throw new BadRequestException("Файл не соответствует требуемому формату!");
         }
         return "." + extension.name().toLowerCase();
+    }
+
+    private void checkUserAccessToTaskFile(TaskFile file, User user) throws BadRequestException {
+        Set<Integer> fileRelatedUsers = new HashSet<>();
+        fileRelatedUsers.add(file.getCreator().getId());
+        TodoTask task = file.getTask();
+        fileRelatedUsers.addAll(
+                task.getUnit().getManagers().stream()
+                        .map(Manager::getUser)
+                        .filter(User::isActive)
+                        .map(User::getId)
+                        .collect(Collectors.toSet())
+        );
+        fileRelatedUsers.addAll(
+                task.getGroup().stream()
+                        .map(workerGroupTask -> workerGroupTask.getWorker().getUser())
+                        .filter(User::isActive)
+                        .map(User::getId)
+                        .collect(Collectors.toSet())
+        );
+        if (!fileRelatedUsers.contains(user.getId())) {
+            throw new BadRequestException("Недостаточно прав для доступа к файлу");
+        }
     }
 
 }

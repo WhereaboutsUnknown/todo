@@ -7,6 +7,7 @@ import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.work.TaskFile;
 import com.sagansar.todo.service.FileService;
 import com.sagansar.todo.service.SecurityService;
+import com.sagansar.todo.service.TodoService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -28,11 +29,10 @@ public class FileController {
 
     private final FileService fileService;
 
+    private final TodoService todoService;
+
     @PostMapping("/upload")
     public RestResponse uploadFile(@RequestParam(name = "file") MultipartFile file, @RequestParam(name = "taskId") Long taskId) throws BadRequestException {
-        if (!securityService.checkUserRights(RoleEnum.MANAGER)) {
-            throw new BadRequestException("Недостаточно прав для загрузки файла!");
-        }
         User user = securityService.getCurrentUser();
         if (user == null) {
             throw new BadRequestException("Пользователь не найден!");
@@ -40,6 +40,7 @@ public class FileController {
         if (taskId == null) {
             throw new BadRequestException("Задача не найдена!");
         }
+        todoService.checkUserRightsOnTaskAsManager(user.getId(), taskId);
         fileService.storeFile(user, file, taskId);
         return new RestResponse("Файл загружен!");
     }
@@ -57,7 +58,11 @@ public class FileController {
 
     @RequestMapping(path = "/download/{id}", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable(name = "id") Long fileId) throws BadRequestException {
-        TaskFile taskFile = fileService.getTaskFile(fileId);
+        User user = securityService.getCurrentUser();
+        if (user == null) {
+            throw new BadRequestException("Пользователь не найден!");
+        }
+        TaskFile taskFile = fileService.getTaskFile(fileId, user);
         ByteArrayResource resource = new ByteArrayResource(fileService.getFileContent(taskFile));
 
         return ResponseEntity.ok()
@@ -69,7 +74,11 @@ public class FileController {
 
     @RequestMapping(path = "/video/{id}", method = RequestMethod.GET)
     public ResponseEntity<FileSystemResource> streamVideo(@PathVariable(name = "id") Long fileId) throws BadRequestException {
-        TaskFile taskFile = fileService.getTaskFile(fileId);
+        User user = securityService.getCurrentUser();
+        if (user == null) {
+            throw new BadRequestException("Пользователь не найден!");
+        }
+        TaskFile taskFile = fileService.getTaskFile(fileId, user);
         return ResponseEntity.ok().body(new FileSystemResource(fileService.getFile(taskFile)));
     }
 
