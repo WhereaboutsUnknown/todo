@@ -131,5 +131,5 @@
 
 .task-creation-block:hover {
     background: url('../images/icons-plus.png') 50% / 100px no-repeat #eeeeee;
-    color: white;
+    color: transparent;
 }
