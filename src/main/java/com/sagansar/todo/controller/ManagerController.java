@@ -214,8 +214,8 @@ public class ManagerController {
     @DeleteMapping("/{supervisorId}/tasks/{taskId}/manager")
     public TaskFullDto removeTaskManager(@PathVariable(name = "supervisorId") Integer supervisorId,
                                     @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
-        securityService.getAuthorizedManager(supervisorId);
+        Manager supervisor = securityService.getAuthorizedManager(supervisorId);
         validationService.checkNullSafety(taskId);
-        return TaskMapper.taskToFull(todoService.removeTaskManager(taskId));
+        return TaskMapper.taskToFull(todoService.removeTaskManager(supervisor, taskId));
     }
 }

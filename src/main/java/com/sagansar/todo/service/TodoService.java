@@ -312,17 +312,21 @@ public class TodoService {
     /**
      * Remove Manager from task
      *
+     * @param supervisor Unit supervisor
      * @param taskId task ID
      * @return changed task
      * @throws BadRequestException in case of invalid task ID
      */
-    public TodoTask removeTaskManager(@NonNull Long taskId) throws BadRequestException {
+    public TodoTask removeTaskManager(@NonNull Manager supervisor, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId);
+        if (!supervisor.getUnit().getId().equals(task.getUnit().getId())) {
+            throw new BadRequestException("Задача относится к другому отделу!");
+        }
         Manager manager = task.getManager();
-        if (manager == null) {
+        if (supervisor.getId().equals(manager.getId())) {
             return task;
         }
-        task.setManager(null);
+        task.setManager(supervisor);
         notificationService.sendTaskManagerNotification(manager.getUser(), task.getHeader(), false);
         return todoTaskRepository.save(task);
     }
