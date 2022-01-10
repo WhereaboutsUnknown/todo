@@ -127,7 +127,7 @@ h2{
 .basic-button.delete-button {
     background-image: url("/static/images/delete-icon.png");
 }*/
-.workspace-tasks{
+.workspace-fragment{
     margin: 10px 10px 10px 0;
     display: flex;
     flex-direction: column;
@@ -146,12 +146,12 @@ h2{
     position: relative;
     top: 2px;
 }
-.task-block-list-container {
+.workspace-block-list-container {
     width: 100%;
     flex-grow: 30;
     overflow-y: scroll;
 }
-.task-block-list {
+.workspace-block-list {
     list-style: none;
     width: 100%;
     margin: 0;
@@ -159,7 +159,7 @@ h2{
     display: flex;
     flex-wrap: wrap;
 }
-.task-block-list li {
+.workspace-block-list li {
     flex: 0 0 33.333333%;
 }
 .page-numbers{
@@ -232,6 +232,7 @@ h2{
     height: 60px;
     background-color: #eeeeee;
     display: flex;
+    min-width: 620px;
 }
 
 .tool-container {
@@ -275,6 +276,7 @@ h2{
 .sort-select {
     height: 20px;
     margin-top: 10px;
+    max-width: 120px;
 }
 
 .sort-tool .sort-direction-btn {
