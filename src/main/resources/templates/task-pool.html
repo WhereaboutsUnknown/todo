@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
     <title>Задачи | TODO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
 <div th:replace="fragments/header.html :: header(role=${userRole}, isSupervisor=${supervisor}, main=false)"></div>
 <div class="task-pool-container">
     <div th:replace="fragments/search-fragment.html :: search-fragment(block='task-pool')"></div>
-    <div th:replace="fragments/workspace-tasks.html :: workspace-tasks(creation=false)"></div>
+    <div th:replace="fragments/workspace-fragment.html :: workspace-fragment(creation=false, type='tasks')"></div>
 </div>
 <div th:replace="fragments/footer.html :: common-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
