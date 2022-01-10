@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <div th:replace="fragments/workspace-tasks.html :: workspace-tasks(creation=true)"></div>
+        <div th:replace="fragments/workspace-fragment.html :: workspace-fragment(creation=true, type='tasks')"></div>
     </div>
     <div th:replace="fragments/footer.html :: common-footer"></div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
