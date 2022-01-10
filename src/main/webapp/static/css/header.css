@@ -44,7 +44,6 @@ header {
     text-decoration: none;
     text-align: center;
     position: relative;
-    top: 8px;
 }
 
 .menu-item-logo-href:hover {
@@ -258,7 +257,7 @@ header {
     background: url('../images/bell-icon.png') 0 0 no-repeat;
     position: relative;
     top: 15px;
-    left: 120px;
+    left: 0;
 }
 
 .notification-counter {
@@ -287,6 +286,11 @@ header {
 .notification-list div {
     flex: 1;
     padding: 30px;
+}
+
+.notification-list div i {
+    font-size: 10px;
+    color: #bbbbbb;
 }
 
 .notification-list div:hover {
