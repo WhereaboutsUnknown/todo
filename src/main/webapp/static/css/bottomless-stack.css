@@ -1,0 +1,21 @@
+.bottomless-stack-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    width: 100%;
+}
+
+.bottomless-stack-element-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height: 760px;
+}
+
+.bottomless-stack-element {
+    min-height: 100px;
+    margin: 2px 4px;
+    border-radius: 3px;
+    background-color: #f4f6f8;
+    flex: 1;
+}
