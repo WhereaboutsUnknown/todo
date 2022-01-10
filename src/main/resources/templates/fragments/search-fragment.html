@@ -16,10 +16,15 @@
     <a class="extended-search-anchor" href="#extended-search-block">Расширенный поиск...</a>
   </div>
   <div class="tool-container sort-tool">
-    <select name="sort-select" class="sort-select">
+    <select name="sort-select" class="sort-select" id="sort-select-input">
       <option disabled>Сортировать по</option>
       <option th:if="${block == 'task-pool'}" selected value="deadline">срокам</option>
       <option th:if="${block == 'task-pool'}" value="creationTime">времени создания</option>
+      <option th:if="${block == 'invites'}" selected value="creationTime">времени создания</option>
+      <option th:if="${block == 'invites'}" value="accepted">принятиям/отказам</option>
+      <option th:if="${block == 'invites'}" value="checked">просмотренным/непросмотренным</option>
+      <option th:if="${block == 'responses'}" selected value="creationTime">времени создания</option>
+      <option th:if="${block == 'responses'}" value="checked">просмотренным/непросмотренным</option>
     </select>
     <div class="sort-direction-btn" id="sort-direction-btn">
     </div>
