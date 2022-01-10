@@ -1,0 +1,12 @@
+.responses-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 800px;
+}
+
+@media (max-width: 800px) {
+    .responses-container {
+        width: 99%;
+    }
+}
