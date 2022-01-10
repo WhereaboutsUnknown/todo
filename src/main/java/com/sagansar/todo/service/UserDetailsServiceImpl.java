@@ -3,6 +3,7 @@ package com.sagansar.todo.service;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.general.UserAuthDetails;
 import com.sagansar.todo.repository.UserRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,7 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (principal instanceof UserDetails) {
             user = (UserDetails) principal;
         } else {
-            throw new RuntimeException("Unable to load user!");
+            throw new AccessDeniedException("Unable to load user!");
         }
 
         return user.getAuthorities().stream()
