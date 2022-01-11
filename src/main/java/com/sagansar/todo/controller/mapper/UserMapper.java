@@ -39,6 +39,7 @@ public class UserMapper {
             dto.setRole(dto.getRole() + ", Руководитель");
         }
         dto.setActive(user.isActive());
+        dto.setRegistrationDate(user.getRegistrationDate());
         return dto;
     }
 }
