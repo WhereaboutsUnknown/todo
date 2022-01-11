@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.Set;
@@ -15,6 +16,10 @@ import java.util.Set;
 @Setter
 @Entity(name = "user_accs")
 public class User implements Serializable {
+
+    public User() {
+        this.registrationDate = LocalDateTime.now(ZoneId.systemDefault());
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +55,9 @@ public class User implements Serializable {
 
     @Column(name = "avatar_id")
     protected Long avatar;
+
+    @Column(name = "reg_date")
+    protected LocalDateTime registrationDate;
 
     public void block() {
         active = false;
