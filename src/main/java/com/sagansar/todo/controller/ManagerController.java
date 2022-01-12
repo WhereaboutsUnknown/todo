@@ -4,10 +4,7 @@ import com.sagansar.todo.controller.dto.InviteDto;
 import com.sagansar.todo.controller.dto.ManagerDto;
 import com.sagansar.todo.controller.dto.TaskFullDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
-import com.sagansar.todo.controller.mapper.InviteMapper;
-import com.sagansar.todo.controller.mapper.ManagerMapper;
-import com.sagansar.todo.controller.mapper.PersonMapper;
-import com.sagansar.todo.controller.mapper.TaskMapper;
+import com.sagansar.todo.controller.mapper.*;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.model.external.TaskEstimateTable;
@@ -125,8 +122,10 @@ public class ManagerController {
         }
         TodoTask task = todoService.publishTask(manager, taskId, visibleToAll);
         TaskFullDto dto = TaskMapper.taskToFull(task);
-        List<Integer> invited = inviteService.sendInvitesToAll(workersToInvite, task);
-        dto.setInvited(invited);
+        List<Worker> invited = inviteService.sendInvitesToAll(workersToInvite, task);
+        dto.setInvited(invited.stream()
+                .map(PersonMapper::workerToName)
+                .collect(Collectors.toList()));
 
         return dto;
     }
