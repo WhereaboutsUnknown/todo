@@ -11,6 +11,16 @@
     border: 1px solid #195fd4;
     background: #195fd4;
     color: white;
+    display: flex;
+    height: 20px;
+}
+
+.task-status img {
+    height: 20px;
+}
+
+.alert-container {
+    margin-left: 3px;
 }
 
 .task-block-info {
