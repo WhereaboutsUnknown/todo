@@ -2,6 +2,7 @@ package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.model.general.Extension;
+import com.sagansar.todo.model.general.FilePurpose;
 import com.sagansar.todo.model.general.StoredFile;
 import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
@@ -123,7 +124,7 @@ public class FileService {
         try {
             return getUserFile(avatarId);
         } catch (BadRequestException e) {
-            Path path = Paths.get(appUserFilesStoragePath, "user.jpg");
+            Path path = Paths.get(appUserFilesStoragePath, FilePurpose.USER_AVATAR.getDefaultFile());
             return path.toFile();
         }
     }
@@ -135,6 +136,15 @@ public class FileService {
         StoredFile storedFile = storedFileRepository.findById(fileId)
                 .orElseThrow(() -> new BadRequestException("Файл не найден!"));
         Path path = Paths.get(usersFileStoragePath, storedFile.getName());
+        return path.toFile();
+    }
+
+    public File getUserFile(Long fileId, Long purpose) throws BadRequestException {
+        FilePurpose filePurpose = FilePurpose.fromId(purpose);
+        if (storedFileRepository.existsById(fileId)) {
+            return getUserFile(fileId);
+        }
+        Path path = Paths.get(appUserFilesStoragePath, filePurpose.getDefaultFile());
         return path.toFile();
     }
 
