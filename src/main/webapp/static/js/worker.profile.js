@@ -126,7 +126,6 @@ window.addEventListener("DOMContentLoaded", () => {
     req();
 
     $("#refresh-button").click(function () {
-        $("#task-block-list").empty();
         tasks();
     });
 
