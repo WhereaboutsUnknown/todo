@@ -10,4 +10,6 @@ public interface InviteRepository extends JpaRepository<Invite, Long> {
     List<Invite> findAllByTaskId(Long taskId);
 
     List<Invite> findAllByWorkerId(Integer workerId);
+
+    boolean existsByWorkerIdAndTaskId(Integer workerId, Long taskId);
 }
