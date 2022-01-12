@@ -23,6 +23,7 @@ public class TaskMapper {
         if (status != null) {
             dto.setStatus(status.getDescription());
         }
+        dto.setAlert(task.getAlert());
         return dto;
     }
 
@@ -54,6 +55,9 @@ public class TaskMapper {
         if (status != null) {
             dto.setStatus(status.getDescription());
         }
+        dto.setPlannedStart(task.getPlannedStart());
+        dto.setHistory(task.getHistory());
+        dto.setAlert(task.getAlert());
 
         return dto;
     }

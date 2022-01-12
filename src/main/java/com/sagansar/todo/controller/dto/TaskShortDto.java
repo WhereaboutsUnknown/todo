@@ -2,6 +2,7 @@ package com.sagansar.todo.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sagansar.todo.model.work.taskmeta.TaskAlert;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,7 @@ public class TaskShortDto {
 
     @JsonProperty
     private PersonNameDto person;
+
+    @JsonProperty
+    private TaskAlert alert;
 }

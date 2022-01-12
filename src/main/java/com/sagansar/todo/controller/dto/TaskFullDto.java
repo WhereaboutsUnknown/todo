@@ -2,6 +2,7 @@ package com.sagansar.todo.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sagansar.todo.model.work.taskmeta.TaskAlert;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -57,4 +58,13 @@ public class TaskFullDto {
 
     @JsonProperty
     private List<FileBasic> files;
+
+    @JsonProperty
+    private LocalDateTime plannedStart;
+
+    @JsonProperty
+    private String history;
+
+    @JsonProperty
+    private TaskAlert alert;
 }
