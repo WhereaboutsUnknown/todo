@@ -1,6 +1,7 @@
 package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
+import com.sagansar.todo.infrastructure.exceptions.WarningException;
 import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.*;
@@ -443,6 +444,9 @@ public class TodoService {
     }
 
     private void sendWorkerResponse(TodoTask task, Worker worker, String message) {
+        if (responseRepository.existsByWorkerIdAndTaskId(worker.getId(), task.getId())) {
+            throw new WarningException("Отклик уже был отправлен!");
+        }
         WorkerResponse response = new WorkerResponse();
         response.setWorker(worker);
         response.setTask(task);
