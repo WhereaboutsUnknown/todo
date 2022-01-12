@@ -294,6 +294,30 @@ h2{
     cursor: pointer;
 }
 
+[jumphint] {
+    position: relative; /* Относительное позиционирование */
+}
+
+[jumphint]::after {
+    content: attr(jumphint); /* Вывод */
+    position: absolute; /* Абсолютное позиционирование */
+    width: 300px; /* Ширина подсказки */
+    left: 0; top: 0; /* Положение подсказки */
+    background: #2f2f2f;
+    color: #fada59; /* Цвет текста */
+    font-weight: bold;
+    padding: 0.5em; /* Поля вокруг текста */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    pointer-events: none; /* Подсказка */
+    opacity: 0; /* Подсказка невидима */
+    transition: 1s; /* Время появления подсказки */
+}
+
+[jumphint]:hover::after {
+    opacity: 1; /* Показываем подсказку */
+    top: 2em; /* Положение подсказки */
+}
+
 .disabled {
     display: none !important;
 }
