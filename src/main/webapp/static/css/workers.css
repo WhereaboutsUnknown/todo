@@ -1,0 +1,85 @@
+.workers-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 1000px;
+    background-color: white;
+}
+
+.workers-container .workspace-fragment {
+    margin: 0;
+}
+
+.workers-container .workspace-block-list li {
+    margin-left: 50px;
+}
+
+@media (max-width: 1000px) {
+    .workers {
+        width: 99%;
+    }
+}
+
+.worker-block {
+    margin: 10px;
+    box-shadow: 2px 2px 5px 2px #b6b6b6;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    width: 400px;
+}
+
+.worker-block-header-container {
+    display: flex;
+    background: #2f2f2f;
+    height: 80px;
+}
+
+.worker-block:hover {
+    cursor: pointer;
+}
+
+.worker-block:hover .worker-block-header-container {
+    background: #4f4f4f;
+}
+
+.worker-avatar-container {
+    flex: 1;
+}
+
+.worker-personal-and-stats-container {
+    flex: 6;
+    padding: 5px;
+}
+
+.worker-block-info-container {
+    height: 100px;
+    padding: 10px;
+    overflow: hidden;
+    min-width: 100%;
+}
+
+.worker-skills-info-block {
+    text-align: center;
+    overflow: hidden;
+}
+
+.worker-name-block {
+    margin-top: 5px;
+    margin-left: 10px;
+    color: white;
+    font-size: 18px;
+}
+
+.worker-age-block {
+    color: white;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.worker-avatar {
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+    padding: 10px;
+}
