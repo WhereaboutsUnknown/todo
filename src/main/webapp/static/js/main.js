@@ -107,13 +107,36 @@ function showDone(message) {
     });
 }
 
+function alertElement(data) {
+    if (data) {
+        if (data.errorAlert) {
+            return `<div class="alert-container" jumphint="${data.errorAlert}">
+                        <img src="/static/images/error.png" alt="">
+                    </div>`;
+        } else if (data.warningAlert) {
+            return `<div class="alert-container" jumphint="${data.warningAlert}">
+                        <img src="/static/images/warning.png" alt="">
+                    </div>`;
+        } else if (data.infoAlert) {
+            return `<div class="alert-container" jumphint="${data.infoAlert}">
+                        <img src="/static/images/info.png" alt="">
+                    </div>`;
+        }
+    }
+    return '';
+}
+
 function taskElement(data) {
     const person = data.person;
     const btnClass = (person ? '' : ' inactivated');
     return `
                         <li>
                             <div class="task-block" id="${data.id}">
-                                <h3 class="task-status" id="task-status">${data.status}</h3>
+                                <h3 class="task-status" id="task-status">
+                                    ${data.status}
+                                    ${alertElement(data.alert)}
+                                    ${alertElement(data.responsesInfo)}
+                                </h3>
                                 <div class="task-block-info">
                                     <div class="task-block-header">
                                         <h3 class="task-header" id="task-header">${data.header}</h3>
