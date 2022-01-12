@@ -121,12 +121,7 @@ h2{
     box-shadow: 0 0 1px 2px #fce0ae;
     cursor: pointer;
 }
-/*.basic-button.edit-button {
-    background-image: url("/static/images/edit-icon.png");
-}
-.basic-button.delete-button {
-    background-image: url("/static/images/delete-icon.png");
-}*/
+
 .workspace-fragment{
     margin: 10px 10px 10px 0;
     display: flex;
@@ -158,6 +153,7 @@ h2{
     padding: 0;
     display: flex;
     flex-wrap: wrap;
+    max-height: 600px;
 }
 .workspace-block-list li {
     flex: 0 0 33.333333%;
