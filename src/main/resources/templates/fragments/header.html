@@ -30,13 +30,13 @@
       <li class="menu-item" th:if="${role == 'ADMIN'}">
         <a class="menu-item-href menu-item-active" th:href="@{/console}" th:text="КОНСОЛЬ"></a>
       </li>
-      <li class="menu-item" th:if="${role != 'ADMIN'}">
+      <li class="menu-item empty-item" th:if="${role != 'ADMIN'}">
       </li>
-      <li class="menu-item" th:if="${role != 'ADMIN'}">
+      <li class="menu-item empty-item" th:if="${role != 'ADMIN'}">
       </li>
-      <li class="menu-item" th:if="${role != 'ADMIN' && role != 'SUPERVISOR'}">
+      <li class="menu-item empty-item" th:if="${role != 'ADMIN' && role != 'SUPERVISOR'}">
       </li>
-      <li class="menu-item" th:if="${role == 'FREELANCER'}">
+      <li class="menu-item empty-item" th:if="${role == 'FREELANCER'}">
       </li>
       <li class="menu-item notifications-container">
         <div class="notification-button" id="notification-bell">

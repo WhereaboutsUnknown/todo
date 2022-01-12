@@ -162,6 +162,10 @@ header {
         color: black;
         max-width: 50%;
     }
+
+    .navbar-content .empty-item {
+        display: none;
+    }
 }
 
 @media (max-width: 950px) {
