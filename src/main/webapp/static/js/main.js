@@ -1,3 +1,29 @@
+class TodoApp {
+    constructor() {
+        this.todoCache = new Map();
+    }
+
+    store(attrName, attrValue) {
+        if (attrName) {
+            this.todoCache.set(attrName, attrValue);
+        }
+    }
+
+    removeAttr(attrName) {
+        this.todoCache.remove(attrName);
+    }
+
+    getValue(attrName) {
+        return this.todoCache.get(attrName);
+    }
+
+    getAvatarFileType() {
+        return 1;
+    }
+}
+
+const Todo = new TodoApp();
+
 function root() {
     return 'http://localhost:8080';
 }
@@ -7,7 +33,7 @@ function api() {
 }
 
 function avatarEndpoint(avatarId) {
-    return api() + "/file-service/user/file/" + avatarId;
+    return api() + "/file-service/user/file/" + (avatarId ? avatarId : 0) + "?type=" + Todo.getAvatarFileType();
 }
 
 function rest(method, url, body, callback) {
@@ -109,6 +135,42 @@ function taskElement(data) {
                             </div>
                         </li>
                         `;
+}
+
+function workerElement(data) {
+    if (data) {
+
+        const statistics = data.statistics;
+
+        return `<li>
+                <div class="worker-block" id="${data.id}">
+                    <div class="worker-block-header-container">
+                        <div class="worker-avatar-container">
+                            <img class="worker-avatar" src="${avatarEndpoint(data.avatar)}" alt="Фото">
+                        </div>
+                        <div class="worker-personal-and-stats-container">
+                            <div class="worker-name-block">${data.name ? data.name : ' '}</div>
+                            <div class="worker-age-block">${data.age ? data.age : ' '}</div>
+                            <div class="worker-statistics-inline-container">
+                                <div class="stars">
+                                    <span class="star rate100"></span>
+                                </div>
+                                <div class="star-rating">${statistics ? statistics.points : 0.0}</div>
+                                <div class="${'success-scale' + (statistics ? ' ' + resolveShareSelector(statistics.doneShare) : '')}"></div>
+                                <div class="success-rate-container">
+                                    <div class=success-rate-success>${statistics ? statistics.done : 0}</div>
+                                    <div class=success-rate-slash>/</div>
+                                    <div class=success-rate-fail>${statistics ? statistics.failed : 0}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="worker-block-info-container">
+                        <div class="worker-skills-info-block">${data.skills ? data.skills : ' '}</div>
+                    </div>
+                </div>
+                </li>`
+    }
 }
 
 function notificationElement(data) {
