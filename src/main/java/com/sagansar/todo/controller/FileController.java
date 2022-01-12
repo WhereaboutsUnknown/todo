@@ -83,7 +83,11 @@ public class FileController {
     }
 
     @RequestMapping(path = "/user/file/{id}", method = RequestMethod.GET)
-    public ResponseEntity<FileSystemResource> getUserFile(@PathVariable(name = "id") Long fileId) throws BadRequestException {
+    public ResponseEntity<FileSystemResource> getUserFile(@PathVariable(name = "id") Long fileId,
+                                                          @RequestParam(name = "type", required = false) Long purpose) throws BadRequestException {
+        if (purpose != null) {
+            return ResponseEntity.ok().body(new FileSystemResource(fileService.getUserFile(fileId, purpose)));
+        }
         return ResponseEntity.ok().body(new FileSystemResource(fileService.getUserFile(fileId)));
     }
 
