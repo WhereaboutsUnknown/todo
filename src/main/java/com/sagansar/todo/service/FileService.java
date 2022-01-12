@@ -14,6 +14,7 @@ import com.sagansar.todo.repository.TodoTaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -105,7 +106,7 @@ public class FileService {
             throw new BadRequestException("Отсутствует идентификатор файла!");
         }
         TaskFile file = taskFileRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Файл не найден!"));
+                .orElseThrow(() -> new BadRequestException("Файл не найден!", HttpStatus.NOT_FOUND));
         checkUserAccessToTaskFile(file, user);
         return file;
     }
@@ -116,7 +117,7 @@ public class FileService {
             return Files.readAllBytes(path);
         } catch (IOException e) {
             logger.error(e.getMessage());
-            throw new BadRequestException("Ошибка при чтении файла!");
+            throw new BadRequestException("Ошибка при чтении файла!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -134,7 +135,7 @@ public class FileService {
             throw new BadRequestException("Отсутствует идентификатор файла!");
         }
         StoredFile storedFile = storedFileRepository.findById(fileId)
-                .orElseThrow(() -> new BadRequestException("Файл не найден!"));
+                .orElseThrow(() -> new BadRequestException("Файл не найден!", HttpStatus.NOT_FOUND));
         Path path = Paths.get(usersFileStoragePath, storedFile.getName());
         return path.toFile();
     }
@@ -199,7 +200,7 @@ public class FileService {
                         .collect(Collectors.toSet())
         );
         if (!fileRelatedUsers.contains(user.getId())) {
-            throw new BadRequestException("Недостаточно прав для доступа к файлу");
+            throw new BadRequestException("Недостаточно прав для доступа к файлу", HttpStatus.FORBIDDEN);
         }
     }
 

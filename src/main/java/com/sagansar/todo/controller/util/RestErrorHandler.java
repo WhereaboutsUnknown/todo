@@ -110,7 +110,7 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleBadRequest(BadRequestException ex, WebRequest request) {
         ex.printStackTrace();
         RestError error =
-                new RestError(HttpStatus.OK, ex.getResponseMessage(), "400");
+                new RestError(HttpStatus.OK, ex.getResponseMessage(), (ex.getStatus() == null ? "400" : ex.getStatus()));
         return new ResponseEntity<>(
                 error, new HttpHeaders(), error.getStatus());
     }
