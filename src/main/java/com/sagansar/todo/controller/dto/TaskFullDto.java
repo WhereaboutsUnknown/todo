@@ -53,7 +53,7 @@ public class TaskFullDto {
     private List<PersonNameDto> group;
 
     @JsonProperty
-    private List<Integer> invited;
+    private List<PersonNameDto> invited;
 
     @JsonProperty
     private List<FileBasic> files;

@@ -47,6 +47,9 @@ public class TaskMapper {
         dto.setFiles(task.getFiles().stream()
                 .map(FileMapper::fileToBasic)
                 .collect(Collectors.toList()));
+        dto.setInvited(task.getInvites().stream()
+                .map(invite -> PersonMapper.workerToName(invite.getWorker()))
+                .collect(Collectors.toList()));
         TodoStatus status = task.getStatus();
         if (status != null) {
             dto.setStatus(status.getDescription());

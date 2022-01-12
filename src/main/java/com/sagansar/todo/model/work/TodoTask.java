@@ -53,6 +53,9 @@ public class TodoTask {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<TaskFile> files;
 
+    @OneToMany(mappedBy = "task")
+    private List<Invite> invites;
+
     @Column(name = "main_stack")
     private String stack;
 
