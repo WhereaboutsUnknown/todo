@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -44,23 +45,24 @@ public class InviteService {
      * @param workers Worker ID list
      * @param task task
      */
-    public List<Integer> sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
+    public List<Worker> sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
         if (workers == null || workers.isEmpty()) {
             throw new WarningException("Приглашения не отправлены: не выбрано ни одного исполнителя!");
         }
-        List<Integer> invited = new ArrayList<>();
+        List<Worker> invited = new ArrayList<>();
         workers.stream()
                 .map(workerRepository::findById)
                 .flatMap(Optional::stream)
                 .filter(worker -> worker.getUser() != null)
                 .filter(Worker::isActive)
-                .peek(worker -> notificationService.sendInviteNotification(worker.getUser(), task.getHeader()))
                 .map(worker -> createInvite(worker, task))
+                .filter(Objects::nonNull)
                 .map(inviteRepository::save)
                 .forEach(invite -> {
                     if (socialMediaService.sendTelegramInvite(invite)) {
-                        invited.add(invite.getWorker().getId());
+                        invited.add(invite.getWorker());
                     }
+                    notificationService.sendInviteNotification(invite.getWorker().getUser(), task.getHeader());
                 });
         return invited;
     }
@@ -112,6 +114,10 @@ public class InviteService {
     }
 
     private Invite createInvite(Worker worker, TodoTask task) {
+        if (inviteRepository.existsByWorkerIdAndTaskId(worker.getId(), task.getId())) {
+            logger.error("Сотрудник {} уже приглашен на задачу {}", worker.getId(), task.getId());
+            return null;
+        }
         Invite invite = new Invite();
         invite.setTask(task);
         invite.setWorker(worker);
