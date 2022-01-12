@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum FilePurpose {
-    USER_AVATAR(1L, Extension.Type.IMAGE, "user.jpg"),
+    USER_AVATAR(1L, Extension.Type.IMAGE, "user.png"),
     TASK_VIDEO(2L, Extension.Type.VIDEO, ""),
     UNKNOWN(0, Extension.Type.FILE, "");
 
