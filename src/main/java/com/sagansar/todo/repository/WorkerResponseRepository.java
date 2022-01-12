@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface WorkerResponseRepository extends JpaRepository<WorkerResponse, Long> {
 
-    List<WorkerResponse> findAllByTaskIdAndAndCheckedFalse(Long taskId);
+    List<WorkerResponse> findAllByTaskIdAndCheckedFalse(Long taskId);
 }

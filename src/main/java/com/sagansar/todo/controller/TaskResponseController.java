@@ -39,7 +39,7 @@ public class TaskResponseController {
         Manager manager = securityService.getAuthorizedManager(managerId);
         return manager.getTasks().stream()
                 .map(TodoTask::getId)
-                .flatMap(id -> workerResponseRepository.findAllByTaskIdAndAndCheckedFalse(id).stream())
+                .flatMap(id -> workerResponseRepository.findAllByTaskIdAndCheckedFalse(id).stream())
                 .map(WorkerResponseMapper::responseToBasic)
                 .collect(Collectors.toList());
     }
