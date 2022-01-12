@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class TaskInfo implements TaskAlert {
 
-    private String info;
+    private String infoAlert;
 
     public TaskInfo(String message) {
-        this.info = message;
+        this.infoAlert = message;
     }
 }

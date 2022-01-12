@@ -66,5 +66,5 @@ public class TaskFullDto {
     private String history;
 
     @JsonProperty
-    private TaskAlert alert;
+    private List<TaskAlert> alerts;
 }

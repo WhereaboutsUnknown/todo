@@ -78,17 +78,14 @@ public class ManagerController {
                                               @RequestParam(name = "unit", required = false) boolean needUnit) {
         Manager manager = securityService.getAuthorizedManager(managerId);
         List<TodoTask> tasks;
-        if (needUnit && securityService.checkUserRights(RoleEnum.SUPERVISOR)) {
+        boolean supervisor = securityService.checkUserRights(RoleEnum.SUPERVISOR);
+        if (needUnit && supervisor) {
             tasks = todoTaskRepository.findAllByUnitId(manager.getUnit().getId());
         } else {
             tasks = todoTaskRepository.findAllByManagerId(managerId);
         }
         return tasks.stream()
-                .map(task -> {
-                    TaskShortDto dto = TaskMapper.taskToShort(task);
-                    dto.setPerson(PersonMapper.workerToName(task.getWorker()));
-                    return dto;
-                })
+                .map(task -> TaskMapper.taskToShort(task, manager, supervisor))
                 .collect(Collectors.toList());
     }
 
@@ -97,18 +94,18 @@ public class ManagerController {
                                    @RequestBody TaskForm taskForm) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.validate(taskForm);
-        return TaskMapper.taskToShort(todoService.createTask(manager, taskForm));
+        return TaskMapper.taskToShort(todoService.createTask(manager, taskForm), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @GetMapping("/{managerId}/tasks/{taskId}")
     public TaskFullDto getTask(@PathVariable(name = "managerId") Integer managerId,
                                @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
-        securityService.getAuthorizedManager(managerId);
+        Manager manager = securityService.getAuthorizedManager(managerId);
         if (taskId == null) {
             throw new BadRequestException("В запросе отсутствует ID задачи!");
         }
         return TaskMapper.taskToFull(todoTaskRepository.findById(taskId)
-                .orElseThrow(() -> new BadRequestException("Задача не найдена!")));
+                .orElseThrow(() -> new BadRequestException("Задача не найдена!")), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @PostMapping("/{managerId}/tasks/{taskId}")
@@ -121,7 +118,7 @@ public class ManagerController {
             throw new BadRequestException("В запросе отсутствует ID задачи!");
         }
         TodoTask task = todoService.publishTask(manager, taskId, visibleToAll);
-        TaskFullDto dto = TaskMapper.taskToFull(task);
+        TaskFullDto dto = TaskMapper.taskToFull(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
         List<Worker> invited = inviteService.sendInvitesToAll(workersToInvite, task);
         dto.setInvited(invited.stream()
                 .map(PersonMapper::workerToName)
@@ -145,15 +142,16 @@ public class ManagerController {
             throw new BadRequestException("Задача не относится к отделу " + unit.getName());
         }
         Manager creator = task.getCreator();
-        return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimateTables));
+        return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimateTables), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @GetMapping("/{managerId}/tasks/{taskId}/invites")
     public List<InviteDto> getTaskInvites(@PathVariable(name = "managerId") Integer managerId,
                                           @PathVariable(name = "taskId") Long taskId) {
         securityService.getAuthorizedManager(managerId);
+        boolean supervisor = securityService.checkUserRights(RoleEnum.SUPERVISOR);
         return inviteService.findInvitesOnTask(taskId).stream()
-                .filter(invite -> managerId.equals(invite.getTask().getManager().getId()))
+                .filter(invite -> managerId.equals(invite.getTask().getManager().getId()) || supervisor)
                 .map(InviteMapper::inviteToDto)
                 .collect(Collectors.toList());
     }
@@ -164,7 +162,7 @@ public class ManagerController {
                                   @RequestBody Boolean review) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.checkNullSafety(taskId);
-        return TaskMapper.taskToFull(todoService.review(manager, taskId, review));
+        return TaskMapper.taskToFull(todoService.review(manager, taskId, review), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @DeleteMapping("/{managerId}/tasks/{taskId}")
@@ -172,7 +170,7 @@ public class ManagerController {
                                   @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.checkNullSafety(taskId);
-        return TaskMapper.taskToFull(todoService.cancel(manager, taskId));
+        return TaskMapper.taskToFull(todoService.cancel(manager, taskId), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @PutMapping("/{managerId}/tasks/{taskId}/worker")
@@ -183,7 +181,7 @@ public class ManagerController {
         validationService.checkNullSafety(taskId, workerId);
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new BadRequestException("Работник не найден!"));
-        return TaskMapper.taskToFull(todoService.setWorkerResponsible(manager, taskId, worker));
+        return TaskMapper.taskToFull(todoService.setWorkerResponsible(manager, taskId, worker), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @DeleteMapping("/{managerId}/tasks/{taskId}/worker")
@@ -194,7 +192,7 @@ public class ManagerController {
         validationService.checkNullSafety(taskId, workerId);
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new BadRequestException("Работник не найден!"));
-        return TaskMapper.taskToFull(todoService.deleteWorkerFromTask(manager, worker, taskId));
+        return TaskMapper.taskToFull(todoService.deleteWorkerFromTask(manager, worker, taskId), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @PreAuthorize("hasAuthority('SUPERVISOR')")
@@ -202,11 +200,11 @@ public class ManagerController {
     public TaskFullDto setTaskManager(@PathVariable(name = "supervisorId") Integer supervisorId,
                                             @PathVariable(name = "taskId") Long taskId,
                                             @RequestParam(name = "id") Integer managerId) throws BadRequestException {
-        securityService.getAuthorizedManager(supervisorId);
+        Manager supervisor = securityService.getAuthorizedManager(supervisorId);
         validationService.checkNullSafety(taskId, managerId);
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new BadRequestException("Менеджер не найден!"));
-        return TaskMapper.taskToFull(todoService.setTaskManager(manager, taskId));
+        return TaskMapper.taskToFull(todoService.setTaskManager(manager, taskId), supervisor, true);
     }
 
     @PreAuthorize("hasAuthority('SUPERVISOR')")
@@ -215,6 +213,6 @@ public class ManagerController {
                                     @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
         Manager supervisor = securityService.getAuthorizedManager(supervisorId);
         validationService.checkNullSafety(taskId);
-        return TaskMapper.taskToFull(todoService.removeTaskManager(supervisor, taskId));
+        return TaskMapper.taskToFull(todoService.removeTaskManager(supervisor, taskId), supervisor, true);
     }
 }

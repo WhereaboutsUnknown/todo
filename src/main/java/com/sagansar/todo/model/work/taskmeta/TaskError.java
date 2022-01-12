@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class TaskError implements TaskAlert {
 
-    private String error;
+    private String errorAlert;
 
     public TaskError(String message) {
-        this.error = message;
+        this.errorAlert = message;
     }
 }

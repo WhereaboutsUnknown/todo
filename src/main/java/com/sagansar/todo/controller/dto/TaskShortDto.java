@@ -33,4 +33,7 @@ public class TaskShortDto {
 
     @JsonProperty
     private TaskAlert alert;
+
+    @JsonProperty
+    private TaskAlert responsesInfo;
 }

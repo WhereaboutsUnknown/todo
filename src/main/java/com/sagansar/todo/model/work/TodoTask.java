@@ -4,14 +4,15 @@ import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.manager.Unit;
 import com.sagansar.todo.model.work.taskmeta.TaskAlert;
 import com.sagansar.todo.model.work.taskmeta.TaskError;
+import com.sagansar.todo.model.work.taskmeta.TaskInfo;
 import com.sagansar.todo.model.work.taskmeta.TaskWarning;
 import com.sagansar.todo.model.worker.Worker;
+import com.sagansar.todo.model.worker.WorkerResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -61,6 +62,9 @@ public class TodoTask {
 
     @OneToMany(mappedBy = "task")
     private List<Invite> invites;
+
+    @OneToMany(mappedBy = "task")
+    private List<WorkerResponse> responses;
 
     @Column(name = "main_stack")
     private String stack;
@@ -142,7 +146,17 @@ public class TodoTask {
         return deadlineAlert == null ? (startAlert == null ? tooLong : startAlert) : deadlineAlert;
     }
 
-    private TaskAlert deadlineAlert(LocalDateTime now) {
+    public TaskAlert getResponsesInfo() {
+        if (responses != null) {
+            long unchecked = responses.stream()
+                    .filter(response -> !response.isChecked())
+                    .count();
+            return unchecked > 0 ? new TaskInfo("Есть " + unchecked + " " + resolveCase(unchecked) + " на эту задачу!") : null;
+        }
+        return null;
+    }
+
+    public TaskAlert deadlineAlert(LocalDateTime now) {
         Set<TodoStatus.Status> done = Set.of(TodoStatus.Status.DONE, TodoStatus.Status.APPROVED, TodoStatus.Status.CANCELED, TodoStatus.Status.ARCHIVE);
         if (deadline == null || now.isBefore(deadline) || isStatusIn(done)) {
             return null;
@@ -150,7 +164,7 @@ public class TodoTask {
         return new TaskError("Срок завершения истек!");
     }
 
-    private TaskAlert startAlert(LocalDateTime now) {
+    public TaskAlert startAlert(LocalDateTime now) {
         Set<TodoStatus.Status> notStarted = Set.of(TodoStatus.Status.DRAFT, TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION);
         if (plannedStart == null || now.isBefore(plannedStart) || !isStatusIn(notStarted)) {
             return null;
@@ -158,7 +172,7 @@ public class TodoTask {
         return new TaskError("Плановый срок начала работы истек!");
     }
 
-    private TaskAlert tooLongAlert(LocalDateTime now) {
+    public TaskAlert tooLongAlert(LocalDateTime now) {
         long days = 0;
         if (lastChangeDate != null) {
             days = ChronoUnit.DAYS.between(lastChangeDate, now);
@@ -170,5 +184,14 @@ public class TodoTask {
 
     private boolean isStatusIn(Set<TodoStatus.Status> statuses) {
         return status != null && statuses.contains(status.status());
+    }
+
+    private String resolveCase(long num) {
+        long centtail = num % 100;
+        long dectail = num % 10;
+        if ((centtail > 9 && centtail < 21) || dectail == 0 || dectail > 4) {
+            return "непросмотренных откликов";
+        }
+        return dectail == 1 ? "непросмотренный отклик" : "непросмотренных отклика";
     }
 }

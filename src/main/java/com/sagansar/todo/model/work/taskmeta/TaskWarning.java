@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class TaskWarning implements TaskAlert {
 
-    private String warning;
+    private String warningAlert;
 
     public TaskWarning(String message) {
-        this.warning = message;
+        this.warningAlert = message;
     }
 }

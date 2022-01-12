@@ -85,11 +85,7 @@ public class WorkerController {
     public List<TaskShortDto> getTakenTasks(@PathVariable(name = "workerId") Integer workerId) {
         securityService.getAuthorizedWorker(workerId);
         return todoTaskRepository.findAllByWorkerId(workerId).stream()
-                .map(task -> {
-                    TaskShortDto dto = TaskMapper.taskToShort(task);
-                    dto.setPerson(PersonMapper.managerToName(task.getManager()));
-                    return dto;
-                })
+                .map(TaskMapper::taskToShort)
                 .collect(Collectors.toList());
     }
 
@@ -99,11 +95,7 @@ public class WorkerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
         }
         return todoTaskRepository.findAllAvailable().stream()
-                .map(task -> {
-                    TaskShortDto dto = TaskMapper.taskToShort(task);
-                    dto.setPerson(PersonMapper.managerToName(task.getManager()));
-                    return dto;
-                })
+                .map(TaskMapper::taskToShort)
                 .collect(Collectors.toList());
     }
 
