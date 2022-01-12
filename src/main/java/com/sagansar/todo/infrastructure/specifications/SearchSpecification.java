@@ -40,8 +40,7 @@ public class SearchSpecification<T> implements Specification<T> {
                 return builder.notLike(
                         root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
             }
-        }
-        else if (criteria.getOperation().equalsIgnoreCase(":")) {
+        } else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.equal(
                         root.get(criteria.getKey()), criteria.getValue());
@@ -50,10 +49,8 @@ public class SearchSpecification<T> implements Specification<T> {
                         root.get(criteria.getKey()), criteria.getValue());
             }
         } else if (criteria.getOperation().equalsIgnoreCase("!")) {
-            if (root.get(criteria.getKey()).getJavaType() == String.class) {
-                return builder.notEqual(
-                        root.get(criteria.getKey()), criteria.getValue());
-            }
+            return builder.notEqual(
+                    root.get(criteria.getKey()), criteria.getValue());
         }
         return null;
     }
