@@ -1,6 +1,7 @@
 package com.sagansar.todo.controller;
 
 import com.sagansar.todo.controller.mapper.FileMapper;
+import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.util.AccountError;
 import com.sagansar.todo.controller.util.ErrorView;
 import com.sagansar.todo.controller.util.HttpStatusError;
@@ -87,6 +88,7 @@ public class MainController implements ErrorController {
             boolean hasVideo = videoFile != null;
             modelAndView.addObject("video", hasVideo);
             modelAndView.addObject("videoId", (hasVideo ? videoFile.getId() : ""));
+            modelAndView.addObject("task", TaskMapper.taskToFull(task));
             modelAndView.setViewName("task");
             return internalPage(modelAndView);
         }
