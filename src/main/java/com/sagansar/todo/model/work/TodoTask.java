@@ -134,7 +134,7 @@ public class TodoTask {
             history = "";
         }
         if (record != null) {
-            history += (LocalDateTime.now(ZoneId.systemDefault()) + "  " + record + "\n");
+            history += (LocalDateTime.now(ZoneId.systemDefault()) + "  " + record + "[/]");
         }
     }
 
