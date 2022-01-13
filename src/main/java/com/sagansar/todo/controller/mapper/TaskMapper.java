@@ -57,9 +57,6 @@ public class TaskMapper {
         dto.setFiles(task.getFiles().stream()
                 .map(FileMapper::fileToBasic)
                 .collect(Collectors.toList()));
-        dto.setInvited(task.getInvites().stream()
-                .map(invite -> PersonMapper.workerToName(invite.getWorker()))
-                .collect(Collectors.toList()));
         TodoStatus status = task.getStatus();
         if (status != null) {
             dto.setStatus(status.getDescription());
@@ -90,6 +87,9 @@ public class TaskMapper {
 
         if (hasAccess(task, manager) || supervisor) {
             dto.setAlerts(alerts(task.deadlineAlert(now), task.startAlert(now), task.tooLongAlert(now), task.getResponsesInfo()));
+            dto.setInvited(task.getInvites().stream()
+                    .map(invite -> PersonMapper.workerToName(invite.getWorker()))
+                    .collect(Collectors.toList()));
         }
         return dto;
     }
