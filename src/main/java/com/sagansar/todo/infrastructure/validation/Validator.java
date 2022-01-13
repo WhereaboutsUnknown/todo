@@ -4,5 +4,5 @@ import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 
 public interface Validator {
 
-    boolean validate(String value) throws BadRequestException;
+    void validate(String value) throws BadRequestException;
 }
