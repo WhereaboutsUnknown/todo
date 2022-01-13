@@ -194,4 +194,14 @@ public class TodoTask {
         }
         return dectail == 1 ? "непросмотренный отклик" : "непросмотренных отклика";
     }
+
+    @PrePersist
+    public void onPersist() {
+        lastChangeDate = LocalDateTime.now(ZoneId.systemDefault());
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        lastChangeDate = LocalDateTime.now(ZoneId.systemDefault());
+    }
 }
