@@ -85,10 +85,17 @@ function redirectTimer(time, domain) {
     }, time);
 }
 
+function replaceElementText(element, text) {
+    if (element) {
+        element.empty().append(text ? text : '');
+    }
+}
+
 function showError(message) {
     Swal.fire({
+        icon: 'error',
         text: message,
-        type: 'error',
+        title: 'Ошибка!',
         confirmButtonColor: '#fb2a79'
     });
 }
@@ -100,11 +107,42 @@ function showOk(message) {
     });
 }
 
+function showWarning(title, message) {
+    Swal.fire({
+        icon: 'warning',
+        title: title,
+        text: message,
+        confirmButtonColor: '#195fd4'
+    });
+}
+
 function showDone(message) {
     Swal.fire({
-        type: 'success',
-        text: message,
+        icon: 'success',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
     });
+}
+
+function showDialog(title, hint, yesButton, noButton, onConfirm, onDeny) {
+    Swal.fire({
+        title: title,
+        text: hint,
+        icon: 'warning',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: yesButton,
+        denyButtonText: noButton,
+        confirmButtonColor: '#195fd4',
+        denyButtonColor: '#fb2a79'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm();
+        } else if (result.isDenied) {
+            onDeny();
+        }
+    })
 }
 
 function alertElement(data) {
@@ -208,6 +246,16 @@ function taskRedirect(taskId) {
     }
 }
 
+function extractNumber(line) {
+    if (line) {
+        let num = line.match(/\d+/)[0];
+        if (!isNaN(num)) {
+            return num;
+        }
+    }
+    return 0;
+}
+
 $(document).on('click', '.task-block', function () {
     taskRedirect($(this).attr('id'));
 });
@@ -238,6 +286,15 @@ $(document).on('mouseenter', '#notification-bell', function () {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
+    rest("GET", "/profile", null, function (data) {
+        if (data.error) {
+            console.error("GET " + api() + "/profile", data.errors[0], data.error);
+            return;
+        }
+        console.log(data);
+        Todo.store("profileCache", data);
+    });
+
     rest("GET", "/notifications", null, function (data) {
         if (data.error) {
             console.error("GET " + api() + "/notifications", data.errors[0], data.error);
