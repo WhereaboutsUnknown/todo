@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin
 @Transactional
 @AllArgsConstructor
 @ResponseBody
@@ -33,7 +34,7 @@ public class InviteRestController {
 
     private final SecurityService securityService;
 
-    @PostMapping ("")
+    @GetMapping ("")
     public RestResponse processInviteAnswer(@RequestParam(name = "id") Long inviteId, @RequestParam(name = "accept") boolean accept) throws BadRequestException {
         Invite invite = inviteService.processInviteAnswer(inviteId, accept);
         Worker worker = invite.getWorker();
