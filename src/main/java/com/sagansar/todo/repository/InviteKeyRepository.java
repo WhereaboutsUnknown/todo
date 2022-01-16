@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InviteKeyRepository extends JpaRepository<InviteKey, Long> {
     InviteKey findDistinctByKey(String key);
+
+    void deleteAllByInviteId(Long inviteId);
 }
