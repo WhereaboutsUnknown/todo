@@ -1,16 +1,19 @@
 package com.sagansar.todo.controller.mapper;
 
+import com.sagansar.todo.controller.dto.PersonNameDto;
 import com.sagansar.todo.controller.dto.TaskFullDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.work.WorkerGroupTask;
+import com.sagansar.todo.model.work.taskmeta.TaskAccess;
 import com.sagansar.todo.model.work.taskmeta.TaskAlert;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,6 +56,7 @@ public class TaskMapper {
         dto.setGroup(task.getGroup().stream()
                 .map(WorkerGroupTask::getWorker)
                 .map(PersonMapper::workerToName)
+                .sorted(Comparator.comparing(PersonNameDto::getName))
                 .collect(Collectors.toList()));
         dto.setFiles(task.getFiles().stream()
                 .map(FileMapper::fileToBasic)
@@ -88,9 +92,18 @@ public class TaskMapper {
         if (hasAccess(task, manager) || supervisor) {
             dto.setAlerts(alerts(task.deadlineAlert(now), task.startAlert(now), task.tooLongAlert(now), task.getResponsesInfo()));
             dto.setInvited(task.getInvites().stream()
+                    .filter(invite -> !invite.isAccepted())
                     .map(invite -> PersonMapper.workerToName(invite.getWorker()))
+                    .sorted(Comparator.comparing(PersonNameDto::getName))
                     .collect(Collectors.toList()));
         }
+        dto.setCurrentUserSupervisor(supervisor);
+        TodoStatus.Status status = task.getStatus().status();
+        dto.setEditWorkers(TaskAccess.REMOVE_WORKERS.hasAccess(status));
+        dto.setInviteWorkers(TaskAccess.INVITE_WORKERS.hasAccess(status));
+        dto.setCancelTask(TaskAccess.CANCEL_TASK.hasAccess(status));
+        dto.setArchiveTask(TaskAccess.ARCHIVE_TASK.hasAccess(status));
+        dto.setDeleteTask(TaskAccess.DELETE_TASK.hasAccess(status));
         return dto;
     }
 
