@@ -21,15 +21,11 @@ public class TaskForm implements TaskTemplate {
     private String description;
 
     @JsonProperty
-    @NonNull
-    private Integer creatorId;
-
-    @JsonProperty
-    private Integer unitId;
-
-    @JsonProperty
     private String stack;
 
     @JsonProperty
     private LocalDateTime deadline;
+
+    @JsonProperty
+    private LocalDateTime plannedStart;
 }
