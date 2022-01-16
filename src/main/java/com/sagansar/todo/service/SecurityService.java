@@ -137,6 +137,10 @@ public class SecurityService {
         return invite;
     }
 
+    public void destroyInviteTokens(@NonNull Long inviteId) {
+        inviteKeyRepository.deleteAllByInviteId(inviteId);
+    }
+
     public String generatePassword() {
         return passwordGenerator.generatePassword(10, generationRules());
     }
