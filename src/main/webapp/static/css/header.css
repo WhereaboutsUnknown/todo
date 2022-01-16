@@ -68,7 +68,7 @@ header {
 
     .navbar-content {
         display: none;
-        z-index: 1;
+        z-index: 99;
     }
 
     .navbar-content:hover, .navbar-image:hover + .navbar-content {
@@ -302,7 +302,7 @@ header {
 }
 
 .notification-button:hover + .notification-list, .notification-list:hover {
-    z-index: 1;
+    z-index: 100;
     display:flex;
     flex-direction: column;
     position: absolute;

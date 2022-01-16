@@ -1,0 +1,341 @@
+.main-task-container {
+    width: 99.99%;
+    height: 800px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-control-block {
+    z-index: 1;
+    width: 100%;
+    height: 120px;
+    display: flex;
+    box-shadow: 0 10px 15px -10px #00000070;
+    background-color: #eeeeee;
+}
+
+.task-information-block {
+    display: flex;
+    height: 680px;
+}
+
+.task-navigation-container {
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #f6f6f6;
+}
+
+.current-subdivision-container {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.subdivision-content {
+    display: none;
+}
+
+.subdivision-content:target {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: -100px;
+    padding-top: 120px;
+    padding-left: 10px;
+    font-family: 'Poppins', sans-serif;
+    overflow-y: scroll;
+}
+
+.task-control-buttons {
+    flex: 2;
+    display: flex;
+    height: 120px;
+}
+
+.task-control-buttons-panel {
+    display: flex;
+    justify-content: center;
+    margin-top: 35px;
+    margin-left: 40px;
+    height: 50px;
+}
+
+.task-control-buttons .delete-task-btn {
+    background-image: url('../images/delete-icon.png');
+    background-repeat: no-repeat;
+}
+
+.task-control-buttons .publish-task-btn {
+    background-image: url('../images/person-icon.png');
+    background-repeat: no-repeat;
+}
+
+.task-control-alerts {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 120px;
+}
+
+.task-navigation-item {
+    display: flex;
+    padding: 40px;
+    text-decoration: none;
+    background: #4a8dfb;
+    border-bottom: solid 1px white;
+    color: #ffe120;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+}
+
+.task-navigation-item:hover,
+.task-navigation-item::selection {
+    background: #ffe120;
+    color: white;
+}
+
+.task-managers-container {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-responsible-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.task-group-container {
+    flex: 6;
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.task-invites-container {
+    flex: 6;
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.subdivision-inline-element {
+    display: flex;
+    height: 50px;
+    margin-top: 1px;
+}
+
+.subdivision-inline-element:hover {
+    background-color: #f2f2f4;
+}
+
+.subdivision-inline-element div {
+    height: 25px;
+    padding: 5px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.user-avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+    padding: 5px;
+}
+
+.subdivision-inline-label {
+    background-color: #195fd4;
+    color: white;
+    border-radius: 10px;
+    width: 100px;
+    text-align: center;
+}
+
+.subdivision-inline-label.unit-label {
+    margin-left: 60px;
+}
+
+.task-group-container {
+    color: #195fd4;
+}
+
+.task-invites-container {
+    color: #fb2a79;
+}
+
+.subdivision-inline-element .task-inline-icon {
+    width: 30px;
+}
+
+.task-inline-icon:hover:not(.responsible-star) {
+    cursor: pointer;
+}
+
+.subdivision-inline-element:hover .current-change-btn {
+    background: url('../images/turn-arrow-blue.png') 50% / 20px 20px no-repeat;
+}
+
+.subdivision-inline-element:hover .current-delete-btn {
+    background: url('../images/red-cross.png') 50% / 20px 20px no-repeat;
+}
+
+.subdivision-inline-element .responsible-star {
+    background: url('../images/gold-star.png') 50% / 30px 30px no-repeat;
+}
+
+.subdivision-inline-element:hover .worker-set-authority-btn {
+    background: url('../images/gray-star.png') 50% / 30px 30px no-repeat;
+}
+
+.subdivision-inline-element:hover .worker-delete-btn {
+    background: url('../images/red-cross.png') 50% / 20px 20px no-repeat;
+}
+
+.subdivision-inline-element:hover .cancel-invite-btn {
+    background: url('../images/red-cross.png') 50% / 20px 20px no-repeat;
+}
+
+.task-edit-form {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+
+.task-edit-form input, .task-edit-form textarea {
+    width: 200px;
+}
+
+.task-edit-form label {
+    margin: 10px 0;
+}
+
+.task-header-input {
+    margin-left: 106px;
+}
+
+.task-start-input {
+    margin-left: 20px;
+}
+
+.task-deadline-input {
+    margin-left: 102px;
+}
+
+.task-skills-input {
+    margin-left: 55px;
+}
+
+.task-description-input {
+    margin-left: 111px;
+}
+
+.task-edit-submit {
+    margin-left: 188px;
+    color: white;
+}
+
+.worker-for-invite .potential-worker-stats .worker-statistics-inline-container {
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+.worker-for-invite .potential-worker-stats div {
+    margin-left: 5px;
+    padding: 0;
+}
+
+.worker-for-invite .potential-worker-stats span {
+    margin: 0;
+}
+
+.worker-for-invite .potential-worker-stats .success-scale {
+    height: 10px;
+}
+
+.worker-for-invite .potential-worker-stats .stars {
+    margin: -1px 10px;
+}
+
+.worker-for-invite .potential-worker-stats .star-rating {
+    color: black;
+    margin: 8px 10px;
+}
+
+.worker-for-invite .potential-worker-name,
+.worker-for-invite .potential-worker-skills {
+    margin-top: 10px;
+}
+
+.chosen-for-invite {
+    background-color: #fff9d3;
+}
+
+.invite-workers-btn {
+    line-height: 40px;
+    width: 100px;
+    background: url("../images/ok-icon.png") no-repeat #195fd4 50% 50%;
+    border-radius: 10px;
+    color: transparent;
+}
+
+.task-control-alerts {
+    background: white;
+    overflow-y: scroll;
+    max-height: 90%;
+    min-height: 90%;
+    margin: 5px 5px;
+}
+
+.task-control-alerts .task-alert:hover {
+    background: aliceblue;
+}
+
+.task-control-alerts .task-alert img {
+    height: 20px;
+    margin-top: 10px;
+}
+
+.warning-alert, .info-alert, .error-alert {
+    display: flex;
+    font-size: 12px;
+}
+
+.warning-alert {
+    color: #e3c303;
+}
+
+.error-alert {
+    color: red;
+}
+
+.subdivision-block-element {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
+}
+
+.delete-file-btn {
+    background-image: url("../images/close-icon.png");
+}
+
+.send-invites-btn {
+    background-image: url("../images/plusicon.png");
+}
+
+.cancel-task-btn {
+    background-image: url("../images/close-icon.png");
+}
+
+.archive-task-btn {
+    background-image: url("../images/icons-archive.png");
+}
+
+.review-task-btn {
+    background-image: url("../images/ok-icon.png");
+}
