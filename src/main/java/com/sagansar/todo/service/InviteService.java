@@ -2,6 +2,7 @@ package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.WarningException;
+import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.Invite;
 import com.sagansar.todo.model.work.TodoStatus;
@@ -12,6 +13,7 @@ import com.sagansar.todo.repository.WorkerRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,8 @@ public class InviteService {
 
     private final SocialMediaService socialMediaService;
 
+    private final SecurityService securityService;
+
     /**
      * Send task invites to all chosen Workers except for profiles without User and non-active profiles
      *
@@ -59,9 +63,8 @@ public class InviteService {
                 .filter(Objects::nonNull)
                 .map(inviteRepository::save)
                 .forEach(invite -> {
-                    if (socialMediaService.sendTelegramInvite(invite)) {
-                        invited.add(invite.getWorker());
-                    }
+                    socialMediaService.sendTelegramInvite(invite);
+                    invited.add(invite.getWorker());
                     notificationService.sendInviteNotification(invite.getWorker().getUser(), task.getHeader());
                 });
         return invited;
@@ -113,6 +116,39 @@ public class InviteService {
         return inviteRepository.findAllByWorkerId(workerId);
     }
 
+    public boolean cancelInvite(@NonNull Long taskId, @NonNull Integer workerId, @NonNull Manager manager) throws BadRequestException {
+        Invite invite = inviteRepository.findByWorkerIdAndTaskId(workerId, taskId)
+                .orElseThrow(() -> new BadRequestException("Приглашение не найдено!"));
+        if (!manager.getId().equals(invite.getTask().getManager().getId()) && !securityService.checkUserRights(RoleEnum.SUPERVISOR)) {
+            throw new BadRequestException("Невозможно отменить приглашение: это задача другого куратора!", HttpStatus.FORBIDDEN);
+        }
+        try {
+            securityService.destroyInviteTokens(invite.getId());
+            inviteRepository.delete(invite);
+            notificationService.sendInviteCancelledNotification(invite.getWorker().getUser(), invite.getTask().getHeader());
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    public void cancelAllInvites(@NonNull Long taskId, @NonNull Manager manager) throws BadRequestException {
+        List<Invite> invites = findInvitesOnTask(taskId);
+        if (!invites.isEmpty()) {
+            if (!manager.getId().equals(invites.get(0).getTask().getManager().getId())) {
+                throw new BadRequestException("Невозможно отменить приглашение: это задача другого куратора!", HttpStatus.FORBIDDEN);
+            }
+            for (Invite invite : invites) {
+                securityService.destroyInviteTokens(invite.getId());
+            }
+            inviteRepository.deleteAll(invites);
+            for (Invite invite : invites) {
+                notificationService.sendInviteCancelledNotification(invite.getWorker().getUser(), invite.getTask().getHeader());
+            }
+        }
+    }
+
     private Invite createInvite(Worker worker, TodoTask task) {
         if (inviteRepository.existsByWorkerIdAndTaskId(worker.getId(), task.getId())) {
             logger.error("Сотрудник {} уже приглашен на задачу {}", worker.getId(), task.getId());
@@ -126,13 +162,6 @@ public class InviteService {
     }
 
     private boolean statusInvalid(TodoTask task) {
-        TodoStatus status = task.getStatus();
-        if (status == null) {
-            return true;
-        }
-        TodoStatus.Status statusEnum = status.status();
-        return !TodoStatus.Status.TODO.equals(statusEnum)
-                && !TodoStatus.Status.DISCUSSION.equals(statusEnum)
-                && !TodoStatus.Status.GO.equals(statusEnum);
+        return !task.is(TodoStatus.Status.TODO) && !task.is(TodoStatus.Status.DISCUSSION) && !task.is(TodoStatus.Status.GO);
     }
 }
