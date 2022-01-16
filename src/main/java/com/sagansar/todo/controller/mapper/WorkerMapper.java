@@ -63,6 +63,10 @@ public class WorkerMapper extends ViewDataMapper {
         dto.setName(worker.getName());
         dto.setSkills(worker.getInfo());
         dto.setStatistics(StatisticsMapper.statisticsToBasic(worker.getStatistics()));
+        User user = worker.getUser();
+        if (user != null) {
+            dto.setAvatar(user.getAvatar());
+        }
         return dto;
     }
 
