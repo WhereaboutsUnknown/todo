@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,12 +20,12 @@ import org.springframework.util.StringUtils;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf()
-                .ignoringAntMatchers("/file-service/upload")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
@@ -92,7 +93,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             private final PasswordValidator symbolValidator = new PasswordValidator(upper, lower, digit, special);
 
             @Override
-            public boolean validate(String password) throws BadRequestException {
+            public void validate(String password) throws BadRequestException {
                 if (!StringUtils.hasText(password)) {
                     throw new BadRequestException("Строка пароля пустая");
                 }
@@ -106,7 +107,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 if (!symbolValidator.validate(passwordData).isValid()) {
                     throw new BadRequestException("Пароль должен содержать хотя бы один символ каждого типа: в нижнем регистре, в верхнем регистре, специальный символ, цифру");
                 }
-                return true;
             }
         };
     }

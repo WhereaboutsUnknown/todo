@@ -31,8 +31,8 @@ public class PersonMapper {
 
     private static Long getAvatar(User user) {
         if (user == null) {
-            return null;
+            return 0L;
         }
-        return user.getAvatar();
+        return user.getAvatar() == null ? 0L : user.getAvatar();
     }
 }
