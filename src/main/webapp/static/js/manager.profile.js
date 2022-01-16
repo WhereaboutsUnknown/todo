@@ -122,4 +122,24 @@ window.addEventListener("DOMContentLoaded", () => {
     $("#person-popup .employee-card").click(function (event) {
         event.stopPropagation();
     });
+
+    $(document).on('click', '#create-task-btn', function () {
+        if (profileCache.id && !isNaN(profileCache.id)) {
+            rest("POST", "/manager/" + profileCache.id + "/tasks", null, function (data) {
+                if (data.error) {
+                    console.error("POST " + api() + "/manager/" + profileCache.id + "/tasks", data.status.value, data.error);
+                    showError(data.error);
+                    return;
+                }
+                console.log(data);
+                if (data.id && !isNaN(data.id)) {
+                    redirectTimer(1, root() + "/tasks/" + data.id);
+                } else {
+                    console.error("Wrong server response: ", data);
+                }
+            });
+        } else {
+            console.error("Profile cache: ", profileCache);
+        }
+    });
 });

@@ -189,7 +189,7 @@ function taskElement(data) {
                                             </button>
                                         </div>
                                         <div class="task-block-bottom-block task-block-deadline">
-                                            <p class="task-deadline" id="task-deadline">${data.deadline.replace('T', ' ')}</p>
+                                            <p class="task-deadline" id="task-deadline">${data.deadline ? data.deadline.replace('T', ' ') : ''}</p>
                                         </div>
                                     </div>
                                 </div>
