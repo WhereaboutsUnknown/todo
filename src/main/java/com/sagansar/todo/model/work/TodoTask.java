@@ -14,6 +14,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +59,7 @@ public class TodoTask {
     @OneToMany(mappedBy = "task")
     private Set<WorkerGroupTask> group;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "task")
     private List<TaskFile> files;
 
     @OneToMany(mappedBy = "task")
@@ -106,9 +108,9 @@ public class TodoTask {
                             "Срок завершения перенесен с " + this.deadline + " на " + deadline
             );
         } else {
-            addHistoryRecord(
-                    "Срок завершения удален"
-            );
+            if (this.deadline != null) {
+                addHistoryRecord("Срок завершения удален");
+            }
         }
         this.deadline = deadline;
     }
@@ -116,7 +118,7 @@ public class TodoTask {
     public void setWorker(Worker worker) {
         if (worker != null) {
             addHistoryRecord("Назначен ответственный исполнитель: " + worker.getName());
-        } else {
+        } else if (this.worker != null) {
             addHistoryRecord("Ответственный исполнитель снят");
         }
         this.worker = worker;
@@ -134,7 +136,7 @@ public class TodoTask {
             history = "";
         }
         if (record != null) {
-            history += (LocalDateTime.now(ZoneId.systemDefault()) + "  " + record + "[/]");
+            history += (ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")) + "  " + record + "[/]");
         }
     }
 
@@ -180,6 +182,10 @@ public class TodoTask {
             return new TaskWarning("В задаче не было изменений с момента создания. Может быть, пора ее заархивировать?");
         }
         return days > 14 ? new TaskWarning("Последнее изменение было " + days + " дней назад. Возможно, пора заархивировать задачу?") : null;
+    }
+
+    public boolean is(TodoStatus.Status status) {
+        return this.status != null && this.status.status().equals(status);
     }
 
     private boolean isStatusIn(Set<TodoStatus.Status> statuses) {

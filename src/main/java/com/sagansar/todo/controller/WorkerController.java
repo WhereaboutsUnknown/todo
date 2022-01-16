@@ -13,6 +13,7 @@ import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.infrastructure.sort.WorkerSkillSorter;
 import com.sagansar.todo.infrastructure.specifications.FilterCompiler;
 import com.sagansar.todo.infrastructure.specifications.SearchCriteria;
+import com.sagansar.todo.infrastructure.specifications.SearchSpecification;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
@@ -153,12 +154,18 @@ public class WorkerController {
 
     @GetMapping("/search/for")
     public List<WorkerLineDto> findWorkersForTask(@RequestParam(name = "task") Long taskId,
+                                                  @RequestParam(name = "show", required = false) String show,
                                                   Pageable pageable) throws BadRequestException {
         if (!securityService.checkUserRights(RoleEnum.MANAGER) && !securityService.isAdmin()) {
             throw new UnauthorizedException("Недостаточно полномочий для доступа", true);
         }
         TodoTask task = todoTaskRepository.findById(taskId).orElseThrow(() -> new BadRequestException("Отсутствует задача!"));
         String[] skills = task.getStack().replace(", ", ",").split(",");
+        if ("all".equals(show)) {
+            return WorkerSkillSorter.sort(workerRepository.findAll(pageable).getContent(), skills).stream()
+                    .map(WorkerMapper::workerToLine)
+                    .collect(Collectors.toList());
+        }
         Specification<Worker> filter = filterCompiler.compile(
                 Stream.of(skills)
                 .map(s -> new SearchCriteria("info", "~", s))

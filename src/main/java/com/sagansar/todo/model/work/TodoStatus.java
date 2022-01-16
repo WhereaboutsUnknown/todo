@@ -28,22 +28,24 @@ public class TodoStatus {
 
     @Getter
     public enum Status {
-        DRAFT(1),
-        TODO(2),
-        DISCUSSION(3),
-        GO(4),
-        DONE(5),
-        REVIEW(6),
-        APPROVED(7),
-        SEALED(8),
-        DECLINE(9),
-        CANCELED(10),
-        ARCHIVE(11);
+        DRAFT(1, "Черновик"),
+        TODO(2, "Есть работа!"),
+        DISCUSSION(3, "Открыто обсуждение"),
+        GO(4, "В работе"),
+        DONE(5, "Готово"),
+        REVIEW(6, "На рассмотрении"),
+        APPROVED(7, "Одобрено"),
+        SEALED(8, "Задача закрыта"),
+        DECLINE(9, "Не принято"),
+        CANCELED(10, "Задача снята"),
+        ARCHIVE(11, "Задача в архиве");
 
-        int code;
+        private final int code;
+        private final String alias;
 
-        Status(int code) {
+        Status(int code, String alias) {
             this.code = code;
+            this.alias = alias;
         }
 
         static Status fromCode(int code) {
@@ -61,7 +63,7 @@ public class TodoStatus {
 
         @Override
         public String toString() {
-            return "[" + name() + ", id " + code + "]";
+            return "[" + alias + ", code " + code + "]";
         }
     }
 }

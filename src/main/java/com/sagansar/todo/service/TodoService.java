@@ -13,6 +13,7 @@ import com.sagansar.todo.repository.WorkerGroupTaskRepository;
 import com.sagansar.todo.repository.WorkerResponseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,8 @@ public class TodoService {
      * @return created task
      */
     public TodoTask createTask(@NonNull Manager creator, @NonNull TaskForm taskForm) {
-        return newTask(creator, taskForm);
+        TodoTask task = newTask(creator, taskForm);
+        return todoTaskRepository.save(task);
     }
 
     /**
@@ -75,7 +77,12 @@ public class TodoService {
     public TodoTask createTask(@NonNull Manager creator, @NonNull ArchivedTask template, @NonNull LocalDateTime deadline) {
         TodoTask task = newTask(creator, template);
         task.setDeadline(deadline);
-        return task;
+        return todoTaskRepository.save(task);
+    }
+
+    public TodoTask createTask(@NonNull Manager creator) {
+        TodoTask task = newTask(creator);
+        return todoTaskRepository.save(task);
     }
 
     /**
@@ -90,7 +97,7 @@ public class TodoService {
     public TodoTask publishTask(@NonNull Manager manager, @NonNull Long taskId, boolean visibleToAll) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.DRAFT
-        ));
+        ), "Невозможно опубликовать: задача не является черновиком!");
         checkManagerRightsOnTask(manager, task);
         task.setStatus(getStatus(TodoStatus.Status.TODO));
         task.setVisibleToAll(visibleToAll);
@@ -110,14 +117,14 @@ public class TodoService {
     public TodoTask claimTask(@NonNull Worker worker, @NonNull Long taskId, String message) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION
-        ));
+        ),"Отклики на эту задачу уже закрыты!");
         if (!task.isVisibleToAll()) {
             throw new BadRequestException("Стать исполнителем для этой задачи можно только по приглашению!");
         }
         sendWorkerResponse(task, worker, message);
         dialogService.createDialog(task, worker.getUser(), message);
 
-        if (!TodoStatus.Status.DISCUSSION.equals(task.getStatus().status())) {
+        if (!task.is(TodoStatus.Status.DISCUSSION)) {
             TodoStatus discussion = getStatus(TodoStatus.Status.DISCUSSION);
             task.setStatus(discussion);
             todoTaskRepository.save(task);
@@ -172,7 +179,7 @@ public class TodoService {
     public TodoTask deleteWorkerFromTask(@NonNull Manager manager, @NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.DRAFT, TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO
-        ));
+        ), "Невозможно удалить сотрудника с выполненной задачи! Информация обо всех исполнителях этой задачи будет неизбежно помещена в архив");
         checkManagerRightsOnTask(manager, task);
         Optional<WorkerGroupTask> link = workerGroupTaskRepository.findById(generateCompositeId(task.getId(), worker.getId()));
         if (link.isEmpty()) {
@@ -197,7 +204,7 @@ public class TodoService {
     public TodoTask cancel(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO, TodoStatus.Status.DONE, TodoStatus.Status.REVIEW
-        ));
+        ), "Эту задачу невозможно отменить! Попробуйте архивировать или удалить ее");
         checkManagerRightsOnTask(manager, task);
         workerGroupTaskRepository.deleteAll(
                 workerGroupTaskRepository.findAllByTaskId(taskId).stream()
@@ -205,6 +212,10 @@ public class TodoService {
                             workerGroupTask.getWorker().getUser(),
                             workerGroupTask.getTask().getHeader()))
                     .collect(Collectors.toList()));
+        responseRepository.saveAll(task.getResponses().stream()
+                        .peek(WorkerResponse::decline)
+                        .peek(response -> notificationService.sendResponseDeclinedNotification(response.getWorker().getUser(), task.getHeader()))
+                        .collect(Collectors.toList()));
         task.setWorker(null);
 
         TodoStatus status = getStatus(TodoStatus.Status.CANCELED);
@@ -224,7 +235,7 @@ public class TodoService {
     public TodoTask done(@NonNull Worker worker, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.GO
-        ));
+        ), "Только задачи в работе могут быть помечены, как выполненные!");
         checkWorkerRightsOnTask(worker, task);
         Manager taskManager = task.getManager();
         if (taskManager == null || taskManager.getUser() == null) {
@@ -249,7 +260,7 @@ public class TodoService {
     public TodoTask review(@NonNull Manager manager, @NonNull Long taskId, boolean approved) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.DONE
-        ));
+        ), "Можно выносить решение только по готовым задачам!");
         checkManagerRightsOnTask(manager, task);
         TodoStatus decision = getStatus(approved ? TodoStatus.Status.APPROVED : TodoStatus.Status.GO);
         task.setStatus(decision);
@@ -272,7 +283,7 @@ public class TodoService {
     public TodoTask getTaskForArchiving(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
         TodoTask task = getValidTask(taskId, Set.of(
                 TodoStatus.Status.APPROVED, TodoStatus.Status.GO, TodoStatus.Status.DONE
-        ));
+        ), "Можно архивировать только задачи, которые уже в работе или выполнены!");
         checkManagerRightsOnTask(manager, task);
         return task;
     }
@@ -332,10 +343,40 @@ public class TodoService {
         return todoTaskRepository.save(task);
     }
 
+    public TodoTask editTask(@NonNull Manager manager, @NonNull Long taskId, @NonNull TaskForm taskForm) throws BadRequestException {
+        TodoTask draft = getValidTask(taskId, Set.of(TodoStatus.Status.DRAFT), "Выбранная задача - не черновик!");
+        checkManagerRightsOnTask(manager, draft);
+        draft.setDeadline(taskForm.getDeadline());
+        draft.setStack(taskForm.getStack());
+        draft.setDescription(taskForm.getDescription());
+        draft.setHeader(taskForm.getHeader());
+        draft.setPlannedStart(taskForm.getPlannedStart());
+        return todoTaskRepository.save(draft);
+    }
+
+    public void deleteDraft(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
+        TodoTask draft = getValidTask(taskId, Set.of(TodoStatus.Status.DRAFT), "Выбранная задача - не черновик!");
+        checkManagerRightsOnTask(manager, draft);
+        todoTaskRepository.delete(draft);
+    }
+
+    public TodoTask openAsDraft(@NonNull TodoTask task, @NonNull Manager manager) throws BadRequestException {
+        if (!task.is(TodoStatus.Status.CANCELED)) {
+            throw new BadRequestException("Задача должна быть отменена, чтобы открыть ее, как черновик!");
+        }
+        task.setStatus(getStatus(TodoStatus.Status.DRAFT));
+        task.setManager(manager);
+        return todoTaskRepository.save(task);
+    }
+
     public void checkUserRightsOnTaskAsManager(@NonNull Integer userId, @NonNull Long taskId) throws BadRequestException {
         if (!todoTaskRepository.existsByIdAndManagerUserId(taskId, userId)) {
             throw new BadRequestException("Недостаточно прав для доступа к задаче!");
         }
+    }
+
+    public TodoTask getTaskForInvite(@NonNull Long taskId) throws BadRequestException {
+        return getValidTask(taskId, Set.of(TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION), "Работников можно приглашать только в еще не начатые задачи!");
     }
 
     /**
@@ -345,13 +386,13 @@ public class TodoService {
      * @return existing TodoTask with status
      * @throws BadRequestException in case of no such task or task having no status
      */
-    private TodoTask getValidTask(@NonNull Long taskId, Set<TodoStatus.Status> validStatuses) throws BadRequestException {
+    private TodoTask getValidTask(@NonNull Long taskId, Set<TodoStatus.Status> validStatuses, String ifInvalid) throws BadRequestException {
         TodoTask task = getValidTask(taskId);
         TodoStatus.Status status = task.getStatus().status();
         if (validStatuses.contains(status)) {
             return task;
         }
-        throw new BadRequestException("Задача [" + taskId + "] имеет некорректный статус: " + status);
+        throw new BadRequestException(ifInvalid);
     }
 
     /**
@@ -363,7 +404,7 @@ public class TodoService {
      */
     private TodoTask getValidTask(@NonNull Long taskId) throws BadRequestException {
         TodoTask task = todoTaskRepository.findById(taskId)
-                .orElseThrow(() -> new BadRequestException("Задача " + taskId + " не найдена"));
+                .orElseThrow(() -> new BadRequestException("Задача " + taskId + " не найдена", HttpStatus.NOT_FOUND));
         TodoStatus status = task.getStatus();
         if (status == null) {
             throw new BadRequestException("У задачи [" + taskId + "] отсутствует статус!");
@@ -388,7 +429,7 @@ public class TodoService {
                 workerGroupTask.setResponsible(true);
             }
             workerGroupTaskRepository.save(workerGroupTask);
-            if (!TodoStatus.Status.GO.equals(task.getStatus().status())) {
+            if (!task.is(TodoStatus.Status.GO)) {
                 TodoStatus go = todoStatusRepository.getById(TodoStatus.Status.GO.getCode());
                 task.setStatus(go);
                 todoTaskRepository.save(task);
@@ -404,17 +445,24 @@ public class TodoService {
      * @return created task
      */
     private TodoTask newTask(@NonNull Manager creator, @NonNull TaskTemplate template) {
+        TodoTask task = newTask(creator);
+
+        task.setDeadline(template.getDeadline());
+        task.setHeader(template.getHeader());
+        task.setDescription(template.getDescription());
+        task.setStack(template.getStack());
+
+        return task;
+    }
+
+    private TodoTask newTask(@NonNull Manager creator) {
         TodoTask task = new TodoTask();
         TodoStatus draft = getStatus(TodoStatus.Status.DRAFT);
 
         task.setStatus(draft);
         task.setCreationTime(LocalDateTime.now(ZoneId.systemDefault()));
         task.setCreator(creator);
-        task.setDeadline(template.getDeadline());
-        task.setHeader(template.getHeader());
-        task.setDescription(template.getDescription());
         task.setManager(creator);
-        task.setStack(template.getStack());
         task.setUnit(creator.getUnit());
 
         return task;

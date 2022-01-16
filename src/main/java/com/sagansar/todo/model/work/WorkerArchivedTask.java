@@ -24,7 +24,7 @@ public class WorkerArchivedTask {
 
     @OneToOne
     @JoinColumn(name = "task", nullable = false)
-    private TodoTask task;
+    private ArchivedTask task;
 
     @Column(name = "estimate")
     private Integer estimate;

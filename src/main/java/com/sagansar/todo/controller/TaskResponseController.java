@@ -60,18 +60,20 @@ public class TaskResponseController {
             throw new BadRequestException("Некорректный отклик!");
         }
         todoService.acceptWorkerForTask(manager, response.getTask(), response.getWorker());
-        response.setChecked(true);
+        response.accept();
         return WorkerResponseMapper.responseToBasic(response);
     }
 
     @DeleteMapping("/{id}")
-    public WorkerResponseBasic decline(@PathVariable Integer managerId, @PathVariable Long id) throws BadRequestException {
+    public WorkerResponseBasic decline(@PathVariable Integer managerId,
+                                       @PathVariable Long id,
+                                       @RequestParam(required = false) String cause) throws BadRequestException {
         securityService.getAuthorizedManager(managerId);
         WorkerResponse response = getWorkerResponse(id);
         if (response.getTask() == null || response.getWorker() == null) {
             throw new BadRequestException("Некорректный отклик!");
         }
-        response.setChecked(true);
+        response.decline(cause);
         notificationService.sendResponseDeclinedNotification(response.getWorker().getUser(), response.getTask().getHeader());
         return WorkerResponseMapper.responseToBasic(response);
     }
@@ -79,7 +81,9 @@ public class TaskResponseController {
     //TODO: удалять старые уведомления и отклики
 
     public WorkerResponse getWorkerResponse(Long id) throws BadRequestException {
-        return workerResponseRepository.findById(id)
+        WorkerResponse response = workerResponseRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Отклик не найден!"));
+        response.setChecked(true);
+        return response;
     }
 }

@@ -45,10 +45,11 @@ public class SocialMediaService {
                 .build()
                 .toUriString();
         String message = generateInviteMessage();
-        return telegramBotService.sendMessage(message, user, inviteUrl);
+        telegramBotService.sendMessage(message, user, null);
+        return telegramBotService.sendMessage("Link: ", user, inviteUrl);
     }
 
     private String generateInviteMessage() {
-        return "Для Вас есть новая задача! Чтобы принять или отказаться, перейдите по ссылке: ";
+        return "Для Вас есть новая задача! Чтобы принять/отказаться, перейдите по ссылке";
     }
 }
