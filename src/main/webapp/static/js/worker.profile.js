@@ -231,7 +231,7 @@ window.addEventListener("DOMContentLoaded", () => {
         element.attr("disabled", "disabled");
         element.addClass("inactivated");
         setTimeout(function () {
-            $("#profile-edit-submit").removeAttr("disabled").removeClass("inactivated");
+            element.removeAttr("disabled").removeClass("inactivated");
         }, 5000);
 
         const selectedFile = document.getElementById('edit-avatar-file').files[0];
