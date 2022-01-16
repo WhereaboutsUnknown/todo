@@ -5,6 +5,7 @@ import com.sagansar.todo.controller.dto.ManagerDto;
 import com.sagansar.todo.controller.dto.TaskFullDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.controller.mapper.*;
+import com.sagansar.todo.controller.util.RestResponse;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
 import com.sagansar.todo.model.external.TaskEstimateTable;
@@ -90,11 +91,19 @@ public class ManagerController {
     }
 
     @PostMapping("/{managerId}/tasks")
-    public TaskShortDto createTask(@PathVariable(name = "managerId") Integer managerId,
-                                   @RequestBody TaskForm taskForm) throws BadRequestException {
+    public TaskShortDto createTask(@PathVariable(name = "managerId") Integer managerId) {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        return TaskMapper.taskToShort(todoService.createTask(manager), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+    }
+
+    @PutMapping("/{managerId}/tasks/{taskId}/edit")
+    public TaskFullDto updateTask(@PathVariable(name = "managerId") Integer managerId,
+                                  @PathVariable(name = "taskId") Long taskId,
+                                  @RequestBody TaskForm taskForm) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.validate(taskForm);
-        return TaskMapper.taskToShort(todoService.createTask(manager, taskForm), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        validationService.checkNullSafety(taskId);
+        return TaskMapper.taskToFull(todoService.editTask(manager, taskId, taskForm), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @GetMapping("/{managerId}/tasks/{taskId}")
@@ -170,7 +179,18 @@ public class ManagerController {
                                   @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.checkNullSafety(taskId);
-        return TaskMapper.taskToFull(todoService.cancel(manager, taskId), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        TodoTask cancelled = todoService.cancel(manager, taskId);
+        inviteService.cancelAllInvites(taskId, manager);
+        return TaskMapper.taskToFull(cancelled, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+    }
+
+    @DeleteMapping("/{managerId}/draft/{taskId}")
+    public RestResponse deleteDraft(@PathVariable(name = "managerId") Integer managerId,
+                                    @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        validationService.checkNullSafety(taskId);
+        todoService.deleteDraft(manager, taskId);
+        return new RestResponse("Задача удалена!");
     }
 
     @PutMapping("/{managerId}/tasks/{taskId}/worker")
@@ -193,6 +213,37 @@ public class ManagerController {
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new BadRequestException("Работник не найден!"));
         return TaskMapper.taskToFull(todoService.deleteWorkerFromTask(manager, worker, taskId), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+    }
+
+    @PostMapping("/{managerId}/tasks/{taskId}/invites")
+    public TaskFullDto inviteWorkers(@PathVariable(name = "managerId") Integer managerId,
+                                     @PathVariable(name = "taskId") Long taskId,
+                                     @RequestBody List<Integer> workers) throws BadRequestException {
+        validationService.checkNullSafety(taskId, workers);
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        todoService.checkUserRightsOnTaskAsManager(manager.getUser().getId(), taskId);
+        TodoTask task = todoService.getTaskForInvite(taskId);
+        List<Worker> invited = inviteService.sendInvitesToAll(workers, task);
+        TaskFullDto dto = TaskMapper.taskToFull(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        dto.setInvited(invited.stream()
+                .map(PersonMapper::workerToName)
+                .collect(Collectors.toList()));
+
+        return dto;
+    }
+
+    @DeleteMapping("/{managerId}/tasks/{taskId}/invites")
+    public TaskFullDto cancelInvite(@PathVariable(name = "managerId") Integer managerId,
+                                    @PathVariable(name = "taskId") Long taskId,
+                                    @RequestParam(name = "worker") Integer workerId) throws BadRequestException {
+        Manager manager = securityService.getAuthorizedManager(managerId);
+        validationService.checkNullSafety(taskId, workerId);
+        if (inviteService.cancelInvite(taskId, workerId, manager)) {
+            TodoTask task = todoTaskRepository.findById(taskId)
+                    .orElseThrow(() -> new BadRequestException("Задача не найдена!"));
+            return TaskMapper.taskToFull(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        }
+        throw new BadRequestException("Не удалось отменить приглашение!");
     }
 
     @PreAuthorize("hasAuthority('SUPERVISOR')")
