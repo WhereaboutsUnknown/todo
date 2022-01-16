@@ -67,4 +67,22 @@ public class TaskFullDto {
 
     @JsonProperty
     private List<TaskAlert> alerts;
+
+    @JsonProperty
+    private boolean currentUserSupervisor;
+
+    @JsonProperty
+    private boolean editWorkers;
+
+    @JsonProperty
+    private boolean inviteWorkers;
+
+    @JsonProperty
+    private boolean cancelTask;
+
+    @JsonProperty
+    private boolean deleteTask;
+
+    @JsonProperty
+    private boolean archiveTask;
 }
