@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
+  <title th:text="${task.header + ' (черновик) | TODO'}">Задачи | TODO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/static/css/header.css}">
+  <link rel="stylesheet" th:href="@{/static/css/main.component.css}">
+  <link rel="stylesheet" th:href="@{/static/css/statistics.css}">
+  <link rel="stylesheet" th:href="@{/static/css/task.css}">
+  <link rel="stylesheet" th:href="@{/static/css/footer.css}">
+  <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+<div th:replace="fragments/header.html :: header(role=${userRole}, isSupervisor=${supervisor}, main=false)"></div>
+<div class="main-task-container" th:id="${task.id}">
+  <div class="task-control-block">
+    <div class="task-control-buttons">
+      <div class="task-control-buttons-panel">
+        <a class="publish-task-btn basic-button" id="publish-task-btn" href="#invite-form" title="Опубликовать"></a>
+        <div class="delete-task-btn basic-button" id="delete-task-btn" title="Удалить"></div>
+      </div>
+    </div>
+    <div class="task-control-alerts">
+      <div class="task-alert subdivision-inline-element" th:each="alert : ${task.alerts}">
+        <div th:class="${alert.isError() ? 'error-alert' : (alert.isWarning() ? 'warning-alert' : 'info-alert')}">
+          <img th:src="@{${'/static/images/' + (alert.isError() ? 'error.png' : (alert.isWarning() ? 'warning.png' : 'info.png'))}}" alt="">
+          <div class="alert-message" th:text="${alert.alert()}"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="task-information-block">
+    <div class="task-navigation-container">
+      <a class="task-navigation-item nav-general" href="#general">Общая информация</a>
+      <a class="task-navigation-item nav-files" href="#files">Вложения</a>
+    </div>
+    <div class="current-subdivision-container">
+      <div class="subdivision-content subdiv-general" id="general">
+        <div class="general-header-block">
+          <form action="none" method="post" class="task-edit-form" id="task-edit-form">
+          <label class="task-header-input-label" for="task-header-input">
+            Заголовок
+            <input class="task-header-input" type="text" id="task-header-input" placeholder="Заголовок задачи" name="header" th:value="${task.header == null ? '' : task.header}">
+          </label>
+          <div class="general-status" id="general-status" th:if="${task.status != null && task.status != ''}" th:text="${task.status}"></div>
+          <label class="task-start-input-label" for="task-start-input">
+            Плановый срок начала
+            <input class="task-start-input" type="datetime-local" id="task-start-input" name="plannedStart" th:value="${task.plannedStart}">
+          </label>
+          <label class="task-deadline-input-label" for="task-deadline-input">
+            Срок сдачи
+            <input class="task-deadline-input" type="datetime-local" id="task-deadline-input" name="deadline" th:value="${task.deadline}">
+          </label>
+          <label class="task-skills-input-label" for="task-skills-input">
+            Основные навыки
+            <textarea class="task-skills-input" th:value="${task.stack}" name="stack" id="task-skills-input" rows="3" maxlength="255"></textarea>
+          </label>
+          <label class="task-description-input-label" for="task-description-input">
+            Описание
+            <textarea class="task-description-input" th:value="${task.description}" name="description" id="task-description-input" rows="5"></textarea>
+          </label>
+            <input class="task-edit-submit basic-button" type="submit" id="task-edit-submit">
+          </form>
+        </div>
+      </div>
+      <div class="subdivision-content subdiv-files" id="files">
+        <form action="#" method="post" enctype="multipart/form-data" id="task-file-form">
+          <table>
+            <tr>
+              <td><label for="file-input">Выберите файл для загрузки</label></td>
+              <td><input id="file-input" type="file" name="file" /></td>
+              <input type="hidden" id="task-id" th:name="taskId" th:value="${taskId}"/>
+            </tr>
+            <tr>
+              <td><input type="submit" value="Загрузить" id="submit-task-file" /></td>
+            </tr>
+          </table>
+        </form>
+        <div class="task-files-container" id="task-files-list">
+          <h3 class="persistent">Вложения</h3>
+          <div class="task-applied-file subdivision-block-element" th:each="file : ${task.files}">
+            <video class="video-block" th:if="${file.video}" width="480" controls >
+              <source src="" th:src="'/file-service/video/' + ${file.id}" type="video/mp4">
+              Your browser doesn't support HTML5 video tag.
+            </video>
+            <a class="applied-file-name" th:text="${file.name}" th:href="@{${'/file-service/download/' + file.id}}"></a>
+            <div class="applied-file-size" th:text="${file.size}"></div>
+            <div th:if="${userRole == 'MANAGER'}" class="delete-file-btn basic-button" title="Удалить" th:id="${'delete-' + file.id}"></div>
+          </div>
+        </div>
+      </div>
+      <div class="subdivision-content subdiv-invite-workers" id="invite-form">
+        <label class="persistent" for="visible-to-all-checkbox" title="Если не выбрано, задача будет видна только приглашенным сотрудникам">Видна для всех</label><input type="checkbox" checked class="visible-to-all-checkbox persistent" id="visible-to-all-checkbox">
+        <div class="invite-workers-btn basic-button persistent" id="submit-publishing-btn"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="fragments/footer.html :: common-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" th:src="@{/static/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/statistics.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/invite-workers.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/task.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/draft.js}"></script>
+<script th:if="${userRole == 'FREELANCER'}" type="text/javascript">redirectTimer(1,root())</script>
+</body>
+</html>

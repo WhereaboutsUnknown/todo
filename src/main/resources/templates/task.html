@@ -1,38 +1,136 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title th:text="${title + ' | TODO'}">Задачи | TODO</title>
+    <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
+    <title th:text="${task.header + ' | TODO'}">Задачи | TODO</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
+    <link rel="stylesheet" th:href="@{/static/css/main.component.css}">
+    <link rel="stylesheet" th:href="@{/static/css/statistics.css}">
+    <link rel="stylesheet" th:href="@{/static/css/task.css}">
     <link rel="stylesheet" th:href="@{/static/css/footer.css}">
     <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon">
 </head>
 <body>
 <div th:replace="fragments/header.html :: header(role=${userRole}, isSupervisor=${supervisor}, main=false)"></div>
-<iframe name="post-devnull-frame" id="devnull-frame" style="display: none;"></iframe>
-<form action="#" method="post" enctype="multipart/form-data" id="task-file-form">
-    <table>
-        <tr>
-            <td><label for="file-input">Select a file to upload</label></td>
-            <td><input id="file-input" type="file" name="file" /></td>
-            <input type="hidden" id="task-id" th:name="taskId" th:value="${taskId}"/>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Submit" /></td>
-        </tr>
-    </table>
-</form>
-<video th:if="${video}" width="480" controls >
-    <source src="" th:src="'/file-service/video/' + ${videoId}" type="video/mp4">
-    Your browser doesn't support HTML5 video tag.
-</video>
-<a th:if="${video}" href="" th:href="@{${'/file-service/download/' + videoId}}" th:text="'/file-service/download/' + ${videoId}"></a>
+<div class="main-task-container" th:id="${task.id}">
+    <div class="task-control-block">
+        <div class="task-control-buttons">
+            <div th:if="${userRole == 'FREELANCER'}" class="task-control-buttons-panel">
+
+            </div>
+            <div th:if="${userRole == 'MANAGER'}" class="task-control-buttons-panel">
+                <a th:if="${task.inviteWorkers}" class="send-invites-btn basic-button" id="send-invites-btn" href="#invite-form" title="Пригласить сотрудников"></a>
+                <div th:if="${task.cancelTask}" class="cancel-task-btn basic-button" id="cancel-task-btn" title="Отменить задачу"></div>
+                <div th:if="${task.archiveTask}" class="archive-task-btn basic-button" id="archive-task-btn" title="Архивировать задачу"></div>
+                <div th:if="${task.status == 'Готово'}" class="review-task-btn basic-button" id="review-task-btn" title="Вынести решение"></div>
+            </div>
+        </div>
+        <div class="task-control-alerts">
+            <div class="task-alert subdivision-inline-element" th:each="alert : ${task.alerts}">
+                <div th:class="${alert.isError() ? 'error-alert' : (alert.isWarning() ? 'warning-alert' : 'info-alert')}">
+                    <img th:src="@{${'/static/images/' + (alert.isError() ? 'error.png' : (alert.isWarning() ? 'warning.png' : 'info.png'))}}" alt="">
+                    <div class="alert-message" th:text="${alert.alert()}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="task-information-block">
+        <div class="task-navigation-container">
+            <a class="task-navigation-item nav-general" href="#general">Общая информация</a>
+            <a class="task-navigation-item nav-staff" href="#staff">Участники</a>
+            <a class="task-navigation-item nav-files" href="#files">Вложения</a>
+            <a class="task-navigation-item nav-history" href="#history">История</a>
+        </div>
+        <div class="current-subdivision-container">
+            <div class="subdivision-content subdiv-general" id="general">
+                <div class="general-header-block">
+                    <div class="general-header" id="general-header" th:if="${task.header != null && task.header != ''}" th:text="${task.header}"></div>
+                    <div class="general-status" id="general-status" th:if="${task.status != null && task.status != ''}" th:text="${task.status}"></div>
+                </div>
+                <div class="general-time" id="general-time">
+                    <div class="general-time-creation" id="general-creation" th:if="${task.creationTime != null && task.creationTime != ''}" th:text="${task.creationTime}"></div>
+                    <div class="general-time-planned-start" id="general-start" th:if="${task.plannedStart != null && task.plannedStart != ''}" th:text="${task.plannedStart}"></div>
+                    <div class="general-time-deadline" id="general-deadline" th:if="${task.deadline != null && task.deadline != ''}" th:text="${task.deadline}"></div>
+                </div>
+                <div class="general-skills" id="general-skills" th:if="${task.stack != null && task.stack != ''}" th:text="${task.stack}"></div>
+                <div class="general-description" id="general-description" th:if="${task.description != null && task.description != ''}" th:text="${task.description}"></div>
+            </div>
+            <div class="subdivision-content subdiv-staff" id="staff">
+                <div class="task-managers-container">
+                    <div class="task-managers-creator subdivision-inline-element" th:with="creator = ${task.creator}">
+                        <img src="" class="current-manager-avatar user-avatar" alt="" th:src="@{${'/file-service/user/file/' + creator.avatar + '?type=1'}}">
+                        <div class="creator-label subdivision-inline-label">Создано</div>
+                        <div class="creator-name" id="creator-manager-name" th:text="${creator.name}"></div>
+                    </div>
+                    <div class="task-managers-current subdivision-inline-element" th:with="manager = ${task.manager}">
+                        <img src="" class="current-manager-avatar user-avatar" alt="" th:src="@{${'/file-service/user/file/' + manager.avatar + '?type=1'}}">
+                        <div class="current-label subdivision-inline-label">Менеджер</div>
+                        <div class="current-name" id="current-manager-name" th:text="${manager.name}"></div>
+                        <div th:if="${supervisor}" class="current-change-btn task-inline-icon" title="Сменить менеджера" th:id="${'change-' + manager.id}"></div>
+                        <div th:if="${supervisor}" class="current-delete-btn task-inline-icon" title="Убрать менеджера с задачи" th:id="${'delete-mananger-' + manager.id}"></div>
+                    </div>
+                    <div class="task-managers-unit subdivision-inline-element" th:with="unit = ${task.unit}">
+                        <div class="unit-label subdivision-inline-label">Отдел</div>
+                        <div class="unit-name" id="unit-name" th:text="${unit.name}"></div>
+                    </div>
+                </div>
+                <div class="task-group-container" id="task-group-list">
+                    <h3 class="persistent">Исполнители</h3>
+                    <div class="task-group-worker subdivision-inline-element" th:each="worker : ${task.group}" th:with="responsible = ${task.worker}">
+                        <img src="" class="group-worker-avatar user-avatar" alt="" th:src="@{${'/file-service/user/file/' + worker.avatar + '?type=1'}}">
+                        <div class="group-worker-name" th:text="${worker.name}"></div>
+                        <div th:if="${userRole == 'MANAGER' && responsible.id != worker.id}" class="worker-set-authority-btn task-inline-icon" title="Назначить ответственным" th:id="${'set-' + worker.id}"></div>
+                        <div th:if="${responsible.id == worker.id}" class="responsible-star task-inline-icon" title="Ответственный исполнитель"></div>
+                        <div th:if="${userRole == 'MANAGER'}" class="worker-delete-btn task-inline-icon" title="Исключить" th:id="${'delete-' + worker.id}"></div>
+                    </div>
+                </div>
+                <div th:if="${userRole == 'MANAGER'}" class="task-invites-container" id="task-invites-list">
+                    <h3 class="persistent">Приглашения</h3>
+                    <div class="task-invited-worker subdivision-inline-element" th:each="worker : ${task.invited}">
+                        <img src="" class="invited-avatar user-avatar" alt="" th:src="@{${'/file-service/user/file/' + worker.avatar + '?type=1'}}">
+                        <div class="invited-worker-name" th:text="${worker.name}"></div>
+                        <div th:if="${userRole == 'MANAGER'}" class="cancel-invite-btn task-inline-icon" title="Отменить" th:id="${'cancel-' + worker.id}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="subdivision-content subdiv-files" id="files">
+                <h3 class="persistent">Вложения</h3>
+                <div class="task-applied-file subdivision-block-element" th:each="file : ${task.files}">
+                    <video class="video-block" th:if="${file.video}" width="480" controls >
+                        <source src="" th:src="'/file-service/video/' + ${file.id}" type="video/mp4">
+                        Your browser doesn't support HTML5 video tag.
+                    </video>
+                    <a class="applied-file-name" th:text="${file.name}" th:href="@{${'/file-service/download/' + file.id}}"></a>
+                    <div class="applied-file-size" th:text="${file.size}"></div>
+                    <div th:if="${userRole == 'MANAGER'}" class="delete-file-btn basic-button" title="Удалить" th:id="${'delete-' + file.id}"></div>
+                </div>
+            </div>
+            <div class="subdivision-content subdiv-history" id="history" th:text="${task.history}">
+
+            </div>
+            <div th:if="${userRole == 'MANAGER'}" class="subdivision-content subdiv-invite-workers" id="invite-form">
+                <label class="persistent" for="show-all-checkbox" title="Если не выбрано, будут показаны только сотрудники, подходящие по требуемым навыкам">Показать всех</label>
+                <input type="checkbox" checked class="show-all-checkbox persistent" id="show-all-checkbox">
+                <div class="invite-workers-btn basic-button persistent" id="invite-workers-btn"></div>
+
+            </div>
+        </div>
+    </div>
+</div>
 <div th:replace="fragments/footer.html :: common-footer"></div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" th:src="@{/static/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/statistics.js}"></script>
+<script th:if="${userRole == 'MANAGER' && task.inviteWorkers}" type="text/javascript" th:src="@{/static/js/invite-workers.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/task.js}"></script>
+<script th:if="${userRole == 'MANAGER' && task.cancelTask}" type="text/javascript" th:src="@{/static/js/cancel-task.js}"></script>
+<script th:if="${userRole == 'MANAGER' && task.archiveTask}" type="text/javascript" th:src="@{/static/js/archive-task.js}"></script>
+<script th:if="${userRole == 'MANAGER' && task.status == 'Готово'}" type="text/javascript" th:src="@{/static/js/review-task.js}"></script>
+<script th:if="${userRole == 'MANAGER'}" type="text/javascript" th:src="@{/static/js/task-manager.js}"></script>
+<script th:if="${userRole == 'FREELANCER'}" type="text/javascript" th:src="@{/static/js/task-worker.js}"></script>
 </body>
 </html>
