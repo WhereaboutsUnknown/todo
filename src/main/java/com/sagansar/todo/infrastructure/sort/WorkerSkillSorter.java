@@ -1,5 +1,6 @@
 package com.sagansar.todo.infrastructure.sort;
 
+import com.sagansar.todo.model.work.Statistics;
 import com.sagansar.todo.model.worker.Worker;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class WorkerSkillSorter {
             if (firstSkills != null) {
                 return -1;
             }
-            return 0;
+            return compareByStatistics(first, second);
         }
         for (String skill : skills) {
             if (firstSkills.contains(skill)) {
@@ -35,6 +36,30 @@ public class WorkerSkillSorter {
                 secondPoints++;
             }
         }
+        if (firstPoints == 0 && secondPoints == 0) {
+            return compareByStatistics(first, second);
+        }
         return Integer.compare(secondPoints, firstPoints);
+    }
+
+    private static int compareByStatistics(Worker first, Worker second) {
+        Statistics firstStat = first.getStatistics();
+        Statistics secondStat = second.getStatistics();
+        if (firstStat == null || secondStat == null) {
+            if (secondStat != null) {
+                return 1;
+            }
+            if (firstStat != null) {
+                return -1;
+            }
+        } else {
+            Double pointsFirst = firstStat.getPoints();
+            Double pointsSecond = secondStat.getPoints();
+            if (pointsFirst == 0 && pointsSecond == 0) {
+                return Integer.compare(secondStat.getDone() - secondStat.getFailed(), firstStat.getDone() - firstStat.getFailed());
+            }
+            return Double.compare(pointsSecond, pointsFirst);
+        }
+        return 0;
     }
 }
