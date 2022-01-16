@@ -23,10 +23,10 @@ public class InviteController {
         try {
             Invite invite = securityService.authorizeInviteToken(token);
             TodoTask task = invite.getTask();
-            if (task == null) {
+            if (task == null || invite.isChecked()) {
                 modelAndView.addObject("isError", false);
                 modelAndView.addObject("header", "Что-то пошло не так");
-                modelAndView.addObject("message", "Ошибка обработки приглашения: задача не найдена!");
+                modelAndView.addObject("message", (task == null ? "Задача не найдена!" : "Приглашение больше не актуально"));
                 modelAndView.setViewName("invite-error");
                 return modelAndView;
             }

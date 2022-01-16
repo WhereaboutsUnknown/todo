@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity(name = "archived_task")
+@Entity(name = "archived_tasks")
 public class ArchivedTask implements TaskTemplate {
 
     @Id

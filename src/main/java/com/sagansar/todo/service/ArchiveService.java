@@ -65,7 +65,7 @@ public class ArchiveService {
                 .collect(Collectors.toMap(TaskEstimateTable::getWorkerId, TaskEstimateTable::getEstimate));
         List<WorkerArchivedTask> workers = workerGroupTaskRepository.findAllByTaskId(task.getId()).stream()
                 .filter(Objects::nonNull)
-                .map(workerGroupTask -> createRelation(workerGroupTask, estimates.get(workerGroupTask.getWorker().getId())))
+                .map(workerGroupTask -> createRelation(archivedTask, workerGroupTask, estimates.get(workerGroupTask.getWorker().getId())))
                 .collect(Collectors.toList());
         workerArchivedTaskRepository.saveAll(workers);
         archivedTask.setArchiveTime(LocalDateTime.now(ZoneId.systemDefault()));
@@ -173,10 +173,10 @@ public class ArchiveService {
         return archivedTask;
     }
 
-    private WorkerArchivedTask createRelation(@NonNull WorkerGroupTask workerGroupTask, Integer estimate) {
+    private WorkerArchivedTask createRelation(@NonNull ArchivedTask archivedTask, @NonNull WorkerGroupTask workerGroupTask, Integer estimate) {
         WorkerArchivedTask workerArchivedTask = new WorkerArchivedTask();
         workerArchivedTask.setWorker(workerGroupTask.getWorker());
-        workerArchivedTask.setTask(workerGroupTask.getTask());
+        workerArchivedTask.setTask(archivedTask);
         workerArchivedTask.setResponsible(workerGroupTask.isResponsible());
         workerArchivedTask.setEstimate(estimate);
         return workerArchivedTask;
