@@ -71,6 +71,11 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendInviteCancelledNotification(@NonNull User user, String taskHeader) {
+        String message = "Ваше приглашение на задачу \"" + taskHeader + "\" было отменено!";
+        sendNotification(user, message);
+    }
+
     public void sendNotification(@NonNull User user, String message) {
         Notification notification = createNotification(user, message);
         notificationRepository.save(notification);
