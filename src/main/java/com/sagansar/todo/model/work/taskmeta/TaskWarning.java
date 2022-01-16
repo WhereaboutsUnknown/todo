@@ -10,4 +10,24 @@ public class TaskWarning implements TaskAlert {
     public TaskWarning(String message) {
         this.warningAlert = message;
     }
+
+    @Override
+    public boolean isError() {
+        return false;
+    }
+
+    @Override
+    public boolean isWarning() {
+        return true;
+    }
+
+    @Override
+    public boolean isInfo() {
+        return false;
+    }
+
+    @Override
+    public String alert() {
+        return this.warningAlert;
+    }
 }

@@ -10,4 +10,24 @@ public class TaskError implements TaskAlert {
     public TaskError(String message) {
         this.errorAlert = message;
     }
+
+    @Override
+    public boolean isError() {
+        return true;
+    }
+
+    @Override
+    public boolean isWarning() {
+        return false;
+    }
+
+    @Override
+    public boolean isInfo() {
+        return false;
+    }
+
+    @Override
+    public String alert() {
+        return this.errorAlert;
+    }
 }
