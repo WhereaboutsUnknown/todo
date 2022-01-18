@@ -7,10 +7,10 @@
 <body>
 <div th:fragment="search-fragment(block)" class="search-tools-container">
   <div class="tool-container search-tool">
-    <form class="search-form">
+    <div class="search-form">
       <input type="search" class="search-form-input" id="search-input" placeholder="Поиск...">
-      <input type="submit" class="basic-button search-btn" id="search-btn" value="Найти">
-    </form>
+      <div class="basic-button search-btn" id="search-btn"></div>
+    </div>
   </div>
   <div class="tool-container extended-search-tool">
     <a class="extended-search-anchor" href="#extended-search-block">Расширенный поиск...</a>
@@ -25,6 +25,10 @@
       <option th:if="${block == 'invites'}" value="checked">просмотренным/непросмотренным</option>
       <option th:if="${block == 'responses'}" selected value="creationTime">времени создания</option>
       <option th:if="${block == 'responses'}" value="checked">просмотренным/непросмотренным</option>
+      <option th:if="${block == 'workers'}" selected value="statistics.points">рейтингу</option>
+      <option th:if="${block == 'workers'}" value="statistics.done">выполненным задачам</option>
+      <option th:if="${block == 'workers'}" value="age">возрасту</option>
+      <option th:if="${block == 'workers'}" value="name">имени</option>
     </select>
     <div class="sort-direction-btn" id="sort-direction-btn">
     </div>

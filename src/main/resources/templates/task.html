@@ -19,7 +19,8 @@
     <div class="task-control-block">
         <div class="task-control-buttons">
             <div th:if="${userRole == 'FREELANCER'}" class="task-control-buttons-panel">
-
+                <div th:if="${taskTaken && task.status == 'В работе'}" class="task-done-btn basic-button" id="task-done-btn" title="Сдать работу"></div>
+                <div th:if="${!taskTaken}" class="claim-task-btn basic-button" id="claim-task-btn" title="Отправить отклик"></div>
             </div>
             <div th:if="${userRole == 'MANAGER'}" class="task-control-buttons-panel">
                 <a th:if="${task.inviteWorkers}" class="send-invites-btn basic-button" id="send-invites-btn" href="#invite-form" title="Пригласить сотрудников"></a>
@@ -97,15 +98,29 @@
                 </div>
             </div>
             <div class="subdivision-content subdiv-files" id="files">
-                <h3 class="persistent">Вложения</h3>
-                <div class="task-applied-file subdivision-block-element" th:each="file : ${task.files}">
-                    <video class="video-block" th:if="${file.video}" width="480" controls >
-                        <source src="" th:src="'/file-service/video/' + ${file.id}" type="video/mp4">
-                        Your browser doesn't support HTML5 video tag.
-                    </video>
-                    <a class="applied-file-name" th:text="${file.name}" th:href="@{${'/file-service/download/' + file.id}}"></a>
-                    <div class="applied-file-size" th:text="${file.size}"></div>
-                    <div th:if="${userRole == 'MANAGER'}" class="delete-file-btn basic-button" title="Удалить" th:id="${'delete-' + file.id}"></div>
+                <form action="#" method="post" enctype="multipart/form-data" id="task-file-form">
+                    <table>
+                        <tr>
+                            <td><label for="file-input">Выберите файл для загрузки</label></td>
+                            <td><input id="file-input" type="file" name="file" /></td>
+                            <input type="hidden" id="task-id" th:name="taskId" th:value="${taskId}"/>
+                        </tr>
+                        <tr>
+                            <td><input type="submit" value="Загрузить" id="submit-task-file" /></td>
+                        </tr>
+                    </table>
+                </form>
+                <div class="task-files-container" id="task-files-list">
+                    <h3 class="persistent">Вложения</h3>
+                    <div class="task-applied-file subdivision-block-element" th:each="file : ${task.files}">
+                        <video class="video-block" th:if="${file.video}" width="480" controls >
+                            <source src="" th:src="'/file-service/video/' + ${file.id}" type="video/mp4">
+                            Your browser doesn't support HTML5 video tag.
+                        </video>
+                        <a class="applied-file-name" th:text="${file.name}" th:href="@{${'/file-service/download/' + file.id}}"></a>
+                        <div class="applied-file-size" th:text="${file.size}"></div>
+                        <div th:if="${userRole == 'MANAGER'}" class="delete-file-btn basic-button" title="Удалить" th:id="${'delete-' + file.id}"></div>
+                    </div>
                 </div>
             </div>
             <div class="subdivision-content subdiv-history" id="history" th:text="${task.history}">
