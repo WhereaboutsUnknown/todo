@@ -13,8 +13,10 @@ import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.TaskFile;
 import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
+import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.ManagerRepository;
 import com.sagansar.todo.repository.TodoTaskRepository;
+import com.sagansar.todo.repository.WorkerRepository;
 import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.TodoService;
 import com.sagansar.todo.service.UserDetailsServiceImpl;
@@ -30,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import java.util.Set;
 
 @Controller
@@ -43,6 +46,8 @@ public class MainController implements ErrorController {
     private final TodoTaskRepository todoTaskRepository;
 
     private final ManagerRepository managerRepository;
+
+    private final WorkerRepository workerRepository;
 
     private final TodoService todoService;
 
@@ -101,6 +106,9 @@ public class MainController implements ErrorController {
             if (securityService.checkUserRights(RoleEnum.MANAGER)) {
                 return taskForManager(modelAndView, user, task);
             }
+            if (securityService.checkUserRights(RoleEnum.FREELANCER)) {
+                checkWorkerRights(task, user);
+            }
             TaskFullDto view = TaskMapper.taskToFull(task);
             TaskFile videoFile = task.getFiles().stream()
                     .filter(file -> FileMapper.isVideo(file.getName()))
@@ -110,6 +118,7 @@ public class MainController implements ErrorController {
             modelAndView.addObject("video", hasVideo);
             modelAndView.addObject("videoId", (hasVideo ? videoFile.getId() : ""));
             modelAndView.addObject("task", view);
+            modelAndView.addObject("taskTaken", task.hasWorker(user));
             modelAndView.setViewName("task");
             return internalPage(modelAndView);
         }
@@ -245,6 +254,13 @@ public class MainController implements ErrorController {
             return modelAndView;
         } catch (BadRequestException e) {
             return error(e.getResponseMessage(), HttpStatusError.FORBIDDEN);
+        }
+    }
+
+    private void checkWorkerRights(TodoTask task, User user) {
+        Optional<Worker> worker = workerRepository.findByUserId(user.getId());
+        if (worker.isEmpty() || (!task.hasWorker(user) && !task.is(TodoStatus.Status.TODO) && !task.is(TodoStatus.Status.DISCUSSION))) {
+            throw new AccessDeniedException("Эта задача запрещена для просмотра");
         }
     }
 }
