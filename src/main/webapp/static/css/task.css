@@ -339,3 +339,11 @@
 .review-task-btn {
     background-image: url("../images/ok-icon.png");
 }
+
+.task-done-btn {
+    background-image: url("../images/ok-icon.png");
+}
+
+.claim-task-btn {
+    background-image: url("../images/cloud-icon.png");
+}
