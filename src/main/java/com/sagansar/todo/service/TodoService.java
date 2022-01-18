@@ -38,6 +38,8 @@ public class TodoService {
 
     private final NotificationService notificationService;
 
+    private final FileService fileService;
+
     private final WorkerResponseRepository responseRepository;
 
     public TodoService(TodoTaskRepository todoTaskRepository,
@@ -45,12 +47,14 @@ public class TodoService {
                        TodoStatusRepository todoStatusRepository,
                        NotificationService notificationService,
                        DialogService dialogService,
+                       FileService fileService,
                        WorkerResponseRepository responseRepository) {
         this.workerGroupTaskRepository = workerGroupTaskRepository;
         this.todoStatusRepository = todoStatusRepository;
         this.todoTaskRepository = todoTaskRepository;
         this.notificationService = notificationService;
         this.dialogService = dialogService;
+        this.fileService = fileService;
         this.responseRepository = responseRepository;
     }
 
@@ -357,6 +361,7 @@ public class TodoService {
     public void deleteDraft(@NonNull Manager manager, @NonNull Long taskId) throws BadRequestException {
         TodoTask draft = getValidTask(taskId, Set.of(TodoStatus.Status.DRAFT), "Выбранная задача - не черновик!");
         checkManagerRightsOnTask(manager, draft);
+        fileService.deleteTaskFiles(draft);
         todoTaskRepository.delete(draft);
     }
 
