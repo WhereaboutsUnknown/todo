@@ -27,7 +27,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -151,6 +153,17 @@ public class FileService {
 
     public File getFile(TaskFile taskFile) {
         return Paths.get(taskFileStoragePath, taskFile.getName()).toFile();
+    }
+
+    public void deleteTaskFiles(TodoTask task) {
+        List<TaskFile> filesToDelete = new ArrayList<>();
+        for (TaskFile taskFile : task.getFiles()) {
+            File file = getFile(taskFile);
+            if (file.exists() && file.delete()) {
+                filesToDelete.add(taskFile);
+            }
+        }
+        taskFileRepository.deleteAll(filesToDelete);
     }
 
     private TaskFile createFile(String name, long size) {
