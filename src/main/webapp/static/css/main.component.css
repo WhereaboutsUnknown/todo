@@ -244,6 +244,8 @@ h2{
 .search-form {
     margin-top: 5px;
     width: 90%;
+    display: flex;
+    padding-top: 10px;
 }
 
 .search-form-input {
@@ -255,7 +257,7 @@ h2{
     color: transparent;
     height: 30px;
     width: 30px;
-    margin-top: 10px;
+    margin-top: -1px;
     background-image: url("../images/search-icon.png");
 }
 
