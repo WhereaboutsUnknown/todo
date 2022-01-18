@@ -67,7 +67,7 @@ public class ProfileController {
                 return PersonMapper.managerToName(manager);
             }
             if (securityService.checkUserRights(RoleEnum.FREELANCER)) {
-                Worker worker = workerRepository.findById(user.getId())
+                Worker worker = workerRepository.findByUserId(user.getId())
                         .orElseThrow(() -> new UserBlockedException("Не найден профиль исполнителя!"));
                 if (!worker.isActive()) {
                     throw new UserBlockedException("Профиль исполнителя не активен!");
