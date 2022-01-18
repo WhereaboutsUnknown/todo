@@ -1,10 +1,6 @@
 package com.sagansar.todo.controller;
 
-import com.sagansar.todo.controller.dto.TaskShortDto;
-import com.sagansar.todo.controller.dto.WorkerDto;
-import com.sagansar.todo.controller.dto.WorkerFullDto;
-import com.sagansar.todo.controller.dto.WorkerLineDto;
-import com.sagansar.todo.controller.mapper.PersonMapper;
+import com.sagansar.todo.controller.dto.*;
 import com.sagansar.todo.controller.mapper.TaskMapper;
 import com.sagansar.todo.controller.mapper.WorkerMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
@@ -29,6 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -101,11 +98,18 @@ public class WorkerController {
     }
 
     @PostMapping("/{workerId}/todo/{taskId}")
-    public TaskShortDto claimTask(@PathVariable(name = "workerId") Integer workerId,
+    public TaskFullDto claimTask(@PathVariable(name = "workerId") Integer workerId,
                           @PathVariable(name = "taskId") Long taskId,
                           @RequestParam(name = "message") String message) throws BadRequestException {
         Worker worker = securityService.getAuthorizedWorker(workerId);
-        return TaskMapper.taskToShort(todoService.claimTask(worker, taskId, message));
+        return TaskMapper.taskToFull(todoService.claimTask(worker, taskId, message));
+    }
+
+    @PutMapping("/{workerId}/todo/{taskId}")
+    public TaskFullDto taskDone(@PathVariable(name = "workerId") Integer workerId,
+                                @PathVariable(name = "taskId") Long taskId) throws BadRequestException {
+        Worker worker = securityService.getAuthorizedWorker(workerId);
+        return TaskMapper.taskToFull(todoService.done(worker, taskId));
     }
 
     @PostMapping("/{workerId}")
@@ -130,6 +134,7 @@ public class WorkerController {
                                     @RequestParam(name = "op", required = false) String operator,
                                     @RequestParam(name = "by", required = false) String sort,
                                     @RequestParam(name = "dir", required = false) String direction,
+                                    @RequestParam(name = "req", required = false) String request,
                                     Pageable pageable) throws BadRequestException {
         if (!securityService.checkUserRights(RoleEnum.MANAGER) && !securityService.isAdmin()) {
             throw new UnauthorizedException("Недостаточно полномочий для доступа", true);
@@ -137,16 +142,21 @@ public class WorkerController {
         if (sort != null && direction != null) {
             pageable = validationService.validatePageRequest(pageable, sort, direction);
         }
-        Specification<Worker> filter = null;
+        Specification<Worker> filter = new SearchSpecification<>(new SearchCriteria("active", ":", "true"));
         if (criteria != null && operator != null) {
-            filter = filterCompiler.compile(
+            Specification<Worker> criteriaFilter = filterCompiler.compile(
                     criteria.stream()
                     .map(filterCompiler::compile)
                     .filter(crit -> crit.getKey() != null && crit.getOperation() != null && crit.getValue() != null)
                     .collect(Collectors.toList()),
                     operator
             );
-            filter = filterCompiler.append(filter, new SearchCriteria("active", ":", "true"), FilterCompiler.Operator.AND);
+            filter = filter.and(criteriaFilter);
+        }
+        if (StringUtils.hasText(request)) {
+            Specification<Worker> requestFilter = new SearchSpecification<>(new SearchCriteria("info", "~", request));
+            requestFilter = filterCompiler.append(requestFilter, new SearchCriteria("name", "~", request), FilterCompiler.Operator.OR);
+            filter = filter.and(requestFilter);
         }
         return workerRepository.findAll(filter, pageable)
                 .map(WorkerMapper::workerToDto);
