@@ -44,7 +44,7 @@ function rest(method, url, body, callback) {
         xhr.open(method, api() + url);
         xhr.setRequestHeader("Content-type", "application/json; charset = utf-8");
         xhr.setRequestHeader("X-CSRF-TOKEN", token);
-        if (body) {
+        if (body || typeof body == "boolean") {
             xhr.send(JSON.stringify(body));
         } else {
             xhr.send();

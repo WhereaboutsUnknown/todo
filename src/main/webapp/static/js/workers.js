@@ -5,10 +5,10 @@ function workersCache() {
 window.addEventListener("DOMContentLoaded", () => {
     Todo.store('workersCache', new Map());
 
-    function loadWorkers() {
+    function loadWorkers(initial) {
         let list = $("#workers-block-list");
         list.empty();
-        const searchUrl = addSearchParams("/worker/search");
+        const searchUrl = initial ? "/worker/search" : addSearchParams("/worker/search");
         rest(
             "GET",
             searchUrl,
@@ -24,9 +24,24 @@ window.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    loadWorkers();
+    loadWorkers(true);
 
     $("#refresh-button").click(function () {
-        loadWorkers();
+        loadWorkers(false);
+    });
+
+    sortBtn().click(function () {
+        loadWorkers(false);
+    });
+
+    searchBtn().click(function () {
+        loadWorkers(false);
+    });
+
+    searchInput().on('keyup', function (e) {
+        e.preventDefault();
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            loadWorkers(false);
+        }
     });
 });

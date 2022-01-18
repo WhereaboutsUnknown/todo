@@ -2,6 +2,14 @@ function sortBtn() {
     return $('#sort-direction-btn');
 }
 
+function searchBtn() {
+    return $('#search-btn');
+}
+
+function searchInput() {
+    return $('#search-input');
+}
+
 function getSort() {
     if (sortBtn().hasClass('direction-up')) {
         return 'asc';
@@ -33,12 +41,17 @@ function getCriteria(type) {
     return null;
 }
 
+function getSearchRequest() {
+    return searchInput().val();
+}
+
 function addSearchParams(url, page, size, type) {
     const sortDir = getSort();
     const sortBy = getSortSelector();
     const criteria = getCriteria(type);
+    const req = getSearchRequest();
 
-    return url + "?" + "dir=" + sortDir + (sortBy ? "&by=" + sortBy : "") + (criteria ? "&crit=" + criteria : "") + "&page=" + (page ? page : 0) + "&size=" + (size ? size : 50);
+    return url + `?dir=${sortDir}${sortBy ? "&by=" + sortBy : ""}${criteria ? "&crit=" + criteria : ""}${req ? "&req=" + req : ""}&page=${page ? page : 0}&size=${size ? size : 50}`;
 }
 
 sortBtn().click(function () {
