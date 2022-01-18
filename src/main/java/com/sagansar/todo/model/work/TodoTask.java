@@ -1,5 +1,6 @@
 package com.sagansar.todo.model.work;
 
+import com.sagansar.todo.model.general.User;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.manager.Unit;
 import com.sagansar.todo.model.work.taskmeta.TaskAlert;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -186,6 +188,18 @@ public class TodoTask {
 
     public boolean is(TodoStatus.Status status) {
         return this.status != null && this.status.status().equals(status);
+    }
+
+    public boolean hasWorker(User user) {
+        if (group != null) {
+            Set<Integer> ids = group.stream()
+                    .map(WorkerGroupTask::getWorker)
+                    .map(Worker::getUser)
+                    .map(User::getId)
+                    .collect(Collectors.toSet());
+            return ids.contains(user.getId());
+        }
+        return false;
     }
 
     private boolean isStatusIn(Set<TodoStatus.Status> statuses) {
