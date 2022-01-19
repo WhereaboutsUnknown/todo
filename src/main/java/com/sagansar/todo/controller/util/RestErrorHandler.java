@@ -122,19 +122,4 @@ public class RestErrorHandler extends ResponseEntityExceptionHandler {
                 new RestError(HttpStatus.FORBIDDEN, ex.getResponseMessage(), "403");
         return new ResponseEntity<>(error, new HttpHeaders(), HttpStatus.OK);
     }
-
-    @ExceptionHandler({ AccessDeniedException.class })
-    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, WebRequest request) {
-        ex.printStackTrace();
-        throw ex;
-    }
-
-    @ExceptionHandler({ Exception.class })
-    public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-        ex.printStackTrace();
-        RestError error = new RestError(
-                HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
-        return new ResponseEntity<>(
-                error, new HttpHeaders(), error.getStatus());
-    }
 }
