@@ -16,14 +16,6 @@
     justify-content: center;
 }
 
-/* Содержимое lightbox  */
-.lightbox figcaption {
-    width: 25rem;
-    position: relative;
-    padding: 1.5em;
-    background-color: lightpink;
-}
-
 /* Кнопка закрытия */
 .lightbox .close {
     position: relative;
