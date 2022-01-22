@@ -276,7 +276,7 @@
     background-color: #fff9d3;
 }
 
-.invite-workers-btn {
+.invite-workers-btn, .send-to-archive-btn {
     line-height: 40px;
     width: 100px;
     background: url("../images/ok-icon.png") no-repeat #195fd4 50% 50%;
@@ -346,4 +346,23 @@
 
 .claim-task-btn {
     background-image: url("../images/cloud-icon.png");
+}
+
+.star.selected {
+    color: gold;
+}
+
+.stars-list .star {
+    font-size: 72px;
+    width: 48px;
+}
+
+.estimate-text-block, .border-line-container, .stars-list-container, .archive-btn-container {
+    display: flex;
+    justify-content: center;
+}
+
+.estimate-text-block {
+    font-weight: bold;
+    font-size: 1.5em;
 }
