@@ -139,9 +139,9 @@ public class ManagerController {
     @PostMapping("/{managerId}/tasks/{taskId}/archive")
     public TaskFullDto archiveTask(@PathVariable(name = "managerId") Integer managerId,
                                    @PathVariable(name = "taskId") Long taskId,
-                                   @RequestBody List<TaskEstimateTable> estimateTables) throws BadRequestException {
+                                   @RequestBody Integer estimate) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
-        validationService.checkNullSafety(manager, taskId, estimateTables);
+        validationService.checkNullSafety(manager, taskId, estimate);
         TodoTask task = todoService.getTaskForArchiving(manager, taskId);
         if (manager.getUnit() == null) {
             throw new BadRequestException("Менеджер не относится ни к одному отделу!");
@@ -151,7 +151,7 @@ public class ManagerController {
             throw new BadRequestException("Задача не относится к отделу " + unit.getName());
         }
         Manager creator = task.getCreator();
-        return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimateTables), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        return TaskMapper.taskToFull(archiveService.archiveTask(manager, task, creator, unit, estimate), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @GetMapping("/{managerId}/tasks/{taskId}/invites")
