@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class WorkerArchivedTask {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -33,5 +34,6 @@ public class WorkerArchivedTask {
         if (estimate != null && (estimate < 0 || estimate > 5)) {
             throw new IllegalArgumentException("Оценка должна быть в диапазоне от 0 до 5");
         }
+        this.estimate = estimate;
     }
 }
