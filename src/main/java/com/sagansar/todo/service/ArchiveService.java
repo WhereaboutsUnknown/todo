@@ -50,26 +50,24 @@ public class ArchiveService {
      * @param task task
      * @param creator task creator
      * @param unit unit
-     * @param estimateTables Worker estimates for task
+     * @param estimate Workers estimate for task
      * @return archived task
      * @throws BadRequestException in case of null task
      */
-    public TodoTask archiveTask(Manager manager, TodoTask task, Manager creator, Unit unit, List<TaskEstimateTable> estimateTables) throws BadRequestException {
+    public TodoTask archiveTask(Manager manager, TodoTask task, Manager creator, Unit unit, Integer estimate) throws BadRequestException {
         if (task == null) {
             throw new BadRequestException("Отсутствует задача для архивации!");
         }
         ArchivedTask archivedTask = createArchivedTask(task, manager);
         archivedTask.setUnit(unit);
         archivedTask.setCreator(creator);
-        Map<Integer, Integer> estimates = estimateTables.stream()
-                .collect(Collectors.toMap(TaskEstimateTable::getWorkerId, TaskEstimateTable::getEstimate));
+        archivedTask.setArchiveTime(LocalDateTime.now(ZoneId.systemDefault()));
+        ArchivedTask savedArchivedTask = archivedTaskRepository.save(archivedTask);
         List<WorkerArchivedTask> workers = workerGroupTaskRepository.findAllByTaskId(task.getId()).stream()
                 .filter(Objects::nonNull)
-                .map(workerGroupTask -> createRelation(archivedTask, workerGroupTask, estimates.get(workerGroupTask.getWorker().getId())))
+                .map(workerGroupTask -> createRelation(savedArchivedTask, workerGroupTask, estimate))
                 .collect(Collectors.toList());
         workerArchivedTaskRepository.saveAll(workers);
-        archivedTask.setArchiveTime(LocalDateTime.now(ZoneId.systemDefault()));
-        archivedTaskRepository.save(archivedTask);
         calculateStatistics(workers.stream()
                 .map(WorkerArchivedTask::getWorker)
                 .collect(Collectors.toList()));
@@ -146,7 +144,8 @@ public class ArchiveService {
             if (task.isResponsible()) {
                 responsible++;
             }
-            pointsTotal += task.getEstimate();
+            double estimate = task.getEstimate() == null ? 0.0 : task.getEstimate();
+            pointsTotal += estimate;
         }
         Statistics statistics = getWorkerStatistics(worker.getId());
         if (statistics == null) {
