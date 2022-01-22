@@ -25,7 +25,7 @@
             <div th:if="${userRole == 'MANAGER'}" class="task-control-buttons-panel">
                 <a th:if="${task.inviteWorkers}" class="send-invites-btn basic-button" id="send-invites-btn" href="#invite-form" title="Пригласить сотрудников"></a>
                 <div th:if="${task.cancelTask}" class="cancel-task-btn basic-button" id="cancel-task-btn" title="Отменить задачу"></div>
-                <div th:if="${task.archiveTask}" class="archive-task-btn basic-button" id="archive-task-btn" title="Архивировать задачу"></div>
+                <a th:if="${task.archiveTask}" class="archive-task-btn basic-button" id="archive-task-btn" title="Архивировать задачу" href="#archive-task"></a>
                 <div th:if="${task.status == 'Готово'}" class="review-task-btn basic-button" id="review-task-btn" title="Вынести решение"></div>
             </div>
         </div>
@@ -131,6 +131,27 @@
                 <input type="checkbox" checked class="show-all-checkbox persistent" id="show-all-checkbox">
                 <div class="invite-workers-btn basic-button persistent" id="invite-workers-btn"></div>
 
+            </div>
+            <div th:if="${userRole == 'MANAGER' && task.archiveTask}" class="subdivision-content subdiv-archive-task" id="archive-task">
+                <div class="estimate-text-block">
+                    <p>Оцените выполнение задачи по пятибалльной шкале:</p>
+                </div>
+                <div class="border-line-container">
+                    <div class="border-line-element">
+                    </div>
+                </div>
+                <div class="stars-list-container">
+                    <div class="stars-list">
+                        <span class="star" data-value="1"></span>
+                        <span class="star" data-value="2"></span>
+                        <span class="star" data-value="3"></span>
+                        <span class="star" data-value="4"></span>
+                        <span class="star" data-value="5"></span>
+                    </div>
+                </div>
+                <div class="archive-btn-container">
+                    <div class="send-to-archive-btn basic-button" id="send-to-archive-btn"></div>
+                </div>
             </div>
         </div>
     </div>
