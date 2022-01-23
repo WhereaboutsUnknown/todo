@@ -8,7 +8,7 @@ import java.util.Set;
 @Getter
 public enum TaskAccess {
     REMOVE_WORKERS(TodoStatus.Status.DRAFT, TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO),
-    INVITE_WORKERS(TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION),
+    INVITE_WORKERS(TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO),
     CANCEL_TASK(TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO, TodoStatus.Status.DONE),
     ARCHIVE_TASK(TodoStatus.Status.GO, TodoStatus.Status.DONE, TodoStatus.Status.APPROVED),
     DELETE_TASK(TodoStatus.Status.DRAFT, TodoStatus.Status.CANCELED, TodoStatus.Status.ARCHIVE);
