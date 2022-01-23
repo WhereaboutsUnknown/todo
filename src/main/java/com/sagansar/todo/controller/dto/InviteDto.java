@@ -13,7 +13,13 @@ import java.time.LocalDateTime;
 public class InviteDto {
 
     @JsonProperty
+    private Long id;
+
+    @JsonProperty
     private Long taskId;
+
+    @JsonProperty
+    private String task;
 
     @JsonProperty
     private Integer workerId;

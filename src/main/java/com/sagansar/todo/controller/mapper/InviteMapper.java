@@ -7,7 +7,9 @@ public class InviteMapper {
 
     public static InviteDto inviteToDto(Invite invite) {
         InviteDto dto = new InviteDto();
+        dto.setId(invite.getId());
         dto.setTaskId(invite.getTask().getId());
+        dto.setTask(invite.getTask().getHeader());
         dto.setWorkerId(invite.getWorker().getId());
         dto.setChecked(invite.isChecked());
         dto.setAccepted(invite.isAccepted());
