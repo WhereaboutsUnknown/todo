@@ -12,8 +12,10 @@ import com.sagansar.todo.service.NotificationService;
 import com.sagansar.todo.service.SecurityService;
 import com.sagansar.todo.service.TodoService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,11 +37,20 @@ public class TaskResponseController {
     private final SecurityService securityService;
 
     @GetMapping("")
-    public List<WorkerResponseBasic> getResponses(@PathVariable Integer managerId) {
+    public List<WorkerResponseBasic> getResponses(@PathVariable Integer managerId,
+                                                  @RequestParam(name = "req", required = false) String request,
+                                                  Pageable pageable) {
         Manager manager = securityService.getAuthorizedManager(managerId);
+        if (StringUtils.hasText(request)) {
+            return manager.getTasks().stream()
+                    .map(TodoTask::getId)
+                    .flatMap(id -> workerResponseRepository.findAllByRequest(id, pageable, request).stream())
+                    .map(WorkerResponseMapper::responseToBasic)
+                    .collect(Collectors.toList());
+        }
         return manager.getTasks().stream()
                 .map(TodoTask::getId)
-                .flatMap(id -> workerResponseRepository.findAllByTaskIdAndCheckedFalse(id).stream())
+                .flatMap(id -> workerResponseRepository.findAllByTaskIdAndCheckedFalse(id, pageable).stream())
                 .map(WorkerResponseMapper::responseToBasic)
                 .collect(Collectors.toList());
     }
@@ -77,8 +88,6 @@ public class TaskResponseController {
         notificationService.sendResponseDeclinedNotification(response.getWorker().getUser(), response.getTask().getHeader());
         return WorkerResponseMapper.responseToBasic(response);
     }
-
-    //TODO: удалять старые уведомления и отклики
 
     public WorkerResponse getWorkerResponse(Long id) throws BadRequestException {
         WorkerResponse response = workerResponseRepository.findById(id)
