@@ -1,6 +1,7 @@
 package com.sagansar.todo.controller.mapper;
 
 import com.sagansar.todo.controller.dto.PersonNameDto;
+import com.sagansar.todo.controller.dto.TaskBasic;
 import com.sagansar.todo.controller.dto.TaskFullDto;
 import com.sagansar.todo.controller.dto.TaskShortDto;
 import com.sagansar.todo.model.manager.Manager;
@@ -104,6 +105,23 @@ public class TaskMapper {
         dto.setCancelTask(TaskAccess.CANCEL_TASK.hasAccess(status));
         dto.setArchiveTask(TaskAccess.ARCHIVE_TASK.hasAccess(status));
         dto.setDeleteTask(TaskAccess.DELETE_TASK.hasAccess(status));
+        return dto;
+    }
+
+    public static TaskBasic taskToBasic(TodoTask task) {
+        if (task == null) {
+            return null;
+        }
+        TaskBasic dto = new TaskBasic();
+        dto.setId(task.getId());
+        dto.setHeader(task.getHeader());
+        TodoStatus status = task.getStatus();
+        if (status != null) {
+            dto.setStatus(status.getDescription());
+        }
+        dto.setDeadline(task.getDeadline());
+        dto.setStack(task.getStack());
+        dto.setDescription(task.getDescription());
         return dto;
     }
 
