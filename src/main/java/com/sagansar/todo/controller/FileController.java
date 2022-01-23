@@ -40,7 +40,11 @@ public class FileController {
         if (taskId == null) {
             throw new BadRequestException("Задача не найдена!");
         }
-        todoService.checkUserRightsOnTaskAsManager(user.getId(), taskId);
+        if (securityService.checkUserRights(RoleEnum.MANAGER)) {
+            todoService.checkUserRightsOnTaskAsManager(user.getId(), taskId);
+        } else {
+            todoService.checkUserRightsOnTaskAsWorker(user.getId(), taskId);
+        }
         fileService.storeFile(user, file, taskId);
         return new RestResponse("Файл загружен!");
     }
