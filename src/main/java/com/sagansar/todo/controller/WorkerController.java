@@ -13,6 +13,7 @@ import com.sagansar.todo.infrastructure.specifications.SearchSpecification;
 import com.sagansar.todo.model.external.WorkerProfileForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.model.worker.Worker;
 import com.sagansar.todo.repository.TodoTaskRepository;
@@ -83,6 +84,7 @@ public class WorkerController {
     public List<TaskShortDto> getTakenTasks(@PathVariable(name = "workerId") Integer workerId) {
         securityService.getAuthorizedWorker(workerId);
         return todoTaskRepository.findAllByWorkerId(workerId).stream()
+                .filter(task -> !task.is(TodoStatus.Status.CANCELED) && !task.is(TodoStatus.Status.ARCHIVE))
                 .map(TaskMapper::taskToShort)
                 .collect(Collectors.toList());
     }
