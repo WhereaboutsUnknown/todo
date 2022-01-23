@@ -32,7 +32,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login*").permitAll()
                 .antMatchers("/loginError*").permitAll()
                 .antMatchers("/*.css", "/*.png").permitAll()
-                .antMatchers("/test/*").permitAll() //TODO: for API testing, hide/delete later
                 .antMatchers("/file-service/**").permitAll()
                 .antMatchers("/invite*").permitAll()
                 .antMatchers("/invite/api*").permitAll()
