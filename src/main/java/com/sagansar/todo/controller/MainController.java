@@ -125,6 +125,7 @@ public class MainController implements ErrorController {
         return error(HttpStatusError.NOT_FOUND);
     }
 
+    @PreAuthorize("hasAnyAuthority('FREELANCER', 'ADMIN')")
     @RequestMapping("/invites")
     public ModelAndView invites(ModelAndView modelAndView) {
         modelAndView.setViewName("invites");
