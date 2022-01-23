@@ -35,5 +35,6 @@
     <script type="text/javascript" th:src="@{/static/js/main.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/manager.profile.js}"></script>
     <script th:if="${okMessage == 'cancel'}">window.addEventListener("DOMContentLoaded",()=>{showDone('Задача отменена!')});</script>
+    <script th:if="${okMessage == 'archive'}">window.addEventListener("DOMContentLoaded",()=>{showDone('Задача отправлена в архив!')});</script>
 </body>
 </html>

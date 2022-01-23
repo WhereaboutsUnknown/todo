@@ -10,3 +10,26 @@
         width: 99%;
     }
 }
+
+.invites-container .bottomless-stack-element {
+    max-height: 150px;
+    color: #6991b4;
+}
+
+.invites-container .bottomless-stack-element:hover {
+    cursor: pointer;
+    background: #eef2f6
+}
+
+.invite-open-container {
+    margin-bottom: 50px;
+}
+
+.invite-task-header {
+    font-weight: bold;
+}
+
+.invite-time {
+    font-style: italic;
+    font-size: 12px;
+}

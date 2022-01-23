@@ -10,3 +10,50 @@
         width: 99%;
     }
 }
+
+.responses-container .bottomless-stack-element {
+    max-height: 150px;
+    color: #6991b4;
+}
+
+.responses-container .bottomless-stack-element:hover {
+    cursor: pointer;
+    background: #eef2f6
+}
+
+.response-task-header {
+    font-weight: bold;
+}
+
+.response-time {
+    font-style: italic;
+    font-size: 12px;
+}
+
+.response-open-worker-block {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.response-worker-name {
+    font-weight: bold;
+}
+
+.response-worker-avatar {
+    height: 50px;
+    margin: 5px;
+    border-radius: 100%;
+}
+
+.response-open-worker-block .worker-statistics-container {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.response-open-worker-block .worker-statistics-container div {
+    margin: 2px;
+}

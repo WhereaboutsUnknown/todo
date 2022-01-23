@@ -15,7 +15,7 @@
       <li class="menu-item" th:if="${role != 'MANAGER'}">
         <a class="menu-item-href menu-item-active" th:href="@{/tasks}" th:text="ЗАДАЧИ"></a>
       </li>
-      <li class="menu-item">
+      <li class="menu-item" th:if="${role != 'MANAGER'}">
         <a class="menu-item-href menu-item-active" th:href="@{/invites}" th:text="ПРИГЛАШЕНИЯ"></a>
       </li>
       <li class="menu-item" th:if="${role != 'FREELANCER'}">
