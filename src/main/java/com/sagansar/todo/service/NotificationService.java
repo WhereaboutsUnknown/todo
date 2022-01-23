@@ -76,6 +76,16 @@ public class NotificationService {
         sendNotification(user, message);
     }
 
+    public void sendWorkerRemovedNotification(@NonNull User user, String taskHeader) {
+        String message = "Вы исключены из числа исполнителей задачи \"" + taskHeader + "\"!";
+        sendNotification(user, message);
+    }
+
+    public void sendCanceledTasksRemoved(@NonNull User user) {
+        String message = "Ваши задачи, отмененные более недели назад и не возвращенные в работу, были удалены";
+        sendNotification(user, message);
+    }
+
     public void sendNotification(@NonNull User user, String message) {
         Notification notification = createNotification(user, message);
         notificationRepository.save(notification);
