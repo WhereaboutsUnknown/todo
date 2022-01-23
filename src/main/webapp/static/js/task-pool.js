@@ -1,11 +1,11 @@
-function reloadTasks() {
-    const profileCache = Todo.getValue("profileCache");
-    if (profileCache && !isNaN(profileCache.id)) {
+function reloadTasks(initial) {
+    const profile = Todo.getValue('profileCache');
+    if (profile && !isNaN(profile.id)) {
         let list = $("#task-block-list");
         list.find('*').not('.persistent').remove();
         rest(
             "GET",
-            "/worker/" + profileCache.id + "/todo",
+            "/worker/" + profile.id + "/todo",
             null,
             function (data) {
                 console.log(data);
@@ -18,7 +18,11 @@ function reloadTasks() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    reloadTasks();
+    if (Todo.getValue('profileCache')) {
+        reloadTasks(true);
+    } else {
+        Todo.setProfileLoadCallback(reloadTasks);
+    }
 
     $("#refresh-button").click(function () {
         reloadTasks();

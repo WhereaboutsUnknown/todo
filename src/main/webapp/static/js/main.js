@@ -1,6 +1,7 @@
 class TodoApp {
     constructor() {
         this.todoCache = new Map();
+        this.profileCallbacks = [];
     }
 
     store(attrName, attrValue) {
@@ -19,6 +20,16 @@ class TodoApp {
 
     getAvatarFileType() {
         return 1;
+    }
+
+    setProfileLoadCallback(callback) {
+        this.profileCallbacks.push(callback);
+    }
+
+    fireProfileCallbacks() {
+        for (let i = 0; i < this.profileCallbacks.length; i++) {
+            this.profileCallbacks[i]();
+        }
     }
 }
 
@@ -91,6 +102,36 @@ function replaceElementText(element, text) {
     }
 }
 
+function fillBlockFrom(block, elementList) {
+    if (block && elementList) {
+        block.find('*').not('.persistent').remove();
+        for (let i = 0; i < elementList.length; i++) {
+            block.append(elementList[i]);
+        }
+    }
+}
+
+function resolveMonth(month) {
+    if (!isNaN(month)) {
+        const months = ['янв.', 'фев.', 'мар.', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.'];
+        return months[month];
+    } else {
+        console.error("ERROR: invalid month number " + month);
+    }
+}
+
+function formatDatetime(datetime) {
+    if (datetime) {
+        if (!datetime.day) {
+            datetime = new Date(datetime);
+            return `${datetime.getDay()} ${resolveMonth(datetime.getMonth())} ${datetime.getFullYear()} г., ${datetime.getHours()}:${datetime.getMinutes()}`;
+        }
+        return `${datetime.day} ${resolveMonth(datetime.month)} ${datetime.year} г., ${datetime.hour}:${datetime.minute}`;
+    } else {
+        console.error("ERROR: invalid datetime");
+    }
+}
+
 function showError(message) {
     Swal.fire({
         icon: 'error',
@@ -125,6 +166,33 @@ function showDone(message) {
     });
 }
 
+function showDiscreetDone(message) {
+    Swal.fire({
+        position: 'bottom-end',
+        text: message,
+        showConfirmButton: false,
+        width: 400,
+        height: 50,
+        color: '#ffffff',
+        background: '#4bb84e',
+        timer: 1500
+    })
+}
+
+function showSimpleDialog(text, yesButton, onConfirm) {
+    Swal.fire({
+        text: text,
+        showCancelButton: true,
+        confirmButtonText: yesButton,
+        cancelButtonText: 'Назад',
+        confirmButtonColor: '#195fd4'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm();
+        }
+    });
+}
+
 function showDialog(title, hint, yesButton, noButton, onConfirm, onDeny) {
     Swal.fire({
         title: title,
@@ -136,6 +204,26 @@ function showDialog(title, hint, yesButton, noButton, onConfirm, onDeny) {
         denyButtonText: noButton,
         confirmButtonColor: '#195fd4',
         denyButtonColor: '#fb2a79'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm();
+        } else if (result.isDenied) {
+            onDeny();
+        }
+    })
+}
+
+function showTemplateDialog(template, hint, yesButton, noButton, onConfirm, onDeny) {
+    Swal.fire({
+        html: template,
+        text: hint,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: yesButton,
+        denyButtonText: noButton,
+        cancelButtonText: 'Назад',
+        confirmButtonColor: '#195fd4',
+        denyButtonColor: '#fb2a79',
     }).then((result) => {
         if (result.isConfirmed) {
             onConfirm();
@@ -235,7 +323,7 @@ function workerElement(data) {
 }
 
 function notificationElement(data) {
-    return `<div id="${data.id}">${data.note}<i>   ${data.fireTime}</i></div>`;
+    return `<div id="${data.id}"><p>${data.note ? data.note : ''}</p><p><i>${data.fireTime ? data.fireTime : ''}</i></p></div>`;
 }
 
 function taskRedirect(taskId) {
@@ -267,16 +355,16 @@ $(document).on('mouseenter', '#notification-bell', function () {
     }
     counter.empty();
 
-    let data = [];
+    let read = [];
 
     $('#notification-list div').each(function () {
         const noteId = $(this).attr('id');
         if (!isNaN(noteId)) {
-            data.push(noteId);
+            read.push(noteId);
         }
     });
 
-    rest("PUT", "/notifications", data, function (data) {
+    rest("PUT", "/notifications", read, function (data) {
         if (data.error) {
             console.error("PUT " + api() + "/notifications", data.errors[0], data.error);
             return;
@@ -293,6 +381,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         console.log(data);
         Todo.store("profileCache", data);
+        Todo.fireProfileCallbacks();
     });
 
     rest("GET", "/notifications", null, function (data) {

@@ -15,15 +15,6 @@ function reloadHistory(data) {
     }
 }
 
-function fillBlockFrom(block, elementList) {
-    if (block && elementList) {
-        block.find('*').not('.persistent').remove();
-        for (let i = 0; i < elementList.length; i++) {
-            block.append(elementList[i]);
-        }
-    }
-}
-
 function reloadGeneral(data) {
     replaceElementText($('#general-header'), data.header ? data.header : '');
     replaceElementText($('#general-status'), data.status ? data.status : '');

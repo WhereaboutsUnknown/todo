@@ -55,23 +55,48 @@ window.addEventListener("DOMContentLoaded", () => {
         reloadInvited(invited);
     }
 
-    function setWorkerResponsible(workerId) {
-        const managerId = Todo.getValue('profileCache').id;
-        const taskId = Todo.getValue('currentTask');
-        if (isNaN(managerId) || isNaN(taskId) || isNaN(workerId)) {
-            console.error("Некорректный идентификатор");
-        }
-
-        rest("PUT", '/manager/' + managerId + '/tasks/' + taskId + '/worker?id=' + workerId, null, function (data) {
+    function performTaskAction(method, url, body, okMessage) {
+        rest(method, url, body, function (data) {
             if (data.error) {
-                console.error("PUT ", api() + '/manager/' + managerId + '/task/' + taskId + '/worker', data.errors[0], data.error);
+                console.error(method + ' ', api() + url, data.errors[0], data.error);
                 return;
             }
             console.log(data);
 
             reloadDependent(data);
             reloadAll(data);
+            showDiscreetDone(okMessage);
         });
+    }
+
+    function setWorkerResponsible(workerId) {
+        const managerId = Todo.getValue('profileCache').id;
+        const taskId = Todo.getValue('currentTask');
+        if (isNaN(managerId) || isNaN(taskId) || isNaN(workerId)) {
+            console.error("Некорректный идентификатор");
+            return;
+        }
+        performTaskAction("PUT", `/manager/${managerId}/tasks/${taskId}/worker?id=${workerId}`, null, 'Ответственный исполнитель изменен!');
+    }
+
+    function removeWorkerFromTask(workerId) {
+        const managerId = Todo.getValue('profileCache').id;
+        const taskId = Todo.getValue('currentTask');
+        if (isNaN(managerId) || isNaN(taskId) || isNaN(workerId)) {
+            console.error("Некорректный идентификатор");
+            return;
+        }
+        performTaskAction("DELETE", `/manager/${managerId}/tasks/${taskId}/worker?id=${workerId}`, null, 'Исполнитель удален!');
+    }
+
+    function cancelTaskInvite(workerId) {
+        const managerId = Todo.getValue('profileCache').id;
+        const taskId = Todo.getValue('currentTask');
+        if (isNaN(managerId) || isNaN(taskId) || isNaN(workerId)) {
+            console.error("Некорректный идентификатор");
+            return;
+        }
+        performTaskAction("DELETE", `/manager/${managerId}/tasks/${taskId}/invites?worker=${workerId}`, null, 'Приглашение отменено!');
     }
 
     $(document).on('click','#send-invites-btn', function () {
@@ -98,15 +123,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 function () {
                     const chosenWorkers = getChosenWorkerIds();
                     if (taskId && !isNaN(taskId) && profile.id && !isNaN(profile.id)) {
-                        rest("POST", `/manager/${profile.id}/tasks/${taskId}/invites`, chosenWorkers, function (data) {
-                            if (data.error) {
-                                console.error("POST " + api() + `/manager/${profile.id}/tasks/${taskId}/invites`, data.status.value, data.error);
-                                showError(data.error);
-                                return;
-                            }
-                            reloadDependent(data);
-                            reloadAll(data);
-                        });
+                        performTaskAction("POST", `/manager/${profile.id}/tasks/${taskId}/invites`, chosenWorkers, 'Приглашения отправлены!');
                     } else {
                         console.error("Current task ID: ", taskId);
                     }
@@ -154,5 +171,21 @@ window.addEventListener("DOMContentLoaded", () => {
         const elementId = $(this).attr('id');
         const workerId = extractNumber(elementId);
         setWorkerResponsible(workerId);
+    });
+
+    $(document).on('click','.worker-delete-btn', function () {
+        const elementId = $(this).attr('id');
+        showSimpleDialog('Исключить сотрудника из группы исполнителей задачи?', 'Исключить', function () {
+            const workerId = extractNumber(elementId);
+            removeWorkerFromTask(workerId);
+        });
+    });
+
+    $(document).on('click','.cancel-invite-btn', function () {
+        const elementId = $(this).attr('id');
+        showSimpleDialog('Аннулировать приглашение, отправленное сотруднику?', 'Аннулировать', function () {
+            const workerId = extractNumber(elementId);
+            cancelTaskInvite(workerId);
+        });
     });
 });

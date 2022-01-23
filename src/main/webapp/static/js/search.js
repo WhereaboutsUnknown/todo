@@ -54,6 +54,14 @@ function addSearchParams(url, page, size, type) {
     return url + `?dir=${sortDir}${sortBy ? "&by=" + sortBy : ""}${criteria ? "&crit=" + criteria : ""}${req ? "&req=" + req : ""}&page=${page ? page : 0}&size=${size ? size : 50}`;
 }
 
+function addSortAndReq(url) {
+    const sortDir = getSort();
+    const sortBy = getSortSelector();
+    const req = getSearchRequest();
+
+    return url + `?sort=${sortBy ? sortBy + "," : ""}${sortDir}${req ? "&req=" + req : ""}&page=0&size=1000`;
+}
+
 sortBtn().click(function () {
     if ($(this).hasClass('direction-up')) {
         $(this).removeClass('direction-up');
