@@ -12,4 +12,6 @@ public interface WorkerGroupTaskRepository extends JpaRepository<WorkerGroupTask
     List<WorkerGroupTask> findAllByTaskId(Long taskId);
 
     Optional<WorkerGroupTask> findByTaskIdAndResponsibleTrue(Long taskId);
+
+    boolean existsByWorkerUserIdAndTaskId(Integer userId, Long taskId);
 }

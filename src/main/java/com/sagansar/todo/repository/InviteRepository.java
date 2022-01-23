@@ -10,9 +10,11 @@ public interface InviteRepository extends JpaRepository<Invite, Long> {
 
     List<Invite> findAllByTaskId(Long taskId);
 
-    List<Invite> findAllByWorkerId(Integer workerId);
+    List<Invite> findAllByWorkerIdAndCheckedFalse(Integer workerId);
 
     boolean existsByWorkerIdAndTaskId(Integer workerId, Long taskId);
 
     Optional<Invite> findByWorkerIdAndTaskId(Integer workerId, Long taskId);
+
+    List<Invite> findAllByCheckedTrue();
 }

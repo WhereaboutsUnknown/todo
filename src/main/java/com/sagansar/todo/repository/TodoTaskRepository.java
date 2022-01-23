@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -22,4 +23,6 @@ public interface TodoTaskRepository extends JpaRepository<TodoTask, Long>, JpaSp
     List<TodoTask> findAllByUnitId(Integer unitId);
 
     boolean existsByIdAndManagerUserId(Long id, Integer managerUserId);
+
+    List<TodoTask> findAllByStatusCodeAndLastChangeDateBefore(Integer code, LocalDateTime change);
 }
