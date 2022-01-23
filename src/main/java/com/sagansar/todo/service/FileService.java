@@ -1,12 +1,10 @@
 package com.sagansar.todo.service;
 
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
-import com.sagansar.todo.model.general.Extension;
-import com.sagansar.todo.model.general.FilePurpose;
-import com.sagansar.todo.model.general.StoredFile;
-import com.sagansar.todo.model.general.User;
+import com.sagansar.todo.model.general.*;
 import com.sagansar.todo.model.manager.Manager;
 import com.sagansar.todo.model.work.TaskFile;
+import com.sagansar.todo.model.work.TodoStatus;
 import com.sagansar.todo.model.work.TodoTask;
 import com.sagansar.todo.repository.StoredFileRepository;
 import com.sagansar.todo.repository.TaskFileRepository;
@@ -42,6 +40,8 @@ public class FileService {
 
     private final StoredFileRepository storedFileRepository;
 
+    private final SecurityService securityService;
+
     private final String taskFileStoragePath;
 
     private final String usersFileStoragePath;
@@ -53,12 +53,14 @@ public class FileService {
     public FileService(TaskFileRepository taskFileRepository,
                        TodoTaskRepository todoTaskRepository,
                        StoredFileRepository storedFileRepository,
+                       SecurityService securityService,
                        @Value("${file.task.storage}") String taskFileStoragePath,
                        @Value("${file.user.storage}") String usersFileStoragePath,
                        @Value("${file.app.user.storage}") String appUserFilesStoragePath) {
         this.taskFileRepository = taskFileRepository;
         this.storedFileRepository = storedFileRepository;
         this.todoTaskRepository = todoTaskRepository;
+        this.securityService = securityService;
         this.taskFileStoragePath = taskFileStoragePath;
         this.usersFileStoragePath = usersFileStoragePath;
         this.appUserFilesStoragePath = appUserFilesStoragePath;
@@ -195,9 +197,12 @@ public class FileService {
     }
 
     private void checkUserAccessToTaskFile(TaskFile file, User user) throws BadRequestException {
+        TodoTask task = file.getTask();
+        if (securityService.checkUserRights(user, RoleEnum.FREELANCER) && (task.is(TodoStatus.Status.TODO) || task.is(TodoStatus.Status.DISCUSSION))) {
+            return;
+        }
         Set<Integer> fileRelatedUsers = new HashSet<>();
         fileRelatedUsers.add(file.getCreator().getId());
-        TodoTask task = file.getTask();
         fileRelatedUsers.addAll(
                 task.getUnit().getManagers().stream()
                         .map(Manager::getUser)

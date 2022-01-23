@@ -78,6 +78,10 @@ public class SecurityService {
         return (currentUserRoles.contains(role.name()) || currentUserRoles.contains("ADMIN"));
     }
 
+    public boolean checkUserRights(User user, RoleEnum role) {
+        return user.getRoles().stream().anyMatch(userRole -> RoleEnum.fromId(userRole.getId()).equals(role));
+    }
+
     public boolean isAdmin() {
         Set<String> currentUserRoles = userDetailsService.getCurrentUserRoles();
         return currentUserRoles.contains("ADMIN");
