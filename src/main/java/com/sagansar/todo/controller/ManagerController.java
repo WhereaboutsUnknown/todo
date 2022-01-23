@@ -212,7 +212,9 @@ public class ManagerController {
         validationService.checkNullSafety(taskId, workerId);
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new BadRequestException("Работник не найден!"));
-        return TaskMapper.taskToFull(todoService.deleteWorkerFromTask(manager, worker, taskId), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        TodoTask task = todoService.deleteWorkerFromTask(manager, worker, taskId);
+        inviteService.deleteExpiredInvite(taskId, workerId);
+        return TaskMapper.taskToFull(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @PostMapping("/{managerId}/tasks/{taskId}/invites")
@@ -238,12 +240,8 @@ public class ManagerController {
                                     @RequestParam(name = "worker") Integer workerId) throws BadRequestException {
         Manager manager = securityService.getAuthorizedManager(managerId);
         validationService.checkNullSafety(taskId, workerId);
-        if (inviteService.cancelInvite(taskId, workerId, manager)) {
-            TodoTask task = todoTaskRepository.findById(taskId)
-                    .orElseThrow(() -> new BadRequestException("Задача не найдена!"));
-            return TaskMapper.taskToFull(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
-        }
-        throw new BadRequestException("Не удалось отменить приглашение!");
+        TodoTask task = inviteService.cancelInvite(taskId, workerId, manager);
+        return TaskMapper.taskToFull(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @PreAuthorize("hasAuthority('SUPERVISOR')")

@@ -193,7 +193,15 @@ public class TodoService {
         if (task.getWorker() != null && worker.getId().equals(task.getWorker().getId())) {
             task.setWorker(null);
         }
-        workerGroupTaskRepository.delete(link.get());
+        WorkerGroupTask groupWorker = link.get();
+        workerGroupTaskRepository.delete(groupWorker);
+        task.getGroup().remove(groupWorker);
+        if (!task.is(TodoStatus.Status.TODO) && task.getGroup().size() == 1) {
+            TodoStatus todo = getStatus(TodoStatus.Status.TODO);
+            task.setStatus(todo);
+        }
+        task = todoTaskRepository.save(task);
+        notificationService.sendWorkerRemovedNotification(worker.getUser(), task.getHeader());
         return task;
     }
 
@@ -380,8 +388,14 @@ public class TodoService {
         }
     }
 
+    public void checkUserRightsOnTaskAsWorker(@NonNull Integer userId, @NonNull Long taskId) throws BadRequestException {
+        if (!workerGroupTaskRepository.existsByWorkerUserIdAndTaskId(userId, taskId)) {
+            throw new BadRequestException("Недостаточно прав для доступа к задаче!");
+        }
+    }
+
     public TodoTask getTaskForInvite(@NonNull Long taskId) throws BadRequestException {
-        return getValidTask(taskId, Set.of(TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION), "Работников можно приглашать только в еще не начатые задачи!");
+        return getValidTask(taskId, Set.of(TodoStatus.Status.TODO, TodoStatus.Status.DISCUSSION, TodoStatus.Status.GO), "Работников можно приглашать только в активные задачи!");
     }
 
     /**

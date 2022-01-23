@@ -113,10 +113,10 @@ public class InviteService {
     }
 
     public List<Invite> findWorkerInvites(@NonNull Integer workerId) {
-        return inviteRepository.findAllByWorkerId(workerId);
+        return inviteRepository.findAllByWorkerIdAndCheckedFalse(workerId);
     }
 
-    public boolean cancelInvite(@NonNull Long taskId, @NonNull Integer workerId, @NonNull Manager manager) throws BadRequestException {
+    public TodoTask cancelInvite(@NonNull Long taskId, @NonNull Integer workerId, @NonNull Manager manager) throws BadRequestException {
         Invite invite = inviteRepository.findByWorkerIdAndTaskId(workerId, taskId)
                 .orElseThrow(() -> new BadRequestException("Приглашение не найдено!"));
         if (!manager.getId().equals(invite.getTask().getManager().getId()) && !securityService.checkUserRights(RoleEnum.SUPERVISOR)) {
@@ -126,10 +126,12 @@ public class InviteService {
             securityService.destroyInviteTokens(invite.getId());
             inviteRepository.delete(invite);
             notificationService.sendInviteCancelledNotification(invite.getWorker().getUser(), invite.getTask().getHeader());
-            return true;
+            TodoTask task = invite.getTask();
+            task.getInvites().remove(invite);
+            return task;
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return false;
+            throw new BadRequestException("Не удалось отменить приглашение!");
         }
     }
 
@@ -146,6 +148,14 @@ public class InviteService {
             for (Invite invite : invites) {
                 notificationService.sendInviteCancelledNotification(invite.getWorker().getUser(), invite.getTask().getHeader());
             }
+        }
+    }
+
+    public void deleteExpiredInvite(@NonNull Long taskId, @NonNull Integer workerId) {
+        Invite invite = inviteRepository.findByWorkerIdAndTaskId(workerId, taskId).orElse(null);
+        if (invite != null && invite.isChecked()) {
+            securityService.destroyInviteTokens(invite.getId());
+            inviteRepository.delete(invite);
         }
     }
 
