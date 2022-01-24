@@ -65,7 +65,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
             reloadDependent(data);
             reloadAll(data);
-            showDiscreetDone(okMessage);
+            if (okMessage) {
+                showDiscreetDone(okMessage);
+            }
         });
     }
 
@@ -123,7 +125,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 function () {
                     const chosenWorkers = getChosenWorkerIds();
                     if (taskId && !isNaN(taskId) && profile.id && !isNaN(profile.id)) {
-                        performTaskAction("POST", `/manager/${profile.id}/tasks/${taskId}/invites`, chosenWorkers, 'Приглашения отправлены!');
+                        performTaskAction("POST", `/manager/${profile.id}/tasks/${taskId}/invites`, chosenWorkers, (chosenWorkers.length > 0 ? 'Приглашения отправлены!' : false));
                     } else {
                         console.error("Current task ID: ", taskId);
                     }
