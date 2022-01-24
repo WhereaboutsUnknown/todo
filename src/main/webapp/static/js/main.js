@@ -169,13 +169,13 @@ function showDone(message) {
 function showDiscreetDone(message) {
     Swal.fire({
         position: 'bottom-end',
-        text: message,
+        html: `<p class="swal-discreet-done"><img src="/static/images/ok-icon.png" alt=""/>${message}</p>`,
         showConfirmButton: false,
-        width: 400,
-        height: 50,
+        width: 600,
         color: '#ffffff',
         background: '#4bb84e',
-        timer: 1500
+        backdrop: `transparent`,
+        timer: 3000
     })
 }
 
