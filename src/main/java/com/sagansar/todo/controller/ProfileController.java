@@ -58,6 +58,12 @@ public class ProfileController {
     public PersonNameDto getCurrentUserProfile() {
         User user = securityService.getCurrentUser();
         if (user != null && user.isActive()) {
+            if (securityService.checkUserRights(RoleEnum.ADMIN)) {
+                PersonNameDto dto = new PersonNameDto();
+                dto.setName("Администратор");
+                dto.setId(user.getId());
+                return dto;
+            }
             if (securityService.checkUserRights(RoleEnum.MANAGER)) {
                 Manager manager = managerRepository.findByUserId(user.getId())
                         .orElseThrow(() -> new UserBlockedException("Не найден профиль менеджера!"));
