@@ -20,7 +20,7 @@ public class StatisticsMapper {
         double doneShare = calculateShare(done, total);
         dto.setDoneShare(doneShare);
         dto.setFailedShare(1.0 - doneShare);
-        dto.setPoints(statistics.getPoints());
+        dto.setPoints(roundPoints(statistics.getPoints()));
         return dto;
     }
 
@@ -43,7 +43,7 @@ public class StatisticsMapper {
         dto.setFailedShare(failedShare);
         dto.setRejectedShare(1.0 - doneShare - failedShare);
         dto.setResponsible(statistics.getResponsible());
-        dto.setPoints(statistics.getPoints());
+        dto.setPoints(roundPoints(statistics.getPoints()));
         return dto;
     }
 
@@ -51,5 +51,9 @@ public class StatisticsMapper {
         double partDouble = part * 1.0;
         double totalDouble = total * 1.0;
         return partDouble / totalDouble;
+    }
+
+    private static double roundPoints(double points) {
+        return Math.round(points * 100.0) / 100.0;
     }
 }
