@@ -330,3 +330,12 @@ h2{
     box-shadow: none !important;
     outline: none !important;
 }
+
+.swal-discreet-done img {
+    margin: 0 5px;
+}
+
+.swal-discreet-done {
+    margin: 0;
+    padding: 0;
+}
