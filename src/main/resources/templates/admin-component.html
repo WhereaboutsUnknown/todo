@@ -7,12 +7,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/static/css/header.css}">
+    <link rel="stylesheet" th:href="@{/static/css/main.component.css}">
     <link rel="stylesheet" th:href="@{/static/css/footer.css}">
     <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon">
 </head>
 <body>
     <div th:replace="fragments/header.html :: header(role='ADMIN', isSupervisor=false, main=true)"></div>
+    <input type="button" id="small-ok-alert">
 Это для админа
     <div th:replace="fragments/footer.html :: common-footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" th:src="@{/static/js/main.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/sweetalerttest.js}"></script>
 </body>
 </html>
