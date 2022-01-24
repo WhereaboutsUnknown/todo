@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service for creating and sending task invites to Workers
@@ -50,8 +47,8 @@ public class InviteService {
      * @param task task
      */
     public List<Worker> sendInvitesToAll(List<Integer> workers, @NonNull TodoTask task) {
-        if (workers == null || workers.isEmpty()) {
-            throw new WarningException("Приглашения не отправлены: не выбрано ни одного исполнителя!");
+        if (workers == null) {
+            return Collections.emptyList();
         }
         List<Worker> invited = new ArrayList<>();
         workers.stream()
