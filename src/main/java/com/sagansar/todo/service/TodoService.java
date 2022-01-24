@@ -126,7 +126,7 @@ public class TodoService {
             throw new BadRequestException("Стать исполнителем для этой задачи можно только по приглашению!");
         }
         sendWorkerResponse(task, worker, message);
-        dialogService.createDialog(task, worker.getUser(), message);
+        //dialogService.createDialog(task, worker.getUser(), message);
 
         if (!task.is(TodoStatus.Status.DISCUSSION)) {
             TodoStatus discussion = getStatus(TodoStatus.Status.DISCUSSION);
