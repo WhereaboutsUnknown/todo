@@ -348,6 +348,10 @@
     background-image: url("../images/cloud-icon.png");
 }
 
+.kanban-btn {
+    background-image: url("../images/kanban-icon.png");
+}
+
 .star.selected {
     color: gold;
 }

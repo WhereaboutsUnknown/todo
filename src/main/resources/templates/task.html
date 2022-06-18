@@ -20,6 +20,7 @@
         <div class="task-control-buttons">
             <div th:if="${userRole == 'FREELANCER'}" class="task-control-buttons-panel">
                 <div th:if="${taskTaken && task.status == 'В работе'}" class="task-done-btn basic-button" id="task-done-btn" title="Сдать работу"></div>
+                <div th:if="${taskTaken && task.status == 'В работе'}" class="kanban-btn basic-button" id="kanban-btn" title="Канбан-доска"></div>
                 <div th:if="${!taskTaken}" class="claim-task-btn basic-button" id="claim-task-btn" title="Отправить отклик"></div>
             </div>
             <div th:if="${userRole == 'MANAGER'}" class="task-control-buttons-panel">

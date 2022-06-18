@@ -76,4 +76,13 @@ window.addEventListener("DOMContentLoaded", () => {
             });
         }
     });
+
+    $(document).on('click','#kanban-btn', function () {
+        const taskId = Todo.getValue("currentTask");
+        const toUrl = root() + '/tasks/' + taskId + '/kanban';
+        console.log(toUrl)
+        if (!isNaN(taskId)) {
+            document.location = toUrl;
+        }
+    });
 });
