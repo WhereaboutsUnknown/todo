@@ -126,6 +126,24 @@ public class MainController implements ErrorController {
     }
 
     @PreAuthorize("hasAnyAuthority('FREELANCER', 'ADMIN')")
+    @RequestMapping("/tasks/{id}/kanban")
+    public ModelAndView kanban(@PathVariable(name = "id") Long id,
+                             ModelAndView modelAndView) throws BadRequestException {
+        TodoTask task = todoTaskRepository.findById(id).orElse(null);
+        if (task != null) {
+            User user = securityService.getCurrentUser();
+            modelAndView.addObject("taskId", task.getId());
+            modelAndView.addObject("taskName", task.getHeader());
+            if (securityService.checkUserRights(RoleEnum.FREELANCER)) {
+                checkWorkerRights(task, user);
+            }
+            modelAndView.setViewName("kanban");
+            return internalPage(modelAndView);
+        }
+        return error(HttpStatusError.NOT_FOUND);
+    }
+
+    @PreAuthorize("hasAnyAuthority('FREELANCER', 'ADMIN')")
     @RequestMapping("/invites")
     public ModelAndView invites(ModelAndView modelAndView) {
         modelAndView.setViewName("invites");
