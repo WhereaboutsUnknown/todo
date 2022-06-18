@@ -183,7 +183,7 @@ public class TodoTask {
         } else {
             return new TaskWarning("В задаче не было изменений с момента создания. Может быть, пора ее заархивировать?");
         }
-        return days > 14 ? new TaskWarning("Последнее изменение было " + days + " дней назад. Возможно, пора заархивировать задачу?") : null;
+        return (days > 14 && !is(TodoStatus.Status.ARCHIVE)) ? new TaskWarning("Последнее изменение было " + days + " дней назад. Возможно, пора заархивировать задачу?") : null;
     }
 
     public boolean is(TodoStatus.Status status) {
