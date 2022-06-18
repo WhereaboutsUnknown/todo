@@ -34,6 +34,7 @@ class TodoApp {
 }
 
 const Todo = new TodoApp();
+const months = ['янв.', 'фев.', 'мар.', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.'];
 
 function root() {
     return 'http://localhost:8080';
@@ -113,7 +114,6 @@ function fillBlockFrom(block, elementList) {
 
 function resolveMonth(month) {
     if (!isNaN(month)) {
-        const months = ['янв.', 'фев.', 'мар.', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.'];
         return months[month];
     } else {
         console.error("ERROR: invalid month number " + month);
@@ -230,6 +230,13 @@ function showTemplateDialog(template, hint, yesButton, noButton, onConfirm, onDe
         } else if (result.isDenied) {
             onDeny();
         }
+    })
+}
+
+function showTemplateMessage(template, hint) {
+    Swal.fire({
+        html: template,
+        text: hint
     })
 }
 
