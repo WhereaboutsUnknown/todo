@@ -8,7 +8,7 @@ import com.sagansar.todo.controller.mapper.*;
 import com.sagansar.todo.controller.util.RestResponse;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.infrastructure.exceptions.UserBlockedException;
-import com.sagansar.todo.model.external.TaskEstimateTable;
+import com.sagansar.todo.kanban.service.KanbanManageService;
 import com.sagansar.todo.model.external.TaskForm;
 import com.sagansar.todo.model.general.RoleEnum;
 import com.sagansar.todo.model.general.User;
@@ -52,6 +52,8 @@ public class ManagerController {
 
     private final ArchiveService archiveService;
 
+    private final KanbanManageService kanbanManageService;
+
     @GetMapping("")
     public ManagerDto getUserManagerProfile() {
         User currentUser = securityService.getCurrentUser();
@@ -93,7 +95,9 @@ public class ManagerController {
     @PostMapping("/{managerId}/tasks")
     public TaskShortDto createTask(@PathVariable(name = "managerId") Integer managerId) {
         Manager manager = securityService.getAuthorizedManager(managerId);
-        return TaskMapper.taskToShort(todoService.createTask(manager), manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
+        TodoTask task = todoService.createTask(manager);
+        kanbanManageService.attachBoard(task);
+        return TaskMapper.taskToShort(task, manager, securityService.checkUserRights(RoleEnum.SUPERVISOR));
     }
 
     @PutMapping("/{managerId}/tasks/{taskId}/edit")
