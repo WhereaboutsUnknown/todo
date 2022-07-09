@@ -4,7 +4,7 @@
 }
 
 /* Открываем lightbox */
-.lightbox:target {
+.lightbox:target, .lightbox.lightbox-active {
     z-index: 10;
     position: absolute;
     left: 0;
