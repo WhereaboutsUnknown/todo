@@ -36,102 +36,6 @@ class TodoApp {
 const Todo = new TodoApp();
 const months = ['янв.', 'фев.', 'мар.', 'апр.', 'мая', 'июня', 'июля', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.'];
 
-function root() {
-    return 'http://localhost:8080';
-}
-
-function api() {
-    return 'http://localhost:8080';
-}
-
-function avatarEndpoint(avatarId) {
-    return api() + "/file-service/user/file/" + (avatarId ? avatarId : 0) + "?type=" + Todo.getAvatarFileType();
-}
-
-function rest(method, url, body, callback) {
-    const token = $("meta[name='_csrf']").attr("content");
-    const xhr = new XMLHttpRequest();
-
-    try {
-        xhr.open(method, api() + url);
-        xhr.setRequestHeader("Content-type", "application/json; charset = utf-8");
-        xhr.setRequestHeader("X-CSRF-TOKEN", token);
-        if (body || typeof body == "boolean") {
-            xhr.send(JSON.stringify(body));
-        } else {
-            xhr.send();
-        }
-        xhr.addEventListener("load", function () {
-            if (xhr.status === 200) {
-                let data = JSON.parse(xhr.response);
-                callback(data);
-            }
-        });
-    } catch (e) {
-        console.log(method + " " + api() + url, e);
-    }
-}
-
-function submitForm(url, body, callback) {
-    const token = $("meta[name='_csrf']").attr("content");
-    const xhr = new XMLHttpRequest();
-
-    try {
-        xhr.open("POST", api() + url);
-        xhr.setRequestHeader("X-CSRF-TOKEN", token);
-        xhr.send(body);
-        xhr.addEventListener("load", function () {
-            if (xhr.status === 200) {
-                let data = JSON.parse(xhr.response);
-                callback(data);
-            }
-        });
-    } catch (e) {
-        console.log("POST " + api() + url, e);
-    }
-}
-
-function redirectTimer(time, domain) {
-    setTimeout(function () {
-        document.location = domain;
-    }, time);
-}
-
-function replaceElementText(element, text) {
-    if (element) {
-        element.empty().append(text ? text : '');
-    }
-}
-
-function fillBlockFrom(block, elementList) {
-    if (block && elementList) {
-        block.find('*').not('.persistent').remove();
-        for (let i = 0; i < elementList.length; i++) {
-            block.append(elementList[i]);
-        }
-    }
-}
-
-function resolveMonth(month) {
-    if (!isNaN(month)) {
-        return months[month];
-    } else {
-        console.error("ERROR: invalid month number " + month);
-    }
-}
-
-function formatDatetime(datetime) {
-    if (datetime) {
-        if (!datetime.day) {
-            datetime = new Date(datetime);
-            return `${datetime.getDay()} ${resolveMonth(datetime.getMonth())} ${datetime.getFullYear()} г., ${datetime.getHours()}:${datetime.getMinutes()}`;
-        }
-        return `${datetime.day} ${resolveMonth(datetime.month)} ${datetime.year} г., ${datetime.hour}:${datetime.minute}`;
-    } else {
-        console.error("ERROR: invalid datetime");
-    }
-}
-
 function showError(message) {
     Swal.fire({
         icon: 'error',
@@ -236,8 +140,128 @@ function showTemplateDialog(template, hint, yesButton, noButton, onConfirm, onDe
 function showTemplateMessage(template, hint) {
     Swal.fire({
         html: template,
-        text: hint
+        text: hint,
+        showConfirmButton: false,
+        showCancelButton: false
     })
+}
+
+function showDiscreetError(message) {
+    Swal.fire({
+        position: 'bottom-end',
+        html: `<p class="swal-discreet-done"><img src="/static/images/close-icon.png" alt=""/><b>Ошибка! </b>${message}</p>`,
+        showConfirmButton: false,
+        width: 600,
+        color: '#ffffff',
+        background: '#db5252',
+        backdrop: `transparent`,
+        timer: 3000
+    })
+}
+
+function root() {
+    return 'http://localhost:8080';
+}
+
+function api() {
+    return 'http://localhost:8080';
+}
+
+function avatarEndpoint(avatarId) {
+    return api() + "/file-service/user/file/" + (avatarId ? avatarId : 0) + "?type=" + Todo.getAvatarFileType();
+}
+
+function rest(method, url, body, callback) {
+    const token = $("meta[name='_csrf']").attr("content");
+    const xhr = new XMLHttpRequest();
+
+    try {
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status !== 200) {
+                let errorResponse = JSON.parse(xhr.response);
+                if (errorResponse.error) {
+                    console.error(method + api() + url, xhr.status, errorResponse.error);
+                    showDiscreetError(errorResponse.error);
+                }
+            }
+        }
+        xhr.open(method, api() + url);
+        xhr.setRequestHeader("Content-type", "application/json; charset = utf-8");
+        xhr.setRequestHeader("X-CSRF-TOKEN", token);
+        if (body || typeof body == "boolean") {
+            xhr.send(JSON.stringify(body));
+        } else {
+            xhr.send();
+        }
+        xhr.addEventListener("load", function () {
+            if (xhr.status === 200) {
+                let data = JSON.parse(xhr.response);
+                callback(data);
+            }
+        });
+    } catch (e) {
+        console.log(method + " " + api() + url, e);
+    }
+}
+
+function submitForm(url, body, callback) {
+    const token = $("meta[name='_csrf']").attr("content");
+    const xhr = new XMLHttpRequest();
+
+    try {
+        xhr.open("POST", api() + url);
+        xhr.setRequestHeader("X-CSRF-TOKEN", token);
+        xhr.send(body);
+        xhr.addEventListener("load", function () {
+            if (xhr.status === 200) {
+                let data = JSON.parse(xhr.response);
+                callback(data);
+            }
+        });
+    } catch (e) {
+        console.log("POST " + api() + url, e);
+    }
+}
+
+function redirectTimer(time, domain) {
+    setTimeout(function () {
+        document.location = domain;
+    }, time);
+}
+
+function replaceElementText(element, text) {
+    if (element) {
+        element.empty().append(text ? text : '');
+    }
+}
+
+function fillBlockFrom(block, elementList) {
+    if (block && elementList) {
+        block.find('*').not('.persistent').remove();
+        for (let i = 0; i < elementList.length; i++) {
+            block.append(elementList[i]);
+        }
+    }
+}
+
+function resolveMonth(month) {
+    if (!isNaN(month)) {
+        return months[month];
+    } else {
+        console.error("ERROR: invalid month number " + month);
+    }
+}
+
+function formatDatetime(datetime) {
+    if (datetime) {
+        if (!datetime.day) {
+            datetime = new Date(datetime);
+            return `${datetime.getDate()} ${resolveMonth(datetime.getMonth())} ${datetime.getFullYear()} г., ${datetime.getHours()}:${datetime.getMinutes()}`;
+        }
+        return `${datetime.day} ${resolveMonth(datetime.month)} ${datetime.year} г., ${datetime.hour > 9 ? datetime.hour : '0' + '' + datetime.hour}:${datetime.minute > 9 ? datetime.minute : '0' + '' + datetime.minute}`;
+    } else {
+        console.error("ERROR: invalid datetime");
+    }
 }
 
 function alertElement(data) {
