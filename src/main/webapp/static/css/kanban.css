@@ -1,0 +1,312 @@
+body {
+    padding: 30px;
+    background-color: #fdfdfd;
+}
+
+.kanban-header-container {
+    display: flex;
+    height: 100px;
+    justify-content: space-between;
+}
+
+.kanban-nav-container {
+    display: flex;
+    width: 30%;
+}
+
+.kanban-nav-goto-task {
+    display: flex;
+}
+
+.kanban-task-href {
+    margin-left: 30px;
+    margin-top: 20px;
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid #cccccc;
+    background-color: #eeeeee;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 0.8em;
+    color: #6a6a6a;
+}
+
+.kanban-task-href:hover {
+    background-color: #f3f3f3;
+    color: #8c8c8c;
+}
+
+.kanban-eat-elephant-container {
+    display: flex;
+    justify-content: center;
+}
+
+.kanban-settings-container {
+    display: flex;
+    justify-content: end;
+    width: 30%;
+}
+
+.kanban-edit-button {
+    margin-top: 30px;
+    margin-right: 30px;
+    background-image: url("../images/edit-icon.png");
+}
+
+.eat-elephant-image-container {
+    height: 100%;
+    width: 150px;
+    cursor: pointer;
+}
+
+.eat-elephant-image-container img.eat-elephant-image {
+    height: 100px;
+}
+
+.eat-elephant-info {
+    display: none;
+}
+
+.eat-elephant-image-container:hover .eat-elephant-info {
+    z-index: 10;
+    top: 50px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 500px;
+    height: 600px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    padding: 50px;
+    background-color: #eeeeee;
+    border-radius: 5px;
+    box-shadow: 1px 1px 10px 2px #b6b6b6;
+}
+
+.kanban-columns-container {
+    height: 45em;
+    display: flex;
+    overflow-y: scroll;
+}
+
+.kanban-column {
+    width: 16%;
+    height: 100%;
+}
+
+.kanban-column-header-container {
+    height: 60px;
+    padding: 20px;
+}
+
+.kanban-column-header {
+    border: 2px solid #cccccc;
+    height: 55px;
+    border-radius: 20px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 55px;
+    font-size: 18px;
+}
+
+.kanban-column-ticket-container {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #ececec;
+    height: 80%;
+}
+
+.kanban-buttons-container {
+    height: 60px;
+    padding: 20px 50px;
+}
+
+.kanban-add-ticket-btn {
+    height: 60px;
+    width: 60px;
+    background-color: #cccccc;
+    clip-path: polygon(0% 60%, 0% 40%, 40% 40%, 40% 0%, 60% 0%, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0% 60%);
+    cursor: pointer;
+}
+
+.kanban-add-ticket-btn:hover {
+    background-color: #dddddd;
+}
+
+.inactive-column {
+    display: none;
+}
+
+.ticket-block {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.worker-level img {
+    border-radius: 100%;
+    visibility: hidden;
+}
+
+.worker-level.present img {
+    visibility: visible;
+}
+
+.name-level {
+    min-height: 100px;
+    background-color: #195fd4;
+    border-radius: 10px;
+    padding: 0 10px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100px;
+    font-size: 14px;
+    color: whitesmoke;
+}
+
+.deadline-level {
+    min-height: 20px;
+    text-align: end;
+    font-size: 12px;
+    font-style: italic;
+    color: #b2b2b2;
+}
+
+.ticket-opened-inner {
+    z-index: 10;
+    position: absolute;
+    top: 20vh;
+    bottom: auto;
+    right: 0;
+    left: 0;
+    width: 400px;
+    margin: auto;
+}
+
+.open-ticket-block {
+    width: 100%;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 50px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px 2px #b6b6b6;
+}
+
+.open-ticket-description {
+    display: flex;
+    flex-direction: column;
+    height: 150px;
+    justify-content: space-between;
+}
+
+.ticket-description-input {
+    overflow-y: scroll;
+    resize: none;
+}
+
+.open-ticket-block.ticket-creation-form {
+    height: 400px;
+}
+
+.open-ticket-buttons {
+    display: flex;
+}
+
+.ticket-person {
+    display: flex;
+    margin: 10px 0;
+}
+
+.ticket-person img {
+    border-radius: 50%;
+    margin-left: 5px;
+}
+
+.save-ticket-btn {
+    background-image: url("../images/ok-icon.png");
+}
+
+.claim-ticket-btn {
+    background-image: url("../images/person-icon.png");
+}
+
+.delete-ticket-btn {
+    background-image: url("../images/delete-icon.png");
+}
+
+.send-comment-btn {
+    background-image: url("../images/ok-icon.png");
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.comment-block {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    max-width: 60%;
+}
+
+.comment-block.own-comment {
+    margin-left: 40%;
+}
+
+.comment-text {
+    background-color: #bb1d52;
+    border-radius: 10px;
+    padding: 0 10px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: whitesmoke;
+    display: flex;
+}
+
+.own-comment .comment-text {
+    background-color: #195fd4;
+}
+
+.comment-time {
+    min-height: 20px;
+    text-align: end;
+    font-size: 12px;
+    font-style: italic;
+    color: #b2b2b2;
+}
+
+.open-ticket-comments-section {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #cccccc;
+    padding-top: 20px;
+}
+
+.ticket-comments {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: 200px;
+    width: 100%;
+    padding: 5px;
+    overflow-y: scroll;
+}
+
+.ticket-comment-input {
+    display: flex;
+    margin-top: 10px;
+}
+
+.ticket-comment-input textarea {
+    width: 80%;
+}

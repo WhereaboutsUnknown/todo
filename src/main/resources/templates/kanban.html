@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" th:name="${_csrf.parameterName}" th:content="${_csrf.token}">
+    <title>Канбан-доска | TODO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/main.component.css}">
+    <link rel="stylesheet" th:href="@{/static/css/lightbox.css}">
+    <link rel="stylesheet" th:href="@{/static/css/kanban.css}">
+    <link rel="shortcut icon" th:href="@{/static/favicon.ico}" type="image/x-icon">
+</head>
+<body>
+<div class="lightbox" id="edit-kanban">
+    <figure>
+        <a href="#" class="close"></a>
+        <div>Здесь будут настройки канбана!</div>
+    </figure>
+</div>
+<div class="lightbox" id="ticket-opened">
+    <figure>
+        <a href="#" class="close"></a>
+        <div class="ticket-opened-inner" id="ticket-opened-inner"></div>
+    </figure>
+</div>
+<div class="kanban-header-container" th:id="${'task-' + taskId}">
+    <div class="kanban-nav-container">
+        <div class="kanban-nav-goto-main">
+            <a class="kanban-logo-href" th:href="@{/my}"><img class="logo-image" src="" th:src="@{/static/images/menu-logo.png}" alt="Main page"></a>
+        </div>
+        <div class="kanban-nav-goto-task">
+            <a class="kanban-task-href" th:href="@{'/tasks/' + ${taskId}}" th:text="${taskName}"></a>
+        </div>
+    </div>
+    <div class="kanban-eat-elephant-container">
+        <div class="eat-elephant-image-container">
+            <img class="eat-elephant-image" src="" th:src="@{/static/images/eat-elephant.png}" alt="Elephant">
+            <div class="eat-elephant-info">
+                <h1 class="eat-elephant-info-header">Слона нужно есть по частям!</h1>
+                <img class="eat-elephant-info-screen" height="auto" width="500" src="" th:src="@{/static/images/demo1.png}" alt="Info">
+                <p class="eat-elephant-info-paragraph">Создавайте задачи и перемещайте их между столбцами этапов</p>
+                <p class="eat-elephant-info-paragraph">Назначайте дедлайны, чтобы видеть предупреждение, когда срок будет подходить к концу</p>
+                <p class="eat-elephant-info-paragraph">Комментируйте задачи и отвечайте на комментарии коллег, чтобы ускорить процессы</p>
+                <h2 class="eat-elephant-info-end">Удачи!</h2>
+            </div>
+        </div>
+    </div>
+    <div class="kanban-settings-container">
+        <a class="basic-button kanban-edit-button" id="kanban-edit-button" href="#edit-kanban"></a>
+    </div>
+</div>
+<div class="kanban-columns-container">
+    <div class="kanban-column persistent-column" id="column-0">
+        <div class="kanban-column-header-container">
+            <div class="kanban-column-header" id="header-0"></div>
+        </div>
+        <div class="kanban-column-ticket-container"></div>
+    </div>
+    <div class="kanban-column changeable-column inactive-column" id="column-1">
+        <div class="kanban-column-header-container">
+            <div class="kanban-column-header" id="header-1"></div>
+        </div>
+        <div class="kanban-column-ticket-container"></div>
+    </div>
+    <div class="kanban-column changeable-column inactive-column" id="column-2">
+        <div class="kanban-column-header-container">
+            <div class="kanban-column-header" id="header-2"></div>
+        </div>
+        <div class="kanban-column-ticket-container"></div>
+    </div>
+    <div class="kanban-column changeable-column inactive-column" id="column-3">
+        <div class="kanban-column-header-container">
+            <div class="kanban-column-header" id="header-3"></div>
+        </div>
+        <div class="kanban-column-ticket-container"></div>
+    </div>
+    <div class="kanban-column changeable-column inactive-column" id="column-4">
+        <div class="kanban-column-header-container">
+            <div class="kanban-column-header" id="header-4"></div>
+        </div>
+        <div class="kanban-column-ticket-container"></div>
+    </div>
+    <div class="kanban-column persistent-column" id="column-5">
+        <div class="kanban-column-header-container">
+            <div class="kanban-column-header" id="header-5"></div>
+        </div>
+        <div class="kanban-column-ticket-container"></div>
+    </div>
+</div>
+<div class="kanban-buttons-container">
+    <div class="kanban-add-ticket-btn" id="add-ticket-btn"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" th:src="@{/static/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/kanban.js}"></script>
+</body>
+</html>
