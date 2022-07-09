@@ -119,6 +119,18 @@ public class SecurityService {
         return worker;
     }
 
+    public Worker getAuthorizedWorker() {
+        if (!checkUserRights(RoleEnum.FREELANCER)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Доступ запрещен");
+        }
+        User user = getCurrentUser();
+        if (user == null) {
+            throw new UnauthorizedException("Доступ запрещен");
+        }
+        return workerRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new UnauthorizedException("Доступ запрещен"));
+    }
+
     public String generateUrlInviteKey(@NonNull Invite invite) {
         String encodedKey = encoder.encode(invite.getId() + ":" + LocalDateTime.now(ZoneId.systemDefault()));
         InviteKey inviteKey = new InviteKey();
