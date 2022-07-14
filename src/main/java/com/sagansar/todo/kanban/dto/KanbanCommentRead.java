@@ -17,4 +17,6 @@ public class KanbanCommentRead {
     private LocalDateTime time;
 
     private PersonNameDto author;
+
+    private Boolean isOwn;
 }
