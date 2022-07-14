@@ -1,8 +1,6 @@
 package com.sagansar.todo.kanban;
 
-import com.sagansar.todo.controller.dto.PersonNameDto;
 import com.sagansar.todo.controller.mapper.Mapper;
-import com.sagansar.todo.controller.mapper.PersonMapper;
 import com.sagansar.todo.infrastructure.exceptions.BadRequestException;
 import com.sagansar.todo.kanban.dto.*;
 import com.sagansar.todo.kanban.model.KanbanComment;
@@ -17,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,14 +50,13 @@ public class KanbanController {
                             .map(ticket -> {
                                 var ticketView = new KanbanTicketFetch();
                                 Mapper.map(ticket, ticketView);
-                                var worker = PersonMapper.workerToName(ticket.getWorker());
-                                ticketView.setWorker(worker);
                                 return ticketView;
                             })
                             .collect(Collectors.toList());
                     columnView.setTickets(tickets);
                     return columnView;
                 })
+                .sorted(Comparator.comparingInt(KanbanColumnRead::getOrder))
                 .collect(Collectors.toList());
     }
 
@@ -86,6 +86,9 @@ public class KanbanController {
         var backlog = kanbanColumnRepository.findByBoardTaskIdAndDeletableFalseAndFinishingFalse(taskId)
                 .orElseThrow(() -> new RuntimeException("Не найден столбец бэклога"));
         Mapper.map(view, ticket);
+        var creator = securityService.getAuthorizedWorker();
+        ticket.setCreator(creator);
+        ticket.setCreationDate(LocalDateTime.now(ZoneId.systemDefault()));
         kanbanService.setColumn(ticket, backlog);
         var response = new KanbanTicketRead();
         Mapper.map(ticket, response);
@@ -131,6 +134,25 @@ public class KanbanController {
         kanbanService.setColumn(ticket, column);
     }
 
+    @PutMapping("/{id}/pick")
+    public KanbanTicketRead pickTicket(
+            @PathVariable Long taskId,
+            @PathVariable Long id
+    ) throws Exception {
+        checkAccess(taskId);
+
+        var ticket = kanbanService.get(id, taskId);
+        if (ticket.getWorker() == null) {
+            var worker = securityService.getAuthorizedWorker();
+            ticket.setWorker(worker);
+            ticket = kanbanService.save(ticket);
+        }
+        var response = new KanbanTicketRead();
+        Mapper.map(ticket, response);
+
+        return response;
+    }
+
     @DeleteMapping("/{id}")
     public void delete(
             @PathVariable Long taskId,
@@ -150,16 +172,18 @@ public class KanbanController {
         checkAccess(taskId);
 
         var ticket = kanbanService.get(id, taskId);
+        var worker = securityService.getAuthorizedWorker();
         var comments = kanbanCommentRepository.findAllByTicketId(ticket.getId());
         return comments.stream()
                 .map(com -> {
                     var response = new KanbanCommentRead();
                     Mapper.map(com, response);
-                    var author = new PersonNameDto();
-                    Mapper.map(com.getAuthor(), author);
-                    response.setAuthor(author);
+                    if (com.getAuthor() != null) {
+                        response.setIsOwn(worker.getUser().getId().equals(com.getAuthor().getId()));
+                    }
                     return response;
                 })
+                .sorted(Comparator.comparing(KanbanCommentRead::getTime))
                 .collect(Collectors.toList());
     }
 
@@ -175,6 +199,7 @@ public class KanbanController {
         var comment = new KanbanComment();
         Mapper.map(view, comment);
         comment.setAuthor(securityService.getCurrentUser());
+        comment.setTime(LocalDateTime.now(ZoneId.systemDefault()));
         comment.setTicket(ticket);
         comment = kanbanCommentRepository.save(comment);
         var response = new KanbanCommentRead();
