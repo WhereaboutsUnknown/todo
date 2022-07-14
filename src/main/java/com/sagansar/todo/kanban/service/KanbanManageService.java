@@ -37,6 +37,12 @@ public class KanbanManageService {
                 .orElseThrow(() -> new BadRequestException("Доска не найдена"));
     }
 
+    public void checkCapacity(Long taskId) throws BadRequestException {
+        if (kanbanColumnRepository.countAllByBoardTaskId(taskId) >= 6) {
+            throw new BadRequestException("Достигнут лимит столбцов на доске");
+        }
+    }
+
     public void attachBoard(TodoTask task) {
         var kanban = kanbanRepository.findByTaskId(task.getId()).orElse(new Kanban());
         kanban.setTask(task);
