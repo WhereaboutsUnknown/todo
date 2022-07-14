@@ -22,19 +22,21 @@ public class KanbanService {
     }
 
     /**
-     * Поместить тикет в столбец
+     * Place ticket to column
      *
-     * @param ticket тикет
-     * @param column столбец
+     * @param ticket changing ticket
+     * @param column column to set
      */
     public void setColumn(KanbanTicket ticket, KanbanColumn column) throws Exception {
-        if (!column.getBoard().getId().equals(ticket.getColumn().getBoard().getId())) {
-            throw new BadRequestException("Столбец относится к другой доске");
-        }
-        if (ticket.getColumn().getFinishing() && !column.getFinishing()) {
-            ticket.setFinishTime(null);
-        } else if (!ticket.getColumn().getFinishing() && column.getFinishing()) {
-            ticket.setFinishTime(LocalDateTime.now(ZoneId.systemDefault()));
+        if (ticket.getColumn() != null) {
+            if (!column.getBoard().getId().equals(ticket.getColumn().getBoard().getId())) {
+                throw new BadRequestException("Столбец относится к другой доске");
+            }
+            if (ticket.getColumn().getFinishing() && !column.getFinishing()) {
+                ticket.setFinishTime(null);
+            } else if (!ticket.getColumn().getFinishing() && column.getFinishing()) {
+                ticket.setFinishTime(LocalDateTime.now(ZoneId.systemDefault()));
+            }
         }
         ticket.setColumn(column);
         kanbanTicketRepository.save(ticket);
