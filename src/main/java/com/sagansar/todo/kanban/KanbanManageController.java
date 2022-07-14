@@ -36,6 +36,7 @@ public class KanbanManageController {
     ) throws Exception {
         checkAccess(taskId);
 
+        kanbanManageService.checkCapacity(taskId);
         var board = kanbanManageService.getBoard(taskId);
         var column = new KanbanColumn();
         Mapper.map(view, column);
