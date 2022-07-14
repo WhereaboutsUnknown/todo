@@ -42,7 +42,7 @@ public class KanbanTicket {
     private Worker creator;
 
     @ManyToOne
-    @JoinColumn(name = "column")
+    @JoinColumn(name = "kanban_col")
     private KanbanColumn column;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
