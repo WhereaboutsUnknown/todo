@@ -108,7 +108,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function fillColumn(colNum, column) {
-        Todo.store(`header-${colNum}`, column.id);
+        Todo.store(`${colNum}`, column.id);
 
         const colElement = document.getElementById(`column-${colNum}`);
         $(colElement).removeClass('inactive-column');
@@ -177,6 +177,34 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     fetchColumns();
+
+    $('.ticket-block').on('dragstart', function(e) {
+        e.originalEvent.dataTransfer.setData('listItem', $(this).index())
+    })
+
+    $('.kanban-column-ticket-container')
+        .on('drop', function(e) {
+            e.preventDefault();
+            $(this).removeClass('drop-zone-active');
+            let listItemIndex = e.originalEvent.dataTransfer.getData('listItem');
+            let block = $('.ticket-block').eq(listItemIndex);
+            $(this).append(block);
+            const colId = Todo.getValue(`${extractNumber(this.id)}`);
+            const taskId = Todo.getValue("currentTask");
+            const ticketId = extractNumber(block.attr("id"));
+            rest("PUT", `/tasks/${taskId}/kanban/ticket/${ticketId}/drop`, colId, function (data) {
+
+            });
+        })
+        .on('dragover', function(e) {
+            e.preventDefault();
+        })
+        .on('dragenter', function(e) {
+            $(this).addClass('drop-zone-active');
+        })
+        .on('dragleave', function(e) {
+            $(this).removeClass('drop-zone-active');
+        });
 
     $(document).on('click', '.kanban-column-header', function (e) {
         const header = e.target;
