@@ -19,4 +19,6 @@ public interface KanbanColumnRepository extends JpaRepository<KanbanColumn, Long
     Integer maxOrder(Long boardId);
 
     Optional<KanbanColumn> findByBoardTaskIdAndId(Long taskId, Long id);
+
+    Integer countAllByBoardTaskId(Long taskId);
 }
